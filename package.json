@@ -1,0 +1,14 @@
+{
+  "name": "1pass_api",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@gitlab.com:my_group5633507/1pass_api.git",
+  "author": "Aliaksei Dzemyanovich <aliaksei.dzemyanovich@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "tg-validate": "cd terragrunt/live/dev && terragrunt run-all validate",
+    "tg-plan": "cd terragrunt/live/dev && terragrunt run-all plan",
+    "tg-apply": "cd terragrunt/live/dev && terragrunt run-all apply --terragrunt-non-interactive",
+    "tg-destroy": "cd terragrunt/live/dev && terragrunt run-all destroy --terragrunt-non-interactive"
+  }
+}
