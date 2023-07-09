@@ -3,8 +3,8 @@
 | Env      | UI URL  | API URL                                                            |
 | -------- | ------- | ------------------------------------------------------------------ |
 | dev      | TBA     | https://uu3xj2zdx6.execute-api.eu-central-1.amazonaws.com/dev1     |
-| preprod  | TBA     | https://ylqh9tcpdj.execute-api.eu-central-1.amazonaws.com/preprod1 |
-| prod     | TBA     | https://n4k0ez87od.execute-api.eu-central-1.amazonaws.com/prod1    |
+| preprod  | TBA     | https://60qhz6s8f9.execute-api.eu-central-1.amazonaws.com/preprod1 |
+| prod     | TBA     | https://6nb2sgfcrl.execute-api.eu-central-1.amazonaws.com/prod1    |
 
 # Deployment
 
