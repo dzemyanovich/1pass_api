@@ -2,27 +2,35 @@ export const handler = async () => {
   // todo: use TypeScript
   const sportObjects = [
     {
-      title: 'Poison BOX',
-      type: 'crossfit',
+      name: 'Poison BOX',
+      address: 'ул. Лещинского 8',
       coords: {
-        latitude: 53.91226000038975,
-        longitude: 27.451467018119395,
+        lat: 53.91226000038975,
+        long: 27.451467018119395,
       },
     },
     {
-      title: 'CROSSiT',
-      type: 'crossfit',
+      name: 'CROSSiT',
+      address: 'ул. Купревича 1/5',
       coords: {
-        latitude: 53.92796322906796,
-        longitude: 27.681089535767622,
+        lat: 53.92796322906796,
+        long: 27.681089535767622,
       },
     },
     {
-      title: 'STAYA BOX',
-      type: 'crossfit',
+      name: 'STAYA BOX',
+      address: 'ул. Тимирязева 9',
       coords: {
-        latitude: 53.90719490535783,
-        longitude: 27.531684602939592,
+        lat: 53.90719490535783,
+        long: 27.531684602939592,
+      },
+    },
+    {
+      name: 'ФОРМА',
+      address: 'ул. Притыцкого 29',
+      coords: {
+        lat: 53.90798928234661,
+        long: 27.48417856648457,
       },
     },
   ];
