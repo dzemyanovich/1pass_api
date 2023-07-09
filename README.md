@@ -50,3 +50,11 @@ AWS Lambda, AWS API Gateway, Node.js, Terraform, Terragrunt, GitLab CI
 Error: Invalid provider registry host
 The host "registry.terraform.io" given in provider source address "registry.terraform.io/hashicorp/aws" does not offer a Terraform provider registry.
 ```
+
+# GitLab CI/CD setup
+Before running pipeline set the following env vars (variables should be **not protected**):
+
+| Env var                      | Value        | Comments                                       |
+| ---------------------------- | ------------ | ---------------------------------------------- |
+| AWS_ACCESS_KEY_ID            | "some_value" |                                                |
+| AWS_SECRET_ACCESS_KEY        | "some_value" |                                                |

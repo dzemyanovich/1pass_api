@@ -55,7 +55,7 @@ resource "aws_api_gateway_method_response" "get_sport_objects_method_response" {
   }
 }
 
-resource "aws_api_gateway_integration_response" "get_sport_objects_integration_response" {
+resource "aws_api_gateway_integration_response" "get_sport_objects_get_integration_response" {
   rest_api_id = aws_api_gateway_rest_api.one_pass_api.id
   resource_id = aws_api_gateway_resource.get_sport_objects_api_resource.id
   http_method = aws_api_gateway_method.get_sport_objects_get_method.http_method
@@ -129,7 +129,7 @@ resource "aws_api_gateway_deployment" "one_pass_api_deployment" {
     aws_api_gateway_integration.get_sport_objects_get_integration,
     aws_api_gateway_integration_response.get_sport_objects_get_integration_response,
     aws_api_gateway_integration.get_sport_objects_options_integration,
-    aws_api_gateway_integration_response.lget_sport_objects_options_integration_response
+    aws_api_gateway_integration_response.get_sport_objects_options_integration_response
   ]
   rest_api_id = aws_api_gateway_rest_api.one_pass_api.id
 
