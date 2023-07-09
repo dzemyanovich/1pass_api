@@ -1,0 +1,91 @@
+image: node:14.21.1
+
+stages:
+  - plan
+  - apply
+  - destroy
+
+variables:
+  TG_IMAGE: alpine/terragrunt:1.5.2
+
+.plan:
+  stage: plan
+  image:
+    name: $TG_IMAGE
+    entrypoint:
+      - '/usr/bin/env'
+      - 'PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'  
+  script:
+    - terragrunt run-all plan --terragrunt-non-interactive
+  # when: manual
+
+plan-preprod:
+  extends:
+    - .plan
+  before_script:
+    - cd terragrunt/live/preprod
+  only:
+    - develop
+
+plan-prod:
+  extends:
+    - .plan
+  before_script:
+    - cd terragrunt/live/prod
+  only:
+    - master
+
+.apply:
+  stage: apply
+  image:
+    name: $TG_IMAGE
+    entrypoint:
+      - '/usr/bin/env'
+      - 'PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+  script:
+    - terragrunt run-all apply --terragrunt-non-interactive
+  when: manual
+
+apply-preprod:
+  extends:
+    - .apply
+  before_script:
+    - cd terragrunt/live/preprod
+  only:
+    - develop
+
+apply-prod:
+  extends:
+    - .apply
+  before_script:
+    - cd terragrunt/live/prod
+  only:
+    - master
+
+# commented out for safete needs, comment out only if required
+# .destroy:
+#   stage: destroy
+#   image:
+#     name: $TG_IMAGE
+#     entrypoint:
+#       - '/usr/bin/env'
+#       - 'PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'  
+#   script:
+#     - terragrunt run-all destroy --terragrunt-non-interactive
+#   when: manual
+
+# destroy-preprod:
+#   extends:
+#     - .destroy
+#   before_script:
+#     - cd terragrunt/live/preprod
+#   only:
+#     - develop
+
+# destroy-prod:
+#   extends:
+#     - .destroy
+#   before_script:
+#     - cd terragrunt/live/prod
+#   only:
+#     - master
