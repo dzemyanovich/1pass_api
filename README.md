@@ -1,10 +1,10 @@
 # Envs
 
-| Env      | UI URL  | API URL |
-| -------- | ------- | ------- |
-| dev      | TBA     | TBA     |
-| preprod  | TBA     | TBA     |
-| prod     | TBA     | TBA     |
+| Env      | UI URL  | API URL                                                            |
+| -------- | ------- | ------------------------------------------------------------------ |
+| dev      | TBA     | TBA                                                                |
+| preprod  | TBA     | https://ylqh9tcpdj.execute-api.eu-central-1.amazonaws.com/preprod1 |                                                                |
+| prod     | TBA     | TBA                                                                |
 
 # Deployment
 
