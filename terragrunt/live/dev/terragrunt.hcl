@@ -16,7 +16,7 @@ EOF
 remote_state {
   backend = "s3"
   config = {
-    bucket = "${local.env}.1pass_api-terragrunt"
+    bucket = "${local.env}.1pass-api-terragrunt"
     region = "${local.aws_region}"
     key    = "${path_relative_to_include()}/terraform.tfstate"
   }
