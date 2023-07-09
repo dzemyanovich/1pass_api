@@ -1,5 +1,5 @@
-resource "aws_api_gateway_rest_api" "one_pass_api" {
-  name        = "${var.product}_${var.env}_1pass_api"
+resource "aws_api_gateway_rest_api" "user_api" {
+  name        = "${var.product}_${var.env}_user_api"
   description = "1Pass API"
 
   depends_on  = [
@@ -8,22 +8,22 @@ resource "aws_api_gateway_rest_api" "one_pass_api" {
 }
 
 resource "aws_api_gateway_resource" "get_sport_objects_api_resource" {
-  rest_api_id = aws_api_gateway_rest_api.one_pass_api.id
-  parent_id   = aws_api_gateway_rest_api.one_pass_api.root_resource_id
+  rest_api_id = aws_api_gateway_rest_api.user_api.id
+  parent_id   = aws_api_gateway_rest_api.user_api.root_resource_id
   path_part   = "get-sport-objects"
 }
 
-############## get-sport-objects GET ##############
+############## GET get-sport-objects ##############
 
 resource "aws_api_gateway_method" "get_sport_objects_get_method" {
-  rest_api_id   = aws_api_gateway_rest_api.one_pass_api.id
+  rest_api_id   = aws_api_gateway_rest_api.user_api.id
   resource_id   = aws_api_gateway_resource.get_sport_objects_api_resource.id
   http_method   = "GET"
   authorization = "NONE"
 }
 
 resource "aws_api_gateway_integration" "get_sport_objects_get_integration" {
-  rest_api_id             = aws_api_gateway_rest_api.one_pass_api.id
+  rest_api_id             = aws_api_gateway_rest_api.user_api.id
   resource_id             = aws_api_gateway_resource.get_sport_objects_api_resource.id
   http_method             = aws_api_gateway_method.get_sport_objects_get_method.http_method
   integration_http_method = "POST"
@@ -37,11 +37,11 @@ resource "aws_lambda_permission" "get_sport_objects_lambda_permission" {
   function_name = aws_lambda_function.get_sport_objects_lambda.function_name
   principal     = "apigateway.amazonaws.com"
 
-  source_arn = "${aws_api_gateway_rest_api.one_pass_api.execution_arn}/*/*"
+  source_arn = "${aws_api_gateway_rest_api.user_api.execution_arn}/*/*"
 }
 
 resource "aws_api_gateway_method_response" "get_sport_objects_method_response" {
-  rest_api_id = aws_api_gateway_rest_api.one_pass_api.id
+  rest_api_id = aws_api_gateway_rest_api.user_api.id
   resource_id = aws_api_gateway_resource.get_sport_objects_api_resource.id
   http_method = aws_api_gateway_method.get_sport_objects_get_method.http_method
   status_code = "200"
@@ -56,7 +56,7 @@ resource "aws_api_gateway_method_response" "get_sport_objects_method_response" {
 }
 
 resource "aws_api_gateway_integration_response" "get_sport_objects_get_integration_response" {
-  rest_api_id = aws_api_gateway_rest_api.one_pass_api.id
+  rest_api_id = aws_api_gateway_rest_api.user_api.id
   resource_id = aws_api_gateway_resource.get_sport_objects_api_resource.id
   http_method = aws_api_gateway_method.get_sport_objects_get_method.http_method
   status_code = aws_api_gateway_method_response.get_sport_objects_method_response.status_code
@@ -66,17 +66,17 @@ resource "aws_api_gateway_integration_response" "get_sport_objects_get_integrati
   }
 }
 
-############## get-sport-objects OPTIONS (for cors) ##############
+############## OPTIONS get-sport-objects (for cors) ##############
 
 resource "aws_api_gateway_method" "get_sport_objects_options_method" {
-  rest_api_id   = aws_api_gateway_rest_api.one_pass_api.id
+  rest_api_id   = aws_api_gateway_rest_api.user_api.id
   resource_id   = aws_api_gateway_resource.get_sport_objects_api_resource.id
   http_method   = "OPTIONS"
   authorization = "NONE"
 }
 
 resource "aws_api_gateway_integration" "get_sport_objects_options_integration" {
-  rest_api_id = aws_api_gateway_rest_api.one_pass_api.id
+  rest_api_id = aws_api_gateway_rest_api.user_api.id
   resource_id = aws_api_gateway_resource.get_sport_objects_api_resource.id
   http_method = aws_api_gateway_method.get_sport_objects_options_method.http_method
   type        = "MOCK"
@@ -89,7 +89,7 @@ EOF
 }
 
 resource "aws_api_gateway_method_response" "get_sport_objects_options_method_response" {
-  rest_api_id = aws_api_gateway_rest_api.one_pass_api.id
+  rest_api_id = aws_api_gateway_rest_api.user_api.id
   resource_id = aws_api_gateway_resource.get_sport_objects_api_resource.id
   http_method = aws_api_gateway_method.get_sport_objects_options_method.http_method
   status_code = "200"
@@ -106,7 +106,7 @@ resource "aws_api_gateway_method_response" "get_sport_objects_options_method_res
 }
 
 resource "aws_api_gateway_integration_response" "get_sport_objects_options_integration_response" {
-  rest_api_id = aws_api_gateway_rest_api.one_pass_api.id
+  rest_api_id = aws_api_gateway_rest_api.user_api.id
   resource_id = aws_api_gateway_resource.get_sport_objects_api_resource.id
   http_method = aws_api_gateway_method.get_sport_objects_options_method.http_method
   status_code = aws_api_gateway_method_response.get_sport_objects_options_method_response.status_code
@@ -120,7 +120,7 @@ resource "aws_api_gateway_integration_response" "get_sport_objects_options_integ
 
 ############## deployment ##############
 
-resource "aws_api_gateway_deployment" "one_pass_api_deployment" {
+resource "aws_api_gateway_deployment" "user_api_deployment" {
   variables = {
     source_code_hash = data.archive_file.lambda_zip.output_base64sha256
   }
@@ -131,7 +131,7 @@ resource "aws_api_gateway_deployment" "one_pass_api_deployment" {
     aws_api_gateway_integration.get_sport_objects_options_integration,
     aws_api_gateway_integration_response.get_sport_objects_options_integration_response
   ]
-  rest_api_id = aws_api_gateway_rest_api.one_pass_api.id
+  rest_api_id = aws_api_gateway_rest_api.user_api.id
 
   triggers = {
     redeployment = sha1(jsonencode([
@@ -147,8 +147,8 @@ resource "aws_api_gateway_deployment" "one_pass_api_deployment" {
   }
 }
 
-resource "aws_api_gateway_stage" "one_pass_api" {
-  deployment_id = aws_api_gateway_deployment.one_pass_api_deployment.id
-  rest_api_id   = aws_api_gateway_rest_api.one_pass_api.id
+resource "aws_api_gateway_stage" "user_api_gateway_stage" {
+  deployment_id = aws_api_gateway_deployment.user_api_deployment.id
+  rest_api_id   = aws_api_gateway_rest_api.user_api.id
   stage_name    = "${var.env}"
 }
