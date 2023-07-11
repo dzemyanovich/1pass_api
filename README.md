@@ -58,6 +58,10 @@ Before running pipeline set the following env vars (variables should be **not pr
 | ---------------------------- | ------------ | ---------------------------------------------- |
 | AWS_ACCESS_KEY_ID            | "some_value" |                                                |
 | AWS_SECRET_ACCESS_KEY        | "some_value" |                                                |
+| TF_VAR_db_username           | "some_value" |                                                |
+| TF_VAR_db_password           | "some_value" |                                                |
+
+> `TF_VAR_db_username` and `TF_VAR_db_password` are the same for all envs
 
 # AWS setup
 In order to set up AWS infrastucture **locally**:
