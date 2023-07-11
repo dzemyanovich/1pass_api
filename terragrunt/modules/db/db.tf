@@ -1,6 +1,6 @@
 # custom security group is required for connection from MySQL Workbench
 resource "aws_security_group" "mysql_security_group" {
-  name = "mysql_security_group"
+  name = "${var.env}-mysql-security-group"
   ingress {
     from_port       = 3306
     to_port         = 3306
