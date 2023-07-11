@@ -43,7 +43,7 @@ AWS Lambda, AWS API Gateway, Node.js, Terraform, Terragrunt, GitLab CI
 | `yarn tg-destroy`                | Destroy dev env                                                      |
 
 # Prerequisites
-- Node.js 14.21.3
+- Node.js 16.20.1
 - Terragrunt 0.48.1 (Terraform 1.5.2 is used under the hood). Use `brew` to install
 > Terraform / Terragrunt usage is restricted in Belarus. In order to run commands locally from Belarus location, you need to be connected to Europe / USA VPN (sometimes you need to switch between different VPN countries several times). Othewise, you'll see the following error:
 ```
@@ -58,3 +58,21 @@ Before running pipeline set the following env vars (variables should be **not pr
 | ---------------------------- | ------------ | ---------------------------------------------- |
 | AWS_ACCESS_KEY_ID            | "some_value" |                                                |
 | AWS_SECRET_ACCESS_KEY        | "some_value" |                                                |
+
+# AWS setup
+In order to set up AWS infrastucture **locally**:
+- create `terragrunt/modules/db/terraform.tfvars`:
+```
+db_username = "some_value"
+db_password = "some_value"
+```
+
+# Local setup
+In order to run mysql migrations locally, create `src/migrations/env-vars.js`:
+```
+process.env.db_username = 'some_value';
+process.env.db_password = 'some_value';
+process.env.db_host = 'some_value';
+process.env.db_name = 'some_value';
+```
+Pattern for **db_name** is `${env}_1pass_db`
