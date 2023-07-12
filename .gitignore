@@ -5,3 +5,4 @@ node_modules/
 terraform.tfvars
 env-vars.js
 db/config/config.json
+.env
