@@ -4,9 +4,16 @@ stages:
   - plan
   - apply
   - destroy
+  - db
 
 variables:
   TG_IMAGE: alpine/terragrunt:1.5.2
+
+cache:
+  paths:
+    - node_modules
+    - terragrunt/modules/lambda/src/node_modules
+    - cache/Cypress
 
 .plan:
   stage: plan
@@ -89,3 +96,16 @@ apply-prod:
 #     - cd terragrunt/live/prod
 #   only:
 #     - master
+
+.db:
+  stage: db
+  before_script:
+    - yarn
+
+db-preprod:
+  extends:
+    - .db
+  script:
+    - yarn db-migrate-preprod
+  only:
+    - develop
