@@ -8,7 +8,7 @@ module.exports = {
   up: async () => {
     runSql(`CREATE DATABASE IF NOT EXISTS ${db_name}`);
   },
-  down: async (queryInterface) => {
+  down: async () => {
     runSql(`DROP DATABASE IF EXISTS ${db_name}`);
   },
 };

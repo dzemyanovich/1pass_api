@@ -1,5 +1,4 @@
 export const handler = async () => {
-  // todo: use TypeScript
   const sportObjects = [
     {
       name: 'Poison BOX',

@@ -1,3 +1,4 @@
+// todo: this file is deprecated
 const Sequelize = require('sequelize');
 
 require('./env-vars');

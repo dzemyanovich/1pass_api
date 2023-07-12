@@ -10,11 +10,14 @@
     "tg-plan": "cd terragrunt/live/dev && terragrunt run-all plan",
     "tg-apply": "cd terragrunt/live/dev && terragrunt run-all apply --terragrunt-non-interactive",
     "tg-destroy": "cd terragrunt/live/dev && terragrunt run-all destroy --terragrunt-non-interactive",
-    "sql": "node src/migrations/connect-db.js"
+    "db-migration": "npx sequelize-cli model:generate --name SportObject --attributes name:string,address:string,lat:float,long:float",
+    "db-empty-migration": "npx sequelize-cli migration:generate --name migration-skeleton",
+    "db-migrate": "export NODE_ENV=dev && npx sequelize-cli db:migrate"
   },
   "devDependencies": {
     "mysql2": "^3.5.1",
     "sequelize": "^6.32.1",
+    "sequelize-cli": "^6.6.1",
     "tedious": "^16.2.0"
   }
 }

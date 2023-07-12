@@ -72,7 +72,7 @@ db_password = "some_value"
 ```
 
 # Local setup
-In order to run mysql migrations locally, create `src/migrations/env-vars.js`:
+In order to run mysql migrations locally, create `db/env-vars.js`:
 ```
 process.env.db_username = 'some_value';
 process.env.db_password = 'some_value';
@@ -80,3 +80,30 @@ process.env.db_host = 'some_value';
 process.env.db_name = 'some_value';
 ```
 Pattern for **db_name** is `${env}_1pass_db`
+
+Create `db/config/config.json`:
+```
+{
+  "dev": {
+    "username": "some_value",
+    "password": "some_value",
+    "database": "some_value",
+    "host": "some_value",
+    "dialect": "mysql"
+  },
+  "dev": {
+    "username": "some_value",
+    "password": "some_value",
+    "database": "some_value",
+    "host": "some_value",
+    "dialect": "mysql"
+  },
+  "dev": {
+    "username": "some_value",
+    "password": "some_value",
+    "database": "some_value",
+    "host": "some_value",
+    "dialect": "mysql"
+  }
+}
+```

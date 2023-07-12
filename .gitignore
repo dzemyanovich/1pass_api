@@ -3,4 +3,5 @@ node_modules/
 
 .terraform.lock.hcl
 terraform.tfvars
-src/migrations/env-vars.js
+env-vars.js
+db/config/config.json
