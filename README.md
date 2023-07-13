@@ -80,31 +80,3 @@ process.env.DEV_DB_PASSWORD = 'some_value';
 process.env.DEV_DB_HOST = 'some_value';
 process.env.DEV_DB_NAME = 'some_value';
 ```
-Pattern for **db_name** is `${env}_1pass_db`
-
-Create `db/config/config.json`:
-```
-{
-  "dev": {
-    "username": "some_value",
-    "password": "some_value",
-    "database": "some_value",
-    "host": "some_value",
-    "dialect": "mysql"
-  },
-  "dev": {
-    "username": "some_value",
-    "password": "some_value",
-    "database": "some_value",
-    "host": "some_value",
-    "dialect": "mysql"
-  },
-  "dev": {
-    "username": "some_value",
-    "password": "some_value",
-    "database": "some_value",
-    "host": "some_value",
-    "dialect": "mysql"
-  }
-}
-```

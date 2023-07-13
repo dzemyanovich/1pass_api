@@ -9,6 +9,7 @@ module.exports = {
     database: process.env.DEV_DB_NAME,
     host: process.env.DEV_DB_HOST,
     dialect: 'mysql',
+    seederStorage: 'sequelize',
   },
   preprod: {
     username: process.env.PREPROD_DB_USERNAME,
@@ -16,6 +17,7 @@ module.exports = {
     database: process.env.PREPROD_DB_NAME,
     host: process.env.PREPROD_DB_HOST,
     dialect: 'mysql',
+    seederStorage: 'sequelize',
   },
   prod: {
     username: process.env.PROD_DB_USERNAME,
@@ -23,5 +25,6 @@ module.exports = {
     database: process.env.PROD_DB_NAME,
     host: process.env.PROD_DB_HOST,
     dialect: 'mysql',
+    seederStorage: 'sequelize',
   },
 }
