@@ -1,5 +1,5 @@
 if (process.env.NODE_ENV === 'dev') {
-  require('dotenv').config();
+  require('../env-vars');
 }
 
 module.exports = {

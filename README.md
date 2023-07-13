@@ -60,6 +60,7 @@ Before running pipeline set the following env vars (variables should be **not pr
 | AWS_SECRET_ACCESS_KEY        | "some_value" |                                                |
 | TF_VAR_db_username           | "some_value" |                                                |
 | TF_VAR_db_password           | "some_value" |                                                |
+// todo: add more
 
 > `TF_VAR_db_username` and `TF_VAR_db_password` are the same for all envs
 
@@ -74,10 +75,10 @@ db_password = "some_value"
 # Local setup
 In order to run mysql migrations locally, create `db/env-vars.js`:
 ```
-process.env.db_username = 'some_value';
-process.env.db_password = 'some_value';
-process.env.db_host = 'some_value';
-process.env.db_name = 'some_value';
+process.env.DEV_DB_USERNAME = 'some_value';
+process.env.DEV_DB_PASSWORD = 'some_value';
+process.env.DEV_DB_HOST = 'some_value';
+process.env.DEV_DB_NAME = 'some_value';
 ```
 Pattern for **db_name** is `${env}_1pass_db`
 

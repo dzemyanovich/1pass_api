@@ -106,6 +106,16 @@ db-preprod:
   extends:
     - .db
   script:
+    - yarn db-create-preprod
     - yarn db-migrate-preprod
   only:
     - develop
+
+db-prod:
+  extends:
+    - .db
+  script:
+    - yarn db-create-prod
+    - yarn db-migrate-prod
+  only:
+    - master

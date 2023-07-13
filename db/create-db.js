@@ -1,27 +1,19 @@
 const mysql = require('mysql2');
+const config = require('./config/config');
 
-require('./env-vars');
+const { username, password, database, host } = config[process.env.NODE_ENV];
 
-const { db_username, db_password, db_host, db_name } = process.env;
+createDb();
 
-module.exports = {
-  up: async () => {
-    runSql(`CREATE DATABASE IF NOT EXISTS ${db_name}`);
-  },
-  down: async () => {
-    runSql(`DROP DATABASE IF EXISTS ${db_name}`);
-  },
-};
-
-function runSql(sql) {
+function createDb() {
   const connection = mysql.createConnection({
-    host: db_host,
-    user: db_username,
-    password: db_password,
+    host: host,
+    user: username,
+    password: password,
   });
 
   connection.query(
-    sql,
+    `CREATE DATABASE IF NOT EXISTS ${database}`,
     function (err, results) {
       console.log(results);
       console.log(err);
