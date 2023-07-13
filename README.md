@@ -60,7 +60,14 @@ Before running pipeline set the following env vars (variables should be **not pr
 | AWS_SECRET_ACCESS_KEY        | "some_value" |                                                |
 | TF_VAR_db_username           | "some_value" |                                                |
 | TF_VAR_db_password           | "some_value" |                                                |
-// todo: add more
+| PREPROD_DB_USERNAME          | "some_value" |                                                |
+| PREPROD_DB_PASSWORD          | "some_value" |                                                |
+| PREPROD_DB_NAME              | "some_value" |                                                |
+| PREPROD_DB_HOST              | "some_value" |                                                |
+| PROD_DB_USERNAME             | "some_value" |                                                |
+| PROD_DB_PASSWORD             | "some_value" |                                                |
+| PROD_DB_NAME                 | "some_value" |                                                |
+| PROD_DB_HOST                 | "some_value" |                                                |
 
 > `TF_VAR_db_username` and `TF_VAR_db_password` are the same for all envs
 
@@ -73,7 +80,7 @@ db_password = "some_value"
 ```
 
 # Local setup
-In order to run mysql migrations locally, create `db/env-vars.js`:
+In order to run mysql migrations locally and deploy dev env, create `db/config/env-vars.js` and `terragrunt/modules/lambda/src/env-vars.js`:
 ```
 process.env.DEV_DB_USERNAME = 'some_value';
 process.env.DEV_DB_PASSWORD = 'some_value';

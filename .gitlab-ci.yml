@@ -1,6 +1,7 @@
 image: node:16.20.1
 
 stages:
+  - build
   - plan
   - apply
   - destroy
@@ -13,7 +14,11 @@ cache:
   paths:
     - node_modules
     - terragrunt/modules/lambda/src/node_modules
-    - cache/Cypress
+
+build:
+  stage: build
+  script:
+    - yarn build-lambda
 
 .plan:
   stage: plan

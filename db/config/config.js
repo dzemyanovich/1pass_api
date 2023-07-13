@@ -1,5 +1,5 @@
 if (process.env.NODE_ENV === 'dev') {
-  require('../env-vars');
+  require('./env-vars');
 }
 
 module.exports = {
