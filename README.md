@@ -54,20 +54,28 @@ The host "registry.terraform.io" given in provider source address "registry.terr
 # GitLab CI/CD setup
 Before running pipeline set the following env vars (variables should be **not protected**):
 
-| Env var                      | Value        | Comments                                       |
-| ---------------------------- | ------------ | ---------------------------------------------- |
-| AWS_ACCESS_KEY_ID            | "some_value" |                                                |
-| AWS_SECRET_ACCESS_KEY        | "some_value" |                                                |
-| TF_VAR_db_username           | "some_value" |                                                |
-| TF_VAR_db_password           | "some_value" |                                                |
-| PREPROD_DB_USERNAME          | "some_value" |                                                |
-| PREPROD_DB_PASSWORD          | "some_value" |                                                |
-| PREPROD_DB_NAME              | "some_value" |                                                |
-| PREPROD_DB_HOST              | "some_value" |                                                |
-| PROD_DB_USERNAME             | "some_value" |                                                |
-| PROD_DB_PASSWORD             | "some_value" |                                                |
-| PROD_DB_NAME                 | "some_value" |                                                |
-| PROD_DB_HOST                 | "some_value" |                                                |
+| Env var                      | Value        | Comments                                              |
+| ---------------------------- | ------------ | ----------------------------------------------------- |
+| AWS_ACCESS_KEY_ID            | "some_value" |                                                       |
+| AWS_SECRET_ACCESS_KEY        | "some_value" |                                                       |
+| TF_VAR_db_username           | "some_value" | Used while creating aws_db_instance via terraform     |
+| TF_VAR_db_password           | "some_value" | Used while creating aws_db_instance via terraform     |
+| PREPROD_DB_USERNAME          | "some_value" | Used while creating database in Gitlab CI             |
+| PREPROD_DB_PASSWORD          | "some_value" | Used while creating database in Gitlab CI             |
+| PREPROD_DB_NAME              | "some_value" | Used while creating database in Gitlab CI             |
+| PREPROD_DB_HOST              | "some_value" | Used while creating database in Gitlab CI             |
+| TF_VAR_PREPROD_DB_USERNAME   | "some_value" | Used in lambdas to access database                    |
+| TF_VAR_PREPROD_DB_PASSWORD   | "some_value" | Used in lambdas to access database                    |
+| TF_VAR_PREPROD_DB_NAME       | "some_value" | Used in lambdas to access database                    |
+| TF_VAR_PREPROD_DB_HOST       | "some_value" | Used in lambdas to access database                    |
+| PROD_DB_USERNAME             | "some_value" | Used while creating database in Gitlab CI             |
+| PROD_DB_PASSWORD             | "some_value" | Used while creating database in Gitlab CI             |
+| PROD_DB_NAME                 | "some_value" | Used while creating database in Gitlab CI             |
+| PROD_DB_HOST                 | "some_value" | Used while creating database in Gitlab CI             |
+| TF_VAR_PROD_DB_USERNAME      | "some_value" | Used in lambdas to access database                    |
+| TF_VAR_PROD_DB_PASSWORD      | "some_value" | Used in lambdas to access database                    |
+| TF_VAR_PROD_DB_NAME          | "some_value" | Used in lambdas to access database                    |
+| TF_VAR_PROD_DB_HOST          | "some_value" | Used in lambdas to access database                    |
 
 > `TF_VAR_db_username` and `TF_VAR_db_password` are the same for all envs
 
