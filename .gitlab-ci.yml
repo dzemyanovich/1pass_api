@@ -128,13 +128,20 @@ db-prod:
   only:
     - master
 
+.integration:
+  stage: integration
+
 integration-preprod:
+  extends:
+    - .integration
   script:
     - yarn integration-preprod
   only:
     - develop
 
 integration-prod:
+  extends:
+    - .integration
   script:
     - yarn integration-prod
   only:
