@@ -1,4 +1,4 @@
-const ENVS = require('./envs');
+const ENVS = require('../enums/envs');
 
 module.exports = {
   getEnv,

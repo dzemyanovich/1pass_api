@@ -10,13 +10,16 @@ module.exports = {
         autoIncrement: true,
         primaryKey: true,
       },
+      // todo: make unique
       username: {
         type: Sequelize.STRING,
         allowNull: false,
       },
+      // todo: make unique
       email: {
         type: Sequelize.STRING,
       },
+      // todo: make unique
       telnumber: {
         type: Sequelize.STRING,
         allowNull: false,

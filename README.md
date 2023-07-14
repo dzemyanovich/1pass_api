@@ -88,7 +88,7 @@ db_password = "some_value"
 ```
 
 # Local setup
-In order to run mysql migrations locally and deploy dev env, create `db/config/env-vars.js` and `terragrunt/modules/lambda/src/env-vars.js`:
+In order to run mysql migrations locally and deploy dev env, create `db/config/env-vars.js` and `terragrunt/modules/lambda/src/config/env-vars.js`:
 ```
 process.env.DEV_DB_USERNAME = 'some_value';
 process.env.DEV_DB_PASSWORD = 'some_value';

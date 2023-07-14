@@ -1,5 +1,5 @@
-const { getEnv } = require('./utils');
-const ENVS = require('./envs');
+const { getEnv } = require('../utils/utils');
+const ENVS = require('../enums/envs');
 
 switch (getEnv()) {
   case ENVS.dev:

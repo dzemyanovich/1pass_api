@@ -1,36 +1,14 @@
 const mysql = require('mysql2');
 
-const { username, password, database, host } = require('./config');
+const { getSportObjects } = require('./DAL/repository');
+const { toSportObject } = require('./utils/view-models');
 
 module.exports = {
   handler,
 };
 
 async function handler() {
-  const connection = mysql.createConnection({
-    host: host,
-    user: username,
-    password: password,
-  });
+  const sportObjects = await getSportObjects();
 
-  const sportObjects = await runQuery(connection, `SELECT * FROM ${database}.SportObjects;`);
-
-  connection.end();
-
-  return sportObjects;
+  return sportObjects.map(m => toSportObject(m));
 };
-
-function runQuery(connection, query) {
-  return new Promise((resolve, reject) => {
-    connection.query(
-      query,
-      function (err, results) {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(results);
-        }
-      }
-    );
-  });
-}

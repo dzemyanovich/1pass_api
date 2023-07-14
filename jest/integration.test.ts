@@ -3,13 +3,14 @@ import axios from 'axios';
 const { API_URL } = process.env;
 const GET_SPORT_OBJECTS_URL = `${API_URL}/get-sport-objects`;
 
+// todo: use this type in lambda function -> DAL (aka repository.js)
 type SportObjectVM = {
   id: number,
   name: string,
   address: string,
   lat: number,
   long: number,
-  createdAt: Date | null, // todo: createdAt cannot be null
+  createdAt: Date,
 };
 
 function get<T>(url: string): Promise<T> {
@@ -21,7 +22,7 @@ function get<T>(url: string): Promise<T> {
 }
 
 // todo: while running I see error in console: Watchman crawl failed
-describe('login and validate-token', () => {
+describe('get-sport-objects', () => {
   it('gets all sport objects', async () => {
     const response: SportObjectVM[] = await get(
       GET_SPORT_OBJECTS_URL,
