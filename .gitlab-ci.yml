@@ -6,6 +6,7 @@ stages:
   - apply
   - destroy
   - db
+  - db-undo
   - integration
 
 variables:
@@ -19,6 +20,7 @@ cache:
 build:
   stage: build
   script:
+    - yarn
     - yarn build-lambda
 
 .plan:
@@ -105,8 +107,6 @@ apply-prod:
 
 .db:
   stage: db
-  before_script:
-    - yarn
 
 db-preprod:
   extends:
@@ -125,6 +125,28 @@ db-prod:
     - yarn db-create-prod
     - yarn db-migrate-prod
     - yarn db-seeds-prod
+  only:
+    - master
+
+.db-undo:
+  stage: db-undo
+  when: manual
+
+db-undo-preprod:
+  extends:
+    - .db-undo
+  script:
+    - yarn db-undo-seeds-preprod
+    - yarn db-undo-migrate-preprod
+  only:
+    - develop
+
+db-undo-prod:
+  extends:
+    - .db-undo
+  script:
+    - yarn db-undo-seeds-prod
+    - yarn db-undo-migrate-prod
   only:
     - master
 
