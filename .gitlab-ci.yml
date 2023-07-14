@@ -113,7 +113,7 @@ db-preprod:
   script:
     - yarn db-create-preprod
     - yarn db-migrate-preprod
-    - db-seeds-preprod
+    - yarn db-seeds-preprod
   only:
     - develop
 
@@ -123,6 +123,6 @@ db-prod:
   script:
     - yarn db-create-prod
     - yarn db-migrate-prod
-    - db-seeds-prod
+    - yarn db-seeds-prod
   only:
     - master
