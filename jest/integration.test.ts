@@ -20,6 +20,7 @@ function get<T>(url: string): Promise<T> {
   });
 }
 
+// todo: while running I see error in console: Watchman crawl failed
 describe('login and validate-token', () => {
   it('gets all sport objects', async () => {
     const response: SportObjectVM[] = await get(

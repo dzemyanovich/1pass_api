@@ -6,6 +6,7 @@ stages:
   - apply
   - destroy
   - db
+  - integration
 
 variables:
   TG_IMAGE: alpine/terragrunt:1.5.2
@@ -124,5 +125,17 @@ db-prod:
     - yarn db-create-prod
     - yarn db-migrate-prod
     - yarn db-seeds-prod
+  only:
+    - master
+
+integration-preprod:
+  script:
+    - yarn integration-preprod
+  only:
+    - develop
+
+integration-prod:
+  script:
+    - yarn integration-prod
   only:
     - master
