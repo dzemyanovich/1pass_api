@@ -28,7 +28,7 @@ resource "aws_lambda_function" "get_sport_objects_lambda" {
 
   environment {
     variables = {
-      NODE_ENV = var.env
+      NODE_ENV            = var.env
       PREPROD_DB_USERNAME = var.PROD_DB_USERNAME
       PREPROD_DB_PASSWORD = var.PROD_DB_PASSWORD
       PREPROD_DB_NAME     = var.PROD_DB_NAME

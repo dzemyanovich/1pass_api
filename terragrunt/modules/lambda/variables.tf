@@ -48,6 +48,5 @@ variable "PROD_DB_HOST" {
 }
 
 variable "root_dir" {
-  type    = string
-  default = ""
+  type = string
 }
