@@ -26,3 +26,27 @@ variable "PREPROD_DB_HOST" {
   type    = string
   default = ""
 }
+
+variable "PROD_DB_USERNAME" {
+  type    = string
+  default = ""
+}
+
+variable "PROD_DB_PASSWORD" {
+  type    = string
+  default = ""
+}
+
+variable "PROD_DB_NAME" {
+  type    = string
+  default = ""
+}
+
+variable "PROD_DB_HOST" {
+  type    = string
+  default = ""
+}
+
+variable "root_dir" {
+  type = string
+}

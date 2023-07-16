@@ -4,3 +4,4 @@ node_modules/
 .terraform.lock.hcl
 terraform.tfvars
 env-vars.js
+.DS_Store
