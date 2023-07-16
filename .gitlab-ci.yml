@@ -16,7 +16,7 @@ variables:
 cache:
   paths:
     - node_modules
-    - terragrunt/modules/lambda/src/node_modules
+    - lambda/node_modules
 
 build:
   stage: build
