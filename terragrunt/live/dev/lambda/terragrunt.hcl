@@ -8,7 +8,7 @@ terraform {
 
 locals {
   global_vars = (read_terragrunt_config(find_in_parent_folders("terragrunt.hcl"))).locals
-  root_dir = get_repo_root()
+  root_dir    = get_repo_root()
 }
 
 inputs = {
