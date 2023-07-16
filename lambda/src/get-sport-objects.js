@@ -1,7 +1,7 @@
 const mysql = require('mysql2');
 
 const { getSportObjects } = require('./DAL/repository');
-const { toSportObject } = require('./utils/view-models');
+const { toSportObject } = require('./db/utils/view-models');
 
 module.exports = {
   handler,

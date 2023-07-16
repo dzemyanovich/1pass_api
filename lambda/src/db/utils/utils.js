@@ -1,11 +1,10 @@
 const mysql = require('mysql2');
-const config = require('./config/config');
 
-const { username, password, host } = config[process.env.NODE_ENV];
+const { username, password, host } = require('../config/config');
 
 module.exports = {
   runSql,
-};
+}
 
 function runSql(sql) {
   const connection = mysql.createConnection({
@@ -24,3 +23,4 @@ function runSql(sql) {
 
   connection.end();
 }
+
