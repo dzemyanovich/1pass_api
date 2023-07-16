@@ -19,10 +19,12 @@ module.exports = (sequelize, DataTypes) => {
     telnumber: DataTypes.STRING,
     password: DataTypes.STRING,
     firstName: DataTypes.STRING,
-    lastName: DataTypes.STRING
+    lastName: DataTypes.STRING,
+    createdAt: 'TIMESTAMP',
   }, {
     sequelize,
     modelName: 'User',
+    timestamps: false,
   });
   return User;
 };

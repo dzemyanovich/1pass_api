@@ -1,6 +1,5 @@
-// const { getSportObjects } = require('./DAL/repository');
+const { SportObject } = require('./db/models');
 const { toSportObject } = require('./db/utils/view-models');
-const SportObject = require('./db/models/sportobject');
 
 module.exports = {
   handler,
@@ -8,7 +7,6 @@ module.exports = {
 
 async function handler() {
   const sportObjects = await SportObject.findAll();
-  // const sportObjects = await getSportObjects();
 
   return sportObjects.map(m => toSportObject(m));
 };

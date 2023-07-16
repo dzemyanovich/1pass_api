@@ -17,10 +17,12 @@ module.exports = (sequelize, DataTypes) => {
     name: DataTypes.STRING,
     address: DataTypes.STRING,
     lat: DataTypes.FLOAT,
-    long: DataTypes.FLOAT
+    long: DataTypes.FLOAT,
+    createdAt: 'TIMESTAMP',
   }, {
     sequelize,
     modelName: 'SportObject',
+    timestamps: false,
   });
   return SportObject;
 };
