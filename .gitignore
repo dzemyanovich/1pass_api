@@ -5,3 +5,4 @@ node_modules/
 terraform.tfvars
 env-vars.js
 .DS_Store
+lambda.zip
