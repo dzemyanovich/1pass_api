@@ -7,7 +7,7 @@ stages:
   - destroy
   - db
   - db-undo
-  - db-drop
+  - db-recreate
   - integration
 
 variables:
@@ -151,23 +151,29 @@ db-undo-prod:
   only:
     - master
 
-.db-drop:
-  stage: db-drop
+.db-recreate:
+  stage: db-recreate
   when: manual
 
-db-drop-preprod:
+db-recreate-preprod:
   extends:
-    - .db-drop
+    - .db-recreate
   script:
     - yarn db-drop-preprod
+    - yarn db-create-preprod
+    - yarn db-migrate-preprod
+    - yarn db-seeds-preprod
   only:
     - develop
 
-db-drop-prod:
+db-recreate-prod:
   extends:
-    - .db-drop
+    - .db-recreate
   script:
     - yarn db-drop-prod
+    - yarn db-create-prod
+    - yarn db-migrate-prod
+    - yarn db-seeds-prod
   only:
     - master
 
