@@ -1,10 +1,12 @@
 # custom security group is required for connection from MySQL Workbench
 resource "aws_security_group" "mysql_security_group" {
+  // todo: use naming with product inside
+  // name = "${var.product}-${var.env}-mysql-security-group"
   name = "${var.env}-mysql-security-group"
   ingress {
-    from_port       = 3306
-    to_port         = 3306
-    protocol        = "tcp"
+    from_port   = 3306
+    to_port     = 3306
+    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
   egress {
@@ -17,7 +19,10 @@ resource "aws_security_group" "mysql_security_group" {
 
 resource "aws_db_instance" "one_pass_db" {
   allocated_storage           = 10
-  identifier                  = "${var.env}-1pass-db"
+  // identifier                  = "${var.env}-${var.product}-db"
+  // todo: having db per each env is extremely costly
+  // identifier                  = "dev1-${var.product}-db" // first character must be a letter
+  identifier                  = "${var.env}-${var.product}-db"
   engine                      = "mysql"
   engine_version              = "5.7"
   instance_class              = "db.t3.micro"
@@ -25,6 +30,6 @@ resource "aws_db_instance" "one_pass_db" {
   password                    = var.db_password
   parameter_group_name        = "default.mysql5.7"
   vpc_security_group_ids      = [aws_security_group.mysql_security_group.id]
-  final_snapshot_identifier   = false
+  skip_final_snapshot         = true // makes possible deletion of db
   publicly_accessible         = true
 }
