@@ -135,6 +135,7 @@ resource "aws_api_gateway_deployment" "user_api_deployment" {
 
   triggers = {
     redeployment = sha1(jsonencode([
+      aws_iam_role.iam_for_lambda.id,
       aws_api_gateway_resource.get_sport_objects_api_resource.id,
       aws_api_gateway_method.get_sport_objects_get_method.id,
       aws_api_gateway_integration.get_sport_objects_get_integration.id,
