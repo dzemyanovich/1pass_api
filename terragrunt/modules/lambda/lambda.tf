@@ -18,6 +18,11 @@ resource "aws_iam_role" "iam_for_lambda" {
 EOF
 }
 
+resource "aws_iam_role_policy_attachment" "lambda_basic_access" {
+  role       = aws_iam_role.iam_for_lambda.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+}
+
 resource "aws_lambda_function" "get_sport_objects_lambda" {
   filename          = data.archive_file.lambda_zip.output_path
   function_name     = "${var.product}-${var.env}-get-sport-objects"
