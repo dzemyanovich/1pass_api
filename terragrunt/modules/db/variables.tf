@@ -1,6 +1,6 @@
 variable "product" {
   type    = string
-  default = "1pass"
+  default = "one-pass" # only lowercase alphanumeric characters and hyphens allowed in "identifier"
 }
 
 variable "env" {
