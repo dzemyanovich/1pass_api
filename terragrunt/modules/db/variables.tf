@@ -14,3 +14,8 @@ variable "db_username" {
 variable "db_password" {
   type = string
 }
+
+variable "is_dev_env" {
+  type    = bool
+  default = false
+}

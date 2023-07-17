@@ -11,5 +11,6 @@ locals {
 }
 
 inputs = {
-  env = local.global_vars.env
+  env        = local.global_vars.env
+  is_dev_env = true
 }
