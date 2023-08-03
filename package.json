@@ -37,7 +37,8 @@
     "integration-preprod": "jest jest/integration.test.ts --coverage=false --modulePathIgnorePatterns=[] --setupFilesAfterEnv '<rootDir>/jest/setup.preprod.ts'",
     "integration-preprod-local": "jest jest/integration.test.ts --coverage=false --modulePathIgnorePatterns=[] --setupFilesAfterEnv '<rootDir>/jest/setup.preprod.ts'",
     "integration-prod": "jest jest/integration.test.ts --coverage=false --modulePathIgnorePatterns=[] --setupFilesAfterEnv '<rootDir>/jest/setup.prod.ts'",
-    "integration-prod-local": "jest jest/integration.test.ts --coverage=false --modulePathIgnorePatterns=[] --setupFilesAfterEnv '<rootDir>/jest/setup.prod.ts'"
+    "integration-prod-local": "jest jest/integration.test.ts --coverage=false --modulePathIgnorePatterns=[] --setupFilesAfterEnv '<rootDir>/jest/setup.prod.ts'",
+    "twilio": "jest jest/twilio.test.ts --coverage=false --modulePathIgnorePatterns=[] --testEnvironment='node'"
   },
   "devDependencies": {
     "@types/jest": "^29.5.3",

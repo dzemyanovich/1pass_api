@@ -1,8 +1,5 @@
 import axios from 'axios';
 
-const { API_URL } = process.env;
-const GET_SPORT_OBJECTS_URL = `${API_URL}/get-sport-objects`;
-
 // todo: use this type in lambda function -> DAL (aka repository.js)
 type SportObjectVM = {
   id: number,
@@ -21,9 +18,11 @@ function get<T>(url: string): Promise<T> {
   });
 }
 
-// todo: while running I see error in console: Watchman crawl failed
 describe('get-sport-objects', () => {
   it('gets all sport objects', async () => {
+    const { API_URL } = process.env;
+    const GET_SPORT_OBJECTS_URL = `${API_URL}/get-sport-objects`;
+
     const response: SportObjectVM[] = await get(
       GET_SPORT_OBJECTS_URL,
     );

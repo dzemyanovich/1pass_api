@@ -4,5 +4,6 @@ node_modules/
 .terraform.lock.hcl
 terraform.tfvars
 env-vars.js
+jest/twilio.setup.js
 .DS_Store
 lambda.zip
