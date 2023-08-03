@@ -52,13 +52,16 @@ variable "root_dir" {
 }
 
 variable "TWILIO_AUTH_TOKEN" {
-  type = string
+  type    = string
+  default = ""
 }
 
 variable "TWILIO_ACCOUNT_SID" {
-  type = string
+  type    = string
+  default = ""
 }
 
 variable "TWILIO_VERIFY_SID" {
-  type = string
+  type    = string
+  default = ""
 }

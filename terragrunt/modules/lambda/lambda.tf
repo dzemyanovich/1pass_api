@@ -53,6 +53,7 @@ resource "aws_lambda_function" "auth_send_code_lambda" {
   handler           = "src/auth-send-code.handler"
   source_code_hash  = data.archive_file.lambda_zip.output_base64sha256
   runtime           = "nodejs18.x"
+  timeout           = 5
 
   environment {
     variables = {
@@ -70,6 +71,7 @@ resource "aws_lambda_function" "auth_verify_code_lambda" {
   handler           = "src/auth-verify-code.handler"
   source_code_hash  = data.archive_file.lambda_zip.output_base64sha256
   runtime           = "nodejs18.x"
+  timeout           = 5
 
   environment {
     variables = {
