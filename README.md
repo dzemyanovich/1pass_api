@@ -76,6 +76,9 @@ Before running pipeline set the following env vars (variables should be **not pr
 | TF_VAR_PROD_DB_PASSWORD      | "some_value" | Used in lambdas to access database                    |
 | TF_VAR_PROD_DB_NAME          | "some_value" | Used in lambdas to access database                    |
 | TF_VAR_PROD_DB_HOST          | "some_value" | Used in lambdas to access database                    |
+| TWILIO_AUTH_TOKEN            | "some_value" | Required for Twilio                                   |
+| TWILIO_ACCOUNT_SID           | "some_value" | Required for Twilio                                   |
+| TWILIO_VERIFY_SID            | "some_value" | Required for Twilio                                   |
 
 > `TF_VAR_db_username` and `TF_VAR_db_password` are the same for all envs
 
@@ -85,6 +88,12 @@ In order to set up AWS infrastucture **locally**:
 ```
 db_username = "some_value"
 db_password = "some_value"
+```
+- create `terragrunt/modules/lambda/terraform.tfvars`:
+```
+TWILIO_AUTH_TOKEN = "some_value"
+TWILIO_ACCOUNT_SID = "some_value"
+TWILIO_VERIFY_SID = "some_value"
 ```
 
 # Local setup

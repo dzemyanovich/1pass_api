@@ -45,3 +45,37 @@ resource "aws_lambda_function" "get_sport_objects_lambda" {
     }
   }
 }
+
+resource "aws_lambda_function" "auth_send_code_lambda" {
+  filename          = data.archive_file.lambda_zip.output_path
+  function_name     = "${var.product}-${var.env}-auth-send-code"
+  role              = aws_iam_role.iam_for_lambda.arn
+  handler           = "src/auth-send-code.handler"
+  source_code_hash  = data.archive_file.lambda_zip.output_base64sha256
+  runtime           = "nodejs18.x"
+
+  environment {
+    variables = {
+      TWILIO_AUTH_TOKEN  = var.TWILIO_AUTH_TOKEN
+      TWILIO_ACCOUNT_SID = var.TWILIO_ACCOUNT_SID
+      TWILIO_VERIFY_SID  = var.TWILIO_VERIFY_SID
+    }
+  }
+}
+
+resource "aws_lambda_function" "auth_verify_code_lambda" {
+  filename          = data.archive_file.lambda_zip.output_path
+  function_name     = "${var.product}-${var.env}-auth-verify-code"
+  role              = aws_iam_role.iam_for_lambda.arn
+  handler           = "src/auth-verify-code.handler"
+  source_code_hash  = data.archive_file.lambda_zip.output_base64sha256
+  runtime           = "nodejs18.x"
+
+  environment {
+    variables = {
+      TWILIO_AUTH_TOKEN  = var.TWILIO_AUTH_TOKEN
+      TWILIO_ACCOUNT_SID = var.TWILIO_ACCOUNT_SID
+      TWILIO_VERIFY_SID  = var.TWILIO_VERIFY_SID
+    }
+  }
+}

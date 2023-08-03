@@ -50,3 +50,15 @@ variable "PROD_DB_HOST" {
 variable "root_dir" {
   type = string
 }
+
+variable "TWILIO_AUTH_TOKEN" {
+  type = string
+}
+
+variable "TWILIO_ACCOUNT_SID" {
+  type = string
+}
+
+variable "TWILIO_VERIFY_SID" {
+  type = string
+}
