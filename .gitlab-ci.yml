@@ -17,12 +17,12 @@ cache:
   paths:
     - node_modules
     - lambda/node_modules
+    - lambda/dist
 
 build:
   stage: build
   script:
-    - yarn
-    - yarn build-lambda
+    - yarn build
 
 .plan:
   stage: plan
