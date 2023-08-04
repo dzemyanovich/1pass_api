@@ -1,12 +1,17 @@
 {
   "compilerOptions": {
+    "allowJs": true,
     "module": "commonjs",
     "esModuleInterop": true,
     "target": "es6",
     "moduleResolution": "node",
-    "sourceMap": true,
-    "outDir": "dist",
+    "outDir": "lambda/dist",
     "jsx": "react"
   },
+  "exclude": [
+    "jest",
+    "jest.config.ts",
+    "lambda/dist"
+  ],
   "lib": ["es2015"]
 }
