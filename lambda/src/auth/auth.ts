@@ -1,9 +1,4 @@
-module.exports = {
-  sendCode,
-  verifyCode,
-}
-
-async function sendCode(phone) {
+export async function sendCode(phone: string): Promise<string> {
   const { TWILIO_AUTH_TOKEN, TWILIO_ACCOUNT_SID, TWILIO_VERIFY_SID } = process.env;
   const client = require('twilio')(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
 
@@ -14,7 +9,7 @@ async function sendCode(phone) {
   return verification.status;
 };
 
-async function verifyCode(phone, code) {
+export async function verifyCode(phone: string, code: string): Promise<string> {
   const { TWILIO_AUTH_TOKEN, TWILIO_ACCOUNT_SID, TWILIO_VERIFY_SID } = process.env;
   const client = require('twilio')(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
 
