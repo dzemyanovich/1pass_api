@@ -1,5 +1,5 @@
 import axios from 'axios';
-import '../types';
+import '../types.d.ts';
 
 function get<T>(url: string): Promise<T> {
   return new Promise((resolve) => {
