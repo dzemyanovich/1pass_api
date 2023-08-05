@@ -1,5 +1,5 @@
 import axios from 'axios';
-import '../custom';
+import '../types';
 
 function get<T>(url: string): Promise<T> {
   return new Promise((resolve) => {
