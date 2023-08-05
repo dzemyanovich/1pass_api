@@ -1,4 +1,4 @@
-export function toSportObject(sportObject) {
+export function toSportObject(sportObject: SportObjectDM): SportObjectVM {
   const { id, name, address, lat, long } = sportObject;
 
   return {

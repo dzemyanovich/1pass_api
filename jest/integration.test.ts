@@ -1,14 +1,5 @@
 import axios from 'axios';
-
-// todo: use this type in lambda function -> DAL (aka repository.js)
-type SportObjectVM = {
-  id: number,
-  name: string,
-  address: string,
-  lat: number,
-  long: number,
-  createdAt: Date,
-};
+import '../custom';
 
 function get<T>(url: string): Promise<T> {
   return new Promise((resolve) => {
