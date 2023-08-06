@@ -10,10 +10,18 @@ export async function handler(event: SendCodeEvent): Promise<EventResult<string>
     };
   }
 
-  const result = await sendCode(event);
+  const sendStatus = await sendCode(event);
+
+  if (sendStatus !== 'pending') {
+    return {
+      valid: false,
+      errors: [
+        `send code status is ${sendStatus}`
+      ],
+    };
+  }
 
   return {
     valid: true,
-    data: result,
   };
 };

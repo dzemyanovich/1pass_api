@@ -1,10 +1,8 @@
-import * as dbModels from './db/models';
+import { getSportObjects } from './db/utils/repository';
 import { toSportObject } from './db/utils/view-models';
 
-const { SportObject } = dbModels as unknown as DBModels;
-
 export async function handler(): Promise<SportObjectVM[]> {
-  const sportObjects: SportObjectDM[] = await SportObject.findAll();
+  const sportObjects: SportObjectDM[] = await getSportObjects();
 
   return sportObjects.map((m: SportObjectDM) => toSportObject(m));
 };

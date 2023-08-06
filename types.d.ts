@@ -9,6 +9,16 @@ type VerifyCodeEvent = {
   code: string,
 }
 
+type SignUpEvent = {
+  phone: string,
+  firstName: string,
+  lastName: string,
+  email: string,
+  confirmEmail: string,
+  password: string,
+  confirmPassword: string,
+}
+
 type EventResult<T> = {
   valid: boolean,
   errors?: string[],
@@ -28,6 +38,7 @@ type DBConfig = {
 
 type DBModel<T> = {
   findAll: () => T[],
+  create: (model: any) => T,
 }
 
 type DBModels = {
@@ -53,11 +64,12 @@ type SportObjectVM = {
 }
 
 type UserDM = {
-  username: string,
-  email: string,
-  telnumber: string,
-  password: string,
-  firstName: string,
-  lastName: string,
+  id: number,
+  phone: string,
+  verified: boolean,
+  email?: string,
+  firstName?: string,
+  lastName?: string,
+  password?: string,
   createdAt: string,
 }

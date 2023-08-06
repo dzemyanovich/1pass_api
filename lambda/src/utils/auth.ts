@@ -21,3 +21,7 @@ export async function verifyCode(event: VerifyCodeEvent): Promise<string> {
 
   return verificationCheck.status;
 };
+
+export async function signUp(event: SignUpEvent): Promise<boolean> {
+  throw new Error('not implemented');
+}

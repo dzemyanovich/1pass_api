@@ -10,28 +10,31 @@ module.exports = {
         autoIncrement: true,
         primaryKey: true,
       },
-      // todo: make unique
-      username: {
+      phone: {
         type: Sequelize.STRING,
         allowNull: false,
+        unique: true,
       },
-      // todo: make unique
+      verified: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+      },
       email: {
         type: Sequelize.STRING,
-      },
-      // todo: make unique
-      telnumber: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
-      password: {
-        type: Sequelize.STRING,
+        allowNull: true,
+        unique: true,
       },
       firstName: {
         type: Sequelize.STRING,
+        allowNull: true,
       },
       lastName: {
         type: Sequelize.STRING,
+        allowNull: true,
+      },
+      password: {
+        type: Sequelize.STRING,
+        allowNull: true,
       },
       createdAt: {
         type: 'TIMESTAMP',

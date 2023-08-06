@@ -18,6 +18,10 @@ export function validateVerifyCode(event: VerifyCodeEvent): SafeParseReturnType<
   return schema.safeParse(event);
 }
 
+export function validateSignUp(event: SignUpEvent): SafeParseReturnType<SignUpEvent, SignUpEvent> {
+  throw new Error('now implemented');
+}
+
 export function getErrors<T>(parseResult: SafeParseReturnType<T, T>): string[] {
   const issues: ZodIssue[] = (parseResult as Zod.SafeParseError<T>).error.issues;
 

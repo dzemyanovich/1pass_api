@@ -53,13 +53,22 @@ resource "aws_lambda_function" "auth_send_code_lambda" {
   handler           = "dist/auth-send-code.handler"
   source_code_hash  = data.archive_file.lambda_zip.output_base64sha256
   runtime           = "nodejs18.x"
-  timeout           = 5
+  timeout           = 10
 
   environment {
     variables = {
-      TWILIO_AUTH_TOKEN  = var.TWILIO_AUTH_TOKEN
-      TWILIO_ACCOUNT_SID = var.TWILIO_ACCOUNT_SID
-      TWILIO_VERIFY_SID  = var.TWILIO_VERIFY_SID
+      NODE_ENV            = var.env
+      PREPROD_DB_USERNAME = var.PROD_DB_USERNAME
+      PREPROD_DB_PASSWORD = var.PROD_DB_PASSWORD
+      PREPROD_DB_NAME     = var.PROD_DB_NAME
+      PREPROD_DB_HOST     = var.PROD_DB_HOST
+      PROD_DB_USERNAME    = var.PROD_DB_USERNAME
+      PROD_DB_PASSWORD    = var.PROD_DB_PASSWORD
+      PROD_DB_NAME        = var.PROD_DB_NAME
+      PROD_DB_HOST        = var.PROD_DB_HOST
+      TWILIO_AUTH_TOKEN   = var.TWILIO_AUTH_TOKEN
+      TWILIO_ACCOUNT_SID  = var.TWILIO_ACCOUNT_SID
+      TWILIO_VERIFY_SID   = var.TWILIO_VERIFY_SID
     }
   }
 }
@@ -71,13 +80,22 @@ resource "aws_lambda_function" "auth_verify_code_lambda" {
   handler           = "dist/auth-verify-code.handler"
   source_code_hash  = data.archive_file.lambda_zip.output_base64sha256
   runtime           = "nodejs18.x"
-  timeout           = 5
+  timeout           = 10
 
   environment {
     variables = {
-      TWILIO_AUTH_TOKEN  = var.TWILIO_AUTH_TOKEN
-      TWILIO_ACCOUNT_SID = var.TWILIO_ACCOUNT_SID
-      TWILIO_VERIFY_SID  = var.TWILIO_VERIFY_SID
+      NODE_ENV            = var.env
+      PREPROD_DB_USERNAME = var.PROD_DB_USERNAME
+      PREPROD_DB_PASSWORD = var.PROD_DB_PASSWORD
+      PREPROD_DB_NAME     = var.PROD_DB_NAME
+      PREPROD_DB_HOST     = var.PROD_DB_HOST
+      PROD_DB_USERNAME    = var.PROD_DB_USERNAME
+      PROD_DB_PASSWORD    = var.PROD_DB_PASSWORD
+      PROD_DB_NAME        = var.PROD_DB_NAME
+      PROD_DB_HOST        = var.PROD_DB_HOST
+      TWILIO_AUTH_TOKEN   = var.TWILIO_AUTH_TOKEN
+      TWILIO_ACCOUNT_SID  = var.TWILIO_ACCOUNT_SID
+      TWILIO_VERIFY_SID   = var.TWILIO_VERIFY_SID
     }
   }
 }
