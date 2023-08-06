@@ -9,6 +9,12 @@ type VerifyCodeEvent = {
   code: string,
 }
 
+type EventResult<T> = {
+  valid: boolean,
+  errors?: string[],
+  data?: T,
+}
+
 // ************** DB ****************
 
 type DBConfig = {

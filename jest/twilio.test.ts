@@ -1,4 +1,4 @@
-import { sendCode, verifyCode } from '../lambda/src/auth/auth';
+import { sendCode, verifyCode } from '../lambda/src/utils/auth';
 import './twilio.setup';
 
 describe('twilio', () => {

@@ -1,7 +1,19 @@
-import { sendCode } from './auth/auth';
+import { sendCode } from './utils/auth';
+import { getErrors, validateSendCode } from './utils/validation';
 
-export async function handler(event: SendCodeEvent): Promise<string> {
-  const { phone } = event;
+export async function handler(event: SendCodeEvent): Promise<EventResult<string>> {
+  const validationResult = validateSendCode(event);
+  if (!validationResult.success) {
+    return {
+      valid: false,
+      errors: getErrors(validationResult),
+    };
+  }
 
-  return await sendCode(phone);
+  const result = await sendCode(event);
+
+  return {
+    valid: true,
+    data: result,
+  };
 };

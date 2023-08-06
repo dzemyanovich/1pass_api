@@ -8,3 +8,4 @@ env-vars.js
 jest/twilio.setup.js
 .DS_Store
 lambda.zip
+lambda/yarn-error.log

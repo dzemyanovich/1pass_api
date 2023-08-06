@@ -2,6 +2,7 @@ image: node:16.20.1
 
 stages:
   - build
+  - unit
   - plan
   - apply
   - destroy
@@ -23,6 +24,11 @@ build:
   stage: build
   script:
     - yarn build
+
+unit:
+  stage: unit
+  script:
+    - yarn unit
 
 .plan:
   stage: plan

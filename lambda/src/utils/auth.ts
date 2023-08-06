@@ -1,4 +1,5 @@
-export async function sendCode(phone: string): Promise<string> {
+export async function sendCode(event: SendCodeEvent): Promise<string> {
+  const { phone } = event;
   const { TWILIO_AUTH_TOKEN, TWILIO_ACCOUNT_SID, TWILIO_VERIFY_SID } = process.env;
   const client = require('twilio')(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
 
@@ -9,7 +10,8 @@ export async function sendCode(phone: string): Promise<string> {
   return verification.status;
 };
 
-export async function verifyCode(phone: string, code: string): Promise<string> {
+export async function verifyCode(event: VerifyCodeEvent): Promise<string> {
+  const { phone, code } = event;
   const { TWILIO_AUTH_TOKEN, TWILIO_ACCOUNT_SID, TWILIO_VERIFY_SID } = process.env;
   const client = require('twilio')(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
 
