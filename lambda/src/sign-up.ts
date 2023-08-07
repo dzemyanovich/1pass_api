@@ -5,7 +5,7 @@ export async function handler(event: SignUpEvent): Promise<EventResult<boolean>>
   const validationResult = validateSignUp(event);
   if (!validationResult.success) {
     return {
-      valid: false,
+      success: false,
       errors: getErrors(validationResult),
     };
   }
@@ -13,7 +13,7 @@ export async function handler(event: SignUpEvent): Promise<EventResult<boolean>>
   const result = await signUp(event);
 
   return {
-    valid: true,
+    success: true,
     data: result,
   };
 };

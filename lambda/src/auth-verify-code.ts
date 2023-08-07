@@ -6,26 +6,29 @@ export async function handler(event: VerifyCodeEvent): Promise<EventResult<UserD
   const validationResult = validateVerifyCode(event);
   if (!validationResult.success) {
     return {
-      valid: false,
+      success: false,
       errors: getErrors(validationResult),
     };
   }
 
-  const verifyStatus = await verifyCode(event);
+  const verifyCodeResult = await verifyCode(event);
 
-  if (verifyStatus !== 'approved') {
+  if (verifyCodeResult.error) {
     return {
-      valid: false,
-      errors: [
-        `verify code status is ${verifyStatus}`
-      ],
+      success: false,
+      errors: [verifyCodeResult.error]
     };
   }
 
-  const user = await createUser(event);
+  const createUserResult = await createUser(event);
 
-  return {
-    valid: true,
-    data: user,
-  };
+  return createUserResult.error
+    ? {
+      success: false,
+      errors: [createUserResult.error],
+    }
+    : {
+      success: true,
+      data: createUserResult.data as UserDM,
+    };
 };

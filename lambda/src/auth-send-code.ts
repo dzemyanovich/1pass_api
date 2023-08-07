@@ -5,23 +5,20 @@ export async function handler(event: SendCodeEvent): Promise<EventResult<string>
   const validationResult = validateSendCode(event);
   if (!validationResult.success) {
     return {
-      valid: false,
+      success: false,
       errors: getErrors(validationResult),
     };
   }
 
-  const sendStatus = await sendCode(event);
+  const executionResult = await sendCode(event);
 
-  if (sendStatus !== 'pending') {
-    return {
-      valid: false,
-      errors: [
-        `send code status is ${sendStatus}`
-      ],
+  return executionResult.error
+    ? {
+      success: false,
+      errors: [executionResult.error]
+    }
+    : {
+      success: true,
+      data: executionResult.data as string,
     };
-  }
-
-  return {
-    valid: true,
-  };
 };

@@ -22,9 +22,13 @@ describe('get-sport-objects', () => {
   const URL = `${API_URL}/get-sport-objects`;
 
   it('gets all sport objects', async () => {
-    const response: SportObjectVM[] = await get(URL);
+    const response: EventResult<SportObjectVM[]> = await get(URL);
 
-    expect(response.length).toBeGreaterThan(0);
+    if (!response.data) {
+      throw new Error('response.data is undefined');
+    }
+
+    expect(response.data.length).toBeGreaterThan(0);
   });
 });
 
@@ -35,7 +39,7 @@ describe('auth-send-code', () => {
   it('phone is missing', async () => {
     const response: EventResult<string> = await post(URL, {});
 
-    expect(response.valid).toBe(false);
+    expect(response.success).toBe(false);
   });
 
   it('invalid phone (short string)', async () => {
@@ -43,7 +47,7 @@ describe('auth-send-code', () => {
       phone: '543',
     });
 
-    expect(response.valid).toBe(false);
+    expect(response.success).toBe(false);
   });
 
   it('invalid phone (number instead of string)', async () => {
@@ -51,7 +55,7 @@ describe('auth-send-code', () => {
       phone: 142 as unknown as string,
     });
 
-    expect(response.valid).toBe(false);
+    expect(response.success).toBe(false);
   });  
 });
 
@@ -64,7 +68,7 @@ describe('auth-verify-code', () => {
       code: 'some_code',
     });
 
-    expect(response.valid).toBe(false);
+    expect(response.success).toBe(false);
   });
 
   it('code is missing', async () => {
@@ -72,13 +76,13 @@ describe('auth-verify-code', () => {
       phone: '+375333366883',
     });
 
-    expect(response.valid).toBe(false);
+    expect(response.success).toBe(false);
   });
 
   it('phone and code are missing', async () => {
     const response: EventResult<string> = await post(URL, {});
 
-    expect(response.valid).toBe(false);
+    expect(response.success).toBe(false);
   });
 
   it('invalid phone and code', async () => {
@@ -87,6 +91,6 @@ describe('auth-verify-code', () => {
       code: null,
     });
 
-    expect(response.valid).toBe(false);
+    expect(response.success).toBe(false);
   });
 });

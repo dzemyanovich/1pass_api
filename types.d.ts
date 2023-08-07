@@ -20,7 +20,7 @@ type SignUpEvent = {
 }
 
 type EventResult<T> = {
-  valid: boolean,
+  success: boolean,
   errors?: string[],
   data?: T,
 }
@@ -44,6 +44,11 @@ type DBModel<T> = {
 type DBModels = {
   SportObject: DBModel<SportObjectDM>,
   User: DBModel<UserDM>
+}
+
+type ExecutionResult<T> = {
+  error: string | null,
+  data: T | null,
 }
 
 type SportObjectDM = {
