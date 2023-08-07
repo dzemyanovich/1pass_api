@@ -47,7 +47,7 @@ type DBModels = {
 }
 
 type ExecutionResult<T> = {
-  error: string | null,
+  errors: string[],
   data: T | null,
 }
 

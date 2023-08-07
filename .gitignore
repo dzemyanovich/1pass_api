@@ -5,7 +5,7 @@ lambda/dist/
 .terraform.lock.hcl
 terraform.tfvars
 env-vars.js
-jest/twilio.setup.js
+jest/lambda.setup.js
 .DS_Store
 lambda.zip
 lambda/yarn-error.log

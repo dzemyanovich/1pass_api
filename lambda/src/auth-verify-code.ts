@@ -12,23 +12,25 @@ export async function handler(event: VerifyCodeEvent): Promise<EventResult<UserD
   }
 
   const verifyCodeResult = await verifyCode(event);
+  const verifyCodeErrors = verifyCodeResult.errors;
 
-  if (verifyCodeResult.error) {
+  if (verifyCodeErrors.length) {
     return {
       success: false,
-      errors: [verifyCodeResult.error]
+      errors: verifyCodeErrors,
     };
   }
 
   const createUserResult = await createUser(event);
+  const { errors, data } = createUserResult;
 
-  return createUserResult.error
+  return errors.length
     ? {
       success: false,
-      errors: [createUserResult.error],
+      errors,
     }
     : {
       success: true,
-      data: createUserResult.data as UserDM,
+      data: data as UserDM,
     };
 };

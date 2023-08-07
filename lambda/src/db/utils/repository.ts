@@ -17,16 +17,16 @@ export async function createUser(event: VerifyCodeEvent): Promise<ExecutionResul
 
 async function executeTransaction<T>(func: () => Promise<T>): Promise<ExecutionResult<T>> {
   let data: T | null = null;
-  let error: string | null = null;
+  const errors: string[] = [];
 
   try {
     data = await func();
   } catch (e: any) {
-    error = e.message;
+    e.errors.forEach((error: any) => errors.push(error.message));
   }
 
   return {
-    error,
+    errors,
     data,
   };
 }

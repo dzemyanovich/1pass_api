@@ -11,14 +11,15 @@ export async function handler(event: SendCodeEvent): Promise<EventResult<string>
   }
 
   const executionResult = await sendCode(event);
+  const { errors, data } = executionResult;
 
-  return executionResult.error
+  return errors.length
     ? {
       success: false,
-      errors: [executionResult.error]
+      errors,
     }
     : {
       success: true,
-      data: executionResult.data as string,
+      data: data as string,
     };
 };

@@ -3,14 +3,15 @@ import { toSportObject } from './db/utils/view-models';
 
 export async function handler(): Promise<EventResult<SportObjectVM[]>> {
   const executionResult = await getSportObjects();
+  const { errors, data } = executionResult;
 
-  return executionResult.error
+  return errors.length
     ? {
       success: false,
-      errors: [ executionResult.error ],
+      errors,
     }
     : {
       success: true,
-      data: (executionResult.data as SportObjectDM[]).map((m: SportObjectDM) => toSportObject(m))
+      data: (data as SportObjectDM[]).map((m: SportObjectDM) => toSportObject(m))
     };
 };

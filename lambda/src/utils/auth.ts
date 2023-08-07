@@ -12,7 +12,7 @@ export async function sendCode(event: SendCodeEvent): Promise<ExecutionResult<st
 
   if (errorMessage) {
     return {
-      error: errorMessage,
+      errors: [errorMessage],
       data: null,
     };
   }
@@ -21,13 +21,13 @@ export async function sendCode(event: SendCodeEvent): Promise<ExecutionResult<st
 
   if (status !== 'pending') {
     return {
-      error: `send code status is ${status}`,
+      errors: [`send code status is ${status}`],
       data: null,
     };
   }
 
   return {
-    error: null,
+    errors: [],
     data: status,
   };
 };
@@ -46,7 +46,7 @@ export async function verifyCode(event: VerifyCodeEvent): Promise<ExecutionResul
 
   if (errorMessage) {
     return {
-      error: errorMessage,
+      errors: [errorMessage],
       data: null,
     };
   }
@@ -55,13 +55,13 @@ export async function verifyCode(event: VerifyCodeEvent): Promise<ExecutionResul
 
   if (status !== 'approved') {
     return {
-      error: `verify code status is ${status}`,
+      errors: [`verify code status is ${status}`],
       data: null,
     };
   }
 
   return {
-    error: null,
+    errors: [],
     data: status,
   };
 };

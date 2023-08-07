@@ -9,6 +9,7 @@ module.exports = config;
 function getConfig(): DBConfig {
   switch (getEnv()) {
     case ENVS.dev:
+    case ENVS.test:
       require('./env-vars');
 
       return {
@@ -48,6 +49,9 @@ function getEnv(): string {
   }
   if (process.env.NODE_ENV.startsWith(ENVS.dev)) {
     return ENVS.dev;
+  }
+  if (process.env.NODE_ENV.startsWith(ENVS.test)) {
+    return ENVS.test;
   }
   if (process.env.NODE_ENV.startsWith(ENVS.preprod)) {
     return ENVS.preprod;
