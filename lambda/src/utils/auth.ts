@@ -23,6 +23,18 @@ export async function verifyCode(event: VerifyCodeEvent): Promise<string> {
   return verificationCheck.status;
 };
 
-export async function signUp(event: SignUpEvent): Promise<boolean> {
-  throw new Error('not implemented');
+export function getHash(str: string): number {
+  let hash = 0;
+
+  if (str.length === 0) {
+    return hash;
+  }
+
+  for (let i = 0; i < str.length; i++) {
+    const chr = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + chr;
+    hash |= 0; // Convert to 32bit integer
+  }
+
+  return hash;
 }

@@ -1,3 +1,4 @@
+import { getHash } from '../../utils/auth';
 import * as dbModels from '../models';
 
 const { SportObject, User } = dbModels as unknown as DBModels;
@@ -24,5 +25,14 @@ export async function createUser(event: VerifyCodeEvent): Promise<UserDM> {
   return User.create({
     phone,
     verified: true,
+  });
+}
+
+export async function signUp(event: SignUpEvent): Promise<UserDM> {
+  const { phone, firstName, lastName, email, password } = event;
+  return User.update({ firstName, lastName, email, password: getHash(password) }, {
+    where: {
+      phone,
+    }
   });
 }
