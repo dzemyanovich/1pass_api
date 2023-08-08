@@ -1,8 +1,8 @@
-import { createUser } from './db/utils/repository';
+import { getUser, createUser, setVerifed } from './db/utils/repository';
 import { verifyCode } from './utils/auth';
 import { getErrors, validateVerifyCode } from './utils/validation';
 
-export async function handler(event: VerifyCodeEvent): Promise<EventResult<UserDM>> {
+export async function handler(event: VerifyCodeEvent): Promise<EventResult<void>> {
   const validationResult = validateVerifyCode(event);
   if (!validationResult.success) {
     return {
@@ -11,26 +11,44 @@ export async function handler(event: VerifyCodeEvent): Promise<EventResult<UserD
     };
   }
 
-  const verifyCodeResult = await verifyCode(event);
-  const verifyCodeErrors = verifyCodeResult.errors;
+  const { phone } = event;
+  const user = await getUser(phone);
 
-  if (verifyCodeErrors.length) {
+  if (user) {
+    if (user.password) {
+      return {
+        success: false,
+        errors: [`user with phone = ${phone} already exists`],
+      };
+    }
+  }
+
+  const status = await verifyCode(event);
+
+  if (status !== 'approved') {
     return {
       success: false,
-      errors: verifyCodeErrors,
+      errors: [`verify code status is ${status}`],
     };
   }
 
-  const createUserResult = await createUser(event);
-  const { errors, data } = createUserResult;
-
-  return errors.length
-    ? {
-      success: false,
-      errors,
+  if (user) {
+    if (user.verified) {
+      return {
+        success: true,
+      };
     }
-    : {
+
+    await setVerifed(phone, true);
+
+    return {
       success: true,
-      data: data as UserDM,
     };
+  }
+
+  await createUser(event);
+
+  return {
+    success: true,
+  };
 };

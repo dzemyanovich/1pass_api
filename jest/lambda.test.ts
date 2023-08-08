@@ -9,7 +9,7 @@ describe.skip('twilio', () => {
     const phone = '+375333366883';
 
     const result = await sendCode({ phone });
-    expect(result.data).toBe('pending');
+    expect(result).toBe('pending');
   });
 
   it('verify code', async () => {
@@ -17,7 +17,7 @@ describe.skip('twilio', () => {
     const code = 'some_code';
 
     const result = await verifyCode({ phone, code });
-    expect(result.data).toBe('approved');
+    expect(result).toBe('approved');
   });
 });
 
@@ -26,7 +26,7 @@ describe('lambdas', () => {
     const phone = '+375333366883';
 
     const result = await authSendCode({ phone });
-    expect(result.data).toBe('pending');
+    expect(result.data).toBe(true);
   });
 
   it.only('auth verify code', async () => {
@@ -34,6 +34,6 @@ describe('lambdas', () => {
     const code = '801197';
 
     const result = await authVerifyCode({ phone, code });
-    expect(result.data).toBe('approved');
+    expect(result.success).toBe(true);
   });
 });

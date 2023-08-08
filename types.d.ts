@@ -36,14 +36,17 @@ type DBConfig = {
   seederStorage: string,
 }
 
+// todo: default sequelize types library should be used
 type DBModel<T> = {
   findAll: () => T[],
   create: (model: any) => T,
+  findOne: (where: any) => T,
+  update: (what: any, where: any) => T,
 }
 
 type DBModels = {
   SportObject: DBModel<SportObjectDM>,
-  User: DBModel<UserDM>
+  User: DBModel<UserDM>,
 }
 
 type ExecutionResult<T> = {

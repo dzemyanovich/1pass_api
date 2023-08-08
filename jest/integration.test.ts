@@ -22,28 +22,25 @@ describe('get-sport-objects', () => {
   const URL = `${API_URL}/get-sport-objects`;
 
   it('gets all sport objects', async () => {
-    const response: EventResult<SportObjectVM[]> = await get(URL);
+    const response: SportObjectVM[] = await get(URL);
 
-    if (!response.data) {
-      throw new Error('response.data is undefined');
-    }
-
-    expect(response.data.length).toBeGreaterThan(0);
+    expect(response.length).toBeGreaterThan(0);
   });
 });
 
+// todo: add check for specific error messages
 describe('auth-send-code', () => {
   const { API_URL } = process.env;
   const URL = `${API_URL}/auth-send-code`;
 
   it('phone is missing', async () => {
-    const response: EventResult<string> = await post(URL, {});
+    const response: EventResult<void> = await post(URL, {});
 
     expect(response.success).toBe(false);
   });
 
   it('invalid phone (short string)', async () => {
-    const response: EventResult<string> = await post(URL, {
+    const response: EventResult<void> = await post(URL, {
       phone: '543',
     });
 
@@ -51,7 +48,7 @@ describe('auth-send-code', () => {
   });
 
   it('invalid phone (number instead of string)', async () => {
-    const response: EventResult<string> = await post(URL, {
+    const response: EventResult<void> = await post(URL, {
       phone: 142 as unknown as string,
     });
 
@@ -59,12 +56,13 @@ describe('auth-send-code', () => {
   });  
 });
 
+// todo: add check for specific error messages
 describe('auth-verify-code', () => {
   const { API_URL } = process.env;
   const URL = `${API_URL}/auth-verify-code`;
 
   it('phone is missing', async () => {
-    const response: EventResult<string> = await post(URL, {
+    const response: EventResult<void> = await post(URL, {
       code: 'some_code',
     });
 
@@ -72,7 +70,7 @@ describe('auth-verify-code', () => {
   });
 
   it('code is missing', async () => {
-    const response: EventResult<string> = await post(URL, {
+    const response: EventResult<void> = await post(URL, {
       phone: '+375333366883',
     });
 
@@ -80,13 +78,13 @@ describe('auth-verify-code', () => {
   });
 
   it('phone and code are missing', async () => {
-    const response: EventResult<string> = await post(URL, {});
+    const response: EventResult<void> = await post(URL, {});
 
     expect(response.success).toBe(false);
   });
 
   it('invalid phone and code', async () => {
-    const response: EventResult<string> = await post(URL, {
+    const response: EventResult<void> = await post(URL, {
       phone: 'string',
       code: null,
     });

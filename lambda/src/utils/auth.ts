@@ -1,69 +1,26 @@
-export async function sendCode(event: SendCodeEvent): Promise<ExecutionResult<string>> {
+export async function sendCode(event: SendCodeEvent): Promise<string> {
   const { phone } = event;
   const { TWILIO_AUTH_TOKEN, TWILIO_ACCOUNT_SID, TWILIO_VERIFY_SID } = process.env;
   const client = require('twilio')(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
 
-  let errorMessage: string | null = null;
-
   const verification = await client.verify.v2
     .services(TWILIO_VERIFY_SID)
-    .verifications.create({ to: phone, channel: 'sms' })
-    .catch((e: Error) => errorMessage = e.message);
+    .verifications.create({ to: phone, channel: 'sms' });
 
-  if (errorMessage) {
-    return {
-      errors: [errorMessage],
-      data: null,
-    };
-  }
-
-  const { status } = verification;
-
-  if (status !== 'pending') {
-    return {
-      errors: [`send code status is ${status}`],
-      data: null,
-    };
-  }
-
-  return {
-    errors: [],
-    data: status,
-  };
+  return verification.status;
 };
 
-export async function verifyCode(event: VerifyCodeEvent): Promise<ExecutionResult<string>> {
+export async function verifyCode(event: VerifyCodeEvent): Promise<string> {
   const { phone, code } = event;
   const { TWILIO_AUTH_TOKEN, TWILIO_ACCOUNT_SID, TWILIO_VERIFY_SID } = process.env;
 
   const client = require('twilio')(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
-  let errorMessage: string | null = null;
 
   const verificationCheck = await client.verify.v2
     .services(TWILIO_VERIFY_SID)
-    .verificationChecks.create({ to: phone, code })
-    .catch((e: Error) => errorMessage = e.message);;
+    .verificationChecks.create({ to: phone, code });
 
-  if (errorMessage) {
-    return {
-      errors: [errorMessage],
-      data: null,
-    };
-  }
-
-  const { status } = verificationCheck;
-
-  if (status !== 'approved') {
-    return {
-      errors: [`verify code status is ${status}`],
-      data: null,
-    };
-  }
-
-  return {
-    errors: [],
-    data: status,
-  };
+  return verificationCheck.status;
 };
 
 export async function signUp(event: SignUpEvent): Promise<boolean> {

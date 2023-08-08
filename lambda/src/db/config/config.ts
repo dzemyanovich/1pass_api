@@ -44,19 +44,16 @@ function getConfig(): DBConfig {
 }
 
 function getEnv(): string {
-  if (!process.env.NODE_ENV) {
-    throw new Error(`process.env.NODE_ENV is not set`);
-  }
-  if (process.env.NODE_ENV.startsWith(ENVS.dev)) {
+  if (process.env.NODE_ENV?.startsWith(ENVS.dev)) {
     return ENVS.dev;
   }
-  if (process.env.NODE_ENV.startsWith(ENVS.test)) {
+  if (process.env.NODE_ENV?.startsWith(ENVS.test)) {
     return ENVS.test;
   }
-  if (process.env.NODE_ENV.startsWith(ENVS.preprod)) {
+  if (process.env.NODE_ENV?.startsWith(ENVS.preprod)) {
     return ENVS.preprod;
   }
-  if (process.env.NODE_ENV.startsWith(ENVS.prod)) {
+  if (process.env.NODE_ENV?.startsWith(ENVS.prod)) {
     return ENVS.prod;
   }
   throw new Error(`process.env.NODE_ENV = ${process.env.NODE_ENV} is not recognized`);
