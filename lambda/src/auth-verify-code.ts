@@ -1,4 +1,4 @@
-import { getUser, createUser, setVerifed } from './db/utils/repository';
+import { getUserByPhone, createUser, setVerifed } from './db/utils/repository';
 import { verifyCode } from './utils/auth';
 import { getErrors, validateVerifyCode } from './utils/validation';
 
@@ -12,7 +12,7 @@ export async function handler(event: VerifyCodeEvent): Promise<EventResult<void>
   }
 
   const { phone } = event;
-  const user = await getUser(phone);
+  const user = await getUserByPhone(phone);
 
   if (user) {
     if (user.password) {

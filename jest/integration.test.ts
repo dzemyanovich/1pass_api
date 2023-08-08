@@ -28,7 +28,6 @@ describe('get-sport-objects', () => {
   });
 });
 
-// todo: add check for specific error messages
 describe('auth-send-code', () => {
   const { API_URL } = process.env;
   const URL = `${API_URL}/auth-send-code`;
@@ -37,6 +36,7 @@ describe('auth-send-code', () => {
     const response: EventResult<void> = await post(URL, {});
 
     expect(response.success).toBe(false);
+    expect(response.errors).toContain('phone: Required');
   });
 
   it('invalid phone (short string)', async () => {
@@ -45,6 +45,7 @@ describe('auth-send-code', () => {
     });
 
     expect(response.success).toBe(false);
+    expect(response.errors).toContain('phone: Invalid input');
   });
 
   it('invalid phone (number instead of string)', async () => {
@@ -53,10 +54,10 @@ describe('auth-send-code', () => {
     });
 
     expect(response.success).toBe(false);
+    expect(response.errors).toContain('phone: Expected string, received number');
   });  
 });
 
-// todo: add check for specific error messages
 describe('auth-verify-code', () => {
   const { API_URL } = process.env;
   const URL = `${API_URL}/auth-verify-code`;
@@ -67,6 +68,7 @@ describe('auth-verify-code', () => {
     });
 
     expect(response.success).toBe(false);
+    expect(response.errors).toContain('phone: Required');
   });
 
   it('code is missing', async () => {
@@ -75,12 +77,15 @@ describe('auth-verify-code', () => {
     });
 
     expect(response.success).toBe(false);
+    expect(response.errors).toContain('code: Required');
   });
 
   it('phone and code are missing', async () => {
     const response: EventResult<void> = await post(URL, {});
 
     expect(response.success).toBe(false);
+    expect(response.errors).toContain('phone: Required');
+    expect(response.errors).toContain('code: Required');
   });
 
   it('invalid phone and code', async () => {
@@ -90,5 +95,7 @@ describe('auth-verify-code', () => {
     });
 
     expect(response.success).toBe(false);
+    expect(response.errors).toContain('phone: Invalid input');
+    expect(response.errors).toContain('code: Expected string, received null');
   });
 });

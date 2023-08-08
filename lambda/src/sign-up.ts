@@ -1,7 +1,7 @@
-import { getUser, signUp } from './db/utils/repository';
+import { getUserByPhone, signUp } from './db/utils/repository';
 import { getErrors, validateSignUp } from './utils/validation';
 
-export async function handler(event: SignUpEvent): Promise<EventResult<UserDM>> {
+export async function handler(event: SignUpEvent): Promise<EventResult<void>> {
   const validationResult = validateSignUp(event);
   if (!validationResult.success) {
     return {
@@ -11,7 +11,7 @@ export async function handler(event: SignUpEvent): Promise<EventResult<UserDM>> 
   }
 
   const { phone } = event;
-  const user = await getUser(phone);
+  const user = await getUserByPhone(phone);
 
   if (user) {
     if (user.password) {
@@ -32,6 +32,5 @@ export async function handler(event: SignUpEvent): Promise<EventResult<UserDM>> 
 
   return {
     success: true,
-    data: result,
   };
 };

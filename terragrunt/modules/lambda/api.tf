@@ -3,7 +3,11 @@ resource "aws_api_gateway_rest_api" "user_api" {
   description = "1Pass API"
 
   depends_on  = [
-    aws_lambda_function.get_sport_objects_lambda
+    aws_lambda_function.get_sport_objects_lambda,
+    aws_lambda_function.auth_send_code_lambda,
+    aws_lambda_function.auth_verify_code_lambda,
+    aws_lambda_function.sign_in_lambda,
+    aws_lambda_function.sign_up_lambda
   ]
 }
 
@@ -23,6 +27,18 @@ resource "aws_api_gateway_resource" "auth_verify_code_api_resource" {
   rest_api_id = aws_api_gateway_rest_api.user_api.id
   parent_id   = aws_api_gateway_rest_api.user_api.root_resource_id
   path_part   = "auth-verify-code"
+}
+
+resource "aws_api_gateway_resource" "sign_in_api_resource" {
+  rest_api_id = aws_api_gateway_rest_api.user_api.id
+  parent_id   = aws_api_gateway_rest_api.user_api.root_resource_id
+  path_part   = "sign-in"
+}
+
+resource "aws_api_gateway_resource" "sign_up_api_resource" {
+  rest_api_id = aws_api_gateway_rest_api.user_api.id
+  parent_id   = aws_api_gateway_rest_api.user_api.root_resource_id
+  path_part   = "sign-up"
 }
 
 ############## GET get-sport-objects ##############

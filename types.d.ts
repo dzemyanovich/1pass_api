@@ -9,6 +9,11 @@ type VerifyCodeEvent = {
   code: string,
 }
 
+type SignInEvent = {
+  phone: string,
+  password: string,
+}
+
 type SignUpEvent = {
   phone: string,
   firstName: string,
@@ -47,11 +52,6 @@ type DBModel<T> = {
 type DBModels = {
   SportObject: DBModel<SportObjectDM>,
   User: DBModel<UserDM>,
-}
-
-type ExecutionResult<T> = {
-  errors: string[],
-  data: T | null,
 }
 
 type SportObjectDM = {
