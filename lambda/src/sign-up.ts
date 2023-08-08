@@ -1,4 +1,5 @@
-import { getUserByPhone, signUp } from './db/utils/repository';
+import { getUser, signUp } from './db/utils/repository';
+import { phoneNotVerified, userExists, userNotFound } from './utils/errors';
 import { getErrors, validateSignUp } from './utils/validation';
 
 export async function handler(event: SignUpEvent): Promise<EventResult<void>> {
@@ -11,21 +12,26 @@ export async function handler(event: SignUpEvent): Promise<EventResult<void>> {
   }
 
   const { phone } = event;
-  const user = await getUserByPhone(phone);
+  const user = await getUser(phone);
 
-  if (user) {
-    if (user.password) {
-      return {
-        success: false,
-        errors: [`user with phone = ${phone} already exists`],
-      };
-    }
-    if (!user.verified) {
-      return {
-        success: false,
-        errors: [`phone ${phone} is not verified`],
-      };
-    }
+  if (!user) {
+    return {
+      success: false,
+      errors: [userNotFound()],
+    };
+  }
+
+  if (user.password) {
+    return {
+      success: false,
+      errors: [userExists(phone)],
+    };
+  }
+  if (!user.verified) {
+    return {
+      success: false,
+      errors: [phoneNotVerified(phone)],
+    };
   }
 
   const result = await signUp(event);

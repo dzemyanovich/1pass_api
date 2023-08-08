@@ -1,4 +1,5 @@
-import { validateSendCode, validateVerifyCode } from './validation';
+import { confirmMismatch, invalidInput } from './errors';
+import { getErrors, validateSendCode, validateSignUp, validateVerifyCode } from './validation';
 
 describe('validateSendCode', () => {
   it('valid data', async () => {
@@ -71,5 +72,26 @@ describe('validateVerifyCode', () => {
     });
 
     expect(result.success).toBe(false);
+  });
+});
+
+describe('validateSignUp', () => {
+  it('password and email do not match', async () => {
+    const result = validateSignUp({
+      phone: '+375333366889a',
+      firstName: 'John',
+      lastName: 'Smith',
+      email: 'smth@mail.ru',
+      confirmEmail: 'smth_2@mail.ru',
+      password: 'password',
+      confirmPassword: 'password_2',
+    });
+
+    const errors = getErrors(result);
+
+    expect(result.success).toBe(false);
+    expect(errors).toContain(invalidInput('phone'));
+    expect(errors).toContain(confirmMismatch('email'));
+    expect(errors).toContain(confirmMismatch('password'));
   });
 });

@@ -7,7 +7,9 @@ export default config;
 module.exports = config;
 
 function getConfig(): DBConfig {
-  switch (getEnv()) {
+  const env = getEnv();
+
+  switch (env) {
     case ENVS.dev:
     case ENVS.test:
       require('./env-vars');
@@ -39,7 +41,7 @@ function getConfig(): DBConfig {
         seederStorage: 'sequelize',
       };
     default:
-      throw new Error('env not supported');
+      throw new Error(`env ${env} not supported`);
   }
 }
 

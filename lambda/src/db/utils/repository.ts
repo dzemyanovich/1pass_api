@@ -11,14 +11,8 @@ export async function setVerifed(phone: string, verified: boolean): Promise<User
   });
 }
 
-export async function getUserByPhone(phone: string): Promise<UserDM> {
+export async function getUser(phone: string): Promise<UserDM> {
   return User.findOne({ where: { phone, } });
-}
-
-export async function getSignInUser(event: SignInEvent): Promise<UserDM> {
-  const { phone, password } = event;
-
-  return User.findOne({ where: { phone, password: getHash(password) } });
 }
 
 export async function getSportObjects(): Promise<SportObjectDM[]> {
@@ -32,6 +26,12 @@ export async function createUser(event: VerifyCodeEvent): Promise<UserDM> {
     phone,
     verified: true,
   });
+}
+
+export async function signIn(event: SignInEvent): Promise<UserDM> {
+  const { phone, password } = event;
+
+  return User.findOne({ where: { phone, password: getHash(password) } });
 }
 
 export async function signUp(event: SignUpEvent): Promise<UserDM> {

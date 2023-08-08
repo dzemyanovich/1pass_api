@@ -1,5 +1,6 @@
-import { getUserByPhone, setVerifed } from './db/utils/repository';
+import { getUser, setVerifed } from './db/utils/repository';
 import { sendCode } from './utils/auth';
+import { sendCodeStatus, userExists } from './utils/errors';
 import { getErrors, validateSendCode } from './utils/validation';
 
 export async function handler(event: SendCodeEvent): Promise<EventResult<void>> {
@@ -12,12 +13,12 @@ export async function handler(event: SendCodeEvent): Promise<EventResult<void>> 
   }
 
   const { phone } = event;
-  const user = await getUserByPhone(phone);
+  const user = await getUser(phone);
   if (user) {
     if (user.password) {
       return {
         success: false,
-        errors: [`user with phone = ${phone} already exists`],
+        errors: [userExists(phone)],
       };
     }
     if (user.verified) {
@@ -30,7 +31,7 @@ export async function handler(event: SendCodeEvent): Promise<EventResult<void>> 
   return status !== 'pending'
     ? {
       success: false,
-      errors: [`send code status is ${status}`]
+      errors: [sendCodeStatus(status)]
     }
     : {
       success: true,

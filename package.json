@@ -40,7 +40,9 @@
     "integration-prod": "jest jest/integration.test.ts --coverage=false --modulePathIgnorePatterns=[] --setupFilesAfterEnv '<rootDir>/jest/setup.prod.ts'",
     "integration-prod-local": "jest jest/integration.test.ts --coverage=false --modulePathIgnorePatterns=[] --setupFilesAfterEnv '<rootDir>/jest/setup.prod.ts'",
     "integration-lambda": "jest jest/lambda.test.ts --coverage=false --modulePathIgnorePatterns=[] --testEnvironment='node' --watch",
-    "unit": "jest --coverage=false"
+    "integration-lambda-watch": "yarn integration-lambda --watch",
+    "unit": "jest --coverage=false",
+    "unit-watch": "yarn unit --watch"
   },
   "devDependencies": {
     "@types/jest": "^29.5.3",

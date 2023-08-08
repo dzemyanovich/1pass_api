@@ -92,6 +92,10 @@ resource "aws_api_gateway_integration_response" "get_sport_objects_get_integrati
   response_parameters = {
     "method.response.header.Access-Control-Allow-Origin" = "'*'"
   }
+
+  depends_on = [
+    aws_api_gateway_integration.get_sport_objects_get_integration
+  ]
 }
 
 ############## OPTIONS get-sport-objects (for cors) ##############
@@ -144,6 +148,10 @@ resource "aws_api_gateway_integration_response" "get_sport_objects_options_integ
     "method.response.header.Access-Control-Allow-Methods" = "'OPTIONS,POST'",
     "method.response.header.Access-Control-Allow-Origin" = "'*'"
   }
+
+  depends_on = [
+    aws_api_gateway_integration.get_sport_objects_options_integration
+  ]
 }
 
 ############## POST auth-send-code ##############
@@ -197,6 +205,10 @@ resource "aws_api_gateway_integration_response" "auth_send_code_post_integration
   response_parameters = {
     "method.response.header.Access-Control-Allow-Origin" = "'*'"
   }
+
+  depends_on = [
+    aws_api_gateway_integration.auth_send_code_post_integration
+  ]
 }
 
 ############## OPTIONS auth-send-code (for cors) ##############
@@ -249,6 +261,10 @@ resource "aws_api_gateway_integration_response" "auth_send_code_options_integrat
     "method.response.header.Access-Control-Allow-Methods" = "'OPTIONS,POST'",
     "method.response.header.Access-Control-Allow-Origin" = "'*'"
   }
+
+  depends_on = [
+    aws_api_gateway_integration.auth_send_code_options_integration
+  ]
 }
 
 ############## POST auth-verify-code ##############
@@ -302,6 +318,10 @@ resource "aws_api_gateway_integration_response" "auth_verify_code_post_integrati
   response_parameters = {
     "method.response.header.Access-Control-Allow-Origin" = "'*'"
   }
+
+  depends_on = [
+    aws_api_gateway_integration.auth_verify_code_post_integration
+  ]
 }
 
 ############## OPTIONS auth-verify-code (for cors) ##############
@@ -354,6 +374,236 @@ resource "aws_api_gateway_integration_response" "auth_verify_code_options_integr
     "method.response.header.Access-Control-Allow-Methods" = "'OPTIONS,POST'",
     "method.response.header.Access-Control-Allow-Origin" = "'*'"
   }
+
+  depends_on = [
+    aws_api_gateway_integration.auth_verify_code_options_integration
+  ]
+}
+
+############## POST sign-in ##############
+
+resource "aws_api_gateway_method" "sign_in_post_method" {
+  rest_api_id   = aws_api_gateway_rest_api.user_api.id
+  resource_id   = aws_api_gateway_resource.sign_in_api_resource.id
+  http_method   = "POST"
+  authorization = "NONE"
+}
+
+resource "aws_api_gateway_integration" "sign_in_post_integration" {
+  rest_api_id             = aws_api_gateway_rest_api.user_api.id
+  resource_id             = aws_api_gateway_resource.sign_in_api_resource.id
+  http_method             = aws_api_gateway_method.sign_in_post_method.http_method
+  integration_http_method = "POST"
+  type                    = "AWS"
+  uri                     = aws_lambda_function.sign_in_lambda.invoke_arn
+}
+
+resource "aws_lambda_permission" "sign_in_lambda_permission" {
+  statement_id  = "AllowExecutionFromAPIGateway"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.sign_in_lambda.function_name
+  principal     = "apigateway.amazonaws.com"
+
+  source_arn = "${aws_api_gateway_rest_api.user_api.execution_arn}/*/*"
+}
+
+resource "aws_api_gateway_method_response" "sign_in_method_response" {
+  rest_api_id = aws_api_gateway_rest_api.user_api.id
+  resource_id = aws_api_gateway_resource.sign_in_api_resource.id
+  http_method = aws_api_gateway_method.sign_in_post_method.http_method
+  status_code = "200"
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+
+  response_models = {
+    "application/json" = "Empty"
+  }
+}
+
+resource "aws_api_gateway_integration_response" "sign_in_post_integration_response" {
+  rest_api_id = aws_api_gateway_rest_api.user_api.id
+  resource_id = aws_api_gateway_resource.sign_in_api_resource.id
+  http_method = aws_api_gateway_method.sign_in_post_method.http_method
+  status_code = aws_api_gateway_method_response.sign_in_method_response.status_code
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = "'*'"
+  }
+
+  depends_on = [
+    aws_api_gateway_integration.sign_in_post_integration
+  ]
+}
+
+############## OPTIONS sign-in (for cors) ##############
+
+resource "aws_api_gateway_method" "sign_in_options_method" {
+  rest_api_id   = aws_api_gateway_rest_api.user_api.id
+  resource_id   = aws_api_gateway_resource.sign_in_api_resource.id
+  http_method   = "OPTIONS"
+  authorization = "NONE"
+}
+
+resource "aws_api_gateway_integration" "sign_in_options_integration" {
+  rest_api_id = aws_api_gateway_rest_api.user_api.id
+  resource_id = aws_api_gateway_resource.sign_in_api_resource.id
+  http_method = aws_api_gateway_method.sign_in_options_method.http_method
+  type        = "MOCK"
+
+  request_templates = {
+    "application/json" = <<EOF
+{"statusCode": 200}
+EOF
+  }
+}
+
+resource "aws_api_gateway_method_response" "sign_in_options_method_response" {
+  rest_api_id = aws_api_gateway_rest_api.user_api.id
+  resource_id = aws_api_gateway_resource.sign_in_api_resource.id
+  http_method = aws_api_gateway_method.sign_in_options_method.http_method
+  status_code = "200"
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = true,
+    "method.response.header.Access-Control-Allow-Methods" = true,
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+
+  response_models = {
+    "application/json" = "Empty"
+  }
+}
+
+resource "aws_api_gateway_integration_response" "sign_in_options_integration_response" {
+  rest_api_id = aws_api_gateway_rest_api.user_api.id
+  resource_id = aws_api_gateway_resource.sign_in_api_resource.id
+  http_method = aws_api_gateway_method.sign_in_options_method.http_method
+  status_code = aws_api_gateway_method_response.sign_in_options_method_response.status_code
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+    "method.response.header.Access-Control-Allow-Methods" = "'OPTIONS,POST'",
+    "method.response.header.Access-Control-Allow-Origin" = "'*'"
+  }
+
+  depends_on = [
+    aws_api_gateway_integration.sign_in_options_integration
+  ]
+}
+
+############## POST sign-up ##############
+
+resource "aws_api_gateway_method" "sign_up_post_method" {
+  rest_api_id   = aws_api_gateway_rest_api.user_api.id
+  resource_id   = aws_api_gateway_resource.sign_up_api_resource.id
+  http_method   = "POST"
+  authorization = "NONE"
+}
+
+resource "aws_api_gateway_integration" "sign_up_post_integration" {
+  rest_api_id             = aws_api_gateway_rest_api.user_api.id
+  resource_id             = aws_api_gateway_resource.sign_up_api_resource.id
+  http_method             = aws_api_gateway_method.sign_up_post_method.http_method
+  integration_http_method = "POST"
+  type                    = "AWS"
+  uri                     = aws_lambda_function.sign_up_lambda.invoke_arn
+}
+
+resource "aws_lambda_permission" "sign_up_lambda_permission" {
+  statement_id  = "AllowExecutionFromAPIGateway"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.sign_up_lambda.function_name
+  principal     = "apigateway.amazonaws.com"
+
+  source_arn = "${aws_api_gateway_rest_api.user_api.execution_arn}/*/*"
+}
+
+resource "aws_api_gateway_method_response" "sign_up_method_response" {
+  rest_api_id = aws_api_gateway_rest_api.user_api.id
+  resource_id = aws_api_gateway_resource.sign_up_api_resource.id
+  http_method = aws_api_gateway_method.sign_up_post_method.http_method
+  status_code = "200"
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+
+  response_models = {
+    "application/json" = "Empty"
+  }
+}
+
+resource "aws_api_gateway_integration_response" "sign_up_post_integration_response" {
+  rest_api_id = aws_api_gateway_rest_api.user_api.id
+  resource_id = aws_api_gateway_resource.sign_up_api_resource.id
+  http_method = aws_api_gateway_method.sign_up_post_method.http_method
+  status_code = aws_api_gateway_method_response.sign_up_method_response.status_code
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = "'*'"
+  }
+
+  depends_on = [
+    aws_api_gateway_integration.sign_up_post_integration
+  ]
+}
+
+############## OPTIONS sign-in (for cors) ##############
+
+resource "aws_api_gateway_method" "sign_up_options_method" {
+  rest_api_id   = aws_api_gateway_rest_api.user_api.id
+  resource_id   = aws_api_gateway_resource.sign_up_api_resource.id
+  http_method   = "OPTIONS"
+  authorization = "NONE"
+}
+
+resource "aws_api_gateway_integration" "sign_up_options_integration" {
+  rest_api_id = aws_api_gateway_rest_api.user_api.id
+  resource_id = aws_api_gateway_resource.sign_up_api_resource.id
+  http_method = aws_api_gateway_method.sign_up_options_method.http_method
+  type        = "MOCK"
+
+  request_templates = {
+    "application/json" = <<EOF
+{"statusCode": 200}
+EOF
+  }
+}
+
+resource "aws_api_gateway_method_response" "sign_up_options_method_response" {
+  rest_api_id = aws_api_gateway_rest_api.user_api.id
+  resource_id = aws_api_gateway_resource.sign_up_api_resource.id
+  http_method = aws_api_gateway_method.sign_up_options_method.http_method
+  status_code = "200"
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = true,
+    "method.response.header.Access-Control-Allow-Methods" = true,
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+
+  response_models = {
+    "application/json" = "Empty"
+  }
+}
+
+resource "aws_api_gateway_integration_response" "sign_up_options_integration_response" {
+  rest_api_id = aws_api_gateway_rest_api.user_api.id
+  resource_id = aws_api_gateway_resource.sign_up_api_resource.id
+  http_method = aws_api_gateway_method.sign_up_options_method.http_method
+  status_code = aws_api_gateway_method_response.sign_up_options_method_response.status_code
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+    "method.response.header.Access-Control-Allow-Methods" = "'OPTIONS,POST'",
+    "method.response.header.Access-Control-Allow-Origin" = "'*'"
+  }
+
+  depends_on = [
+    aws_api_gateway_integration.sign_up_options_integration
+  ]
 }
 
 ############## deployment ##############
@@ -368,10 +618,18 @@ resource "aws_api_gateway_deployment" "user_api_deployment" {
     aws_api_gateway_integration.get_sport_objects_options_integration,
     aws_api_gateway_integration.auth_send_code_post_integration,
     aws_api_gateway_integration.auth_send_code_options_integration,
+    aws_api_gateway_integration.sign_in_post_integration,
+    aws_api_gateway_integration.sign_in_options_integration,
+    aws_api_gateway_integration.sign_up_post_integration,
+    aws_api_gateway_integration.sign_up_options_integration,
     aws_api_gateway_integration_response.get_sport_objects_get_integration_response,
     aws_api_gateway_integration_response.get_sport_objects_options_integration_response,
     aws_api_gateway_integration_response.auth_send_code_post_integration_response,
-    aws_api_gateway_integration_response.auth_send_code_options_integration_response
+    aws_api_gateway_integration_response.auth_send_code_options_integration_response,
+    aws_api_gateway_integration_response.sign_in_post_integration_response,
+    aws_api_gateway_integration_response.sign_in_options_integration_response,
+    aws_api_gateway_integration_response.sign_up_post_integration_response,
+    aws_api_gateway_integration_response.sign_up_options_integration_response
   ]
   rest_api_id = aws_api_gateway_rest_api.user_api.id
 
@@ -381,21 +639,33 @@ resource "aws_api_gateway_deployment" "user_api_deployment" {
       aws_api_gateway_resource.get_sport_objects_api_resource.id,
       aws_api_gateway_resource.auth_send_code_api_resource.id,
       aws_api_gateway_resource.auth_verify_code_api_resource.id,
+      aws_api_gateway_resource.sign_in_api_resource.id,
+      aws_api_gateway_resource.sign_up_api_resource.id,
       aws_api_gateway_method.get_sport_objects_get_method.id,
       aws_api_gateway_method.get_sport_objects_options_method.id,
       aws_api_gateway_method.auth_send_code_post_method.id,
       aws_api_gateway_method.auth_send_code_options_method.id,
       aws_api_gateway_method.auth_verify_code_post_method.id,
       aws_api_gateway_method.auth_verify_code_options_method.id,
+      aws_api_gateway_method.sign_in_post_method.id,
+      aws_api_gateway_method.sign_in_options_method.id,
+      aws_api_gateway_method.sign_up_post_method.id,
+      aws_api_gateway_method.sign_up_options_method.id,
       aws_api_gateway_integration.get_sport_objects_get_integration.id,
       aws_api_gateway_integration.get_sport_objects_options_integration.id,
       aws_api_gateway_integration.auth_send_code_post_integration.id,
       aws_api_gateway_integration.auth_send_code_options_integration.id,
       aws_api_gateway_integration.auth_verify_code_post_integration.id,
       aws_api_gateway_integration.auth_verify_code_options_integration.id,
+      aws_api_gateway_integration.sign_in_post_integration.id,
+      aws_api_gateway_integration.sign_in_options_integration.id,
+      aws_api_gateway_integration.sign_up_post_integration.id,
+      aws_api_gateway_integration.sign_up_options_integration.id,
       aws_lambda_function.get_sport_objects_lambda.source_code_hash,
       aws_lambda_function.auth_send_code_lambda.source_code_hash,
-      aws_lambda_function.auth_verify_code_lambda.source_code_hash
+      aws_lambda_function.auth_verify_code_lambda.source_code_hash,
+      aws_lambda_function.sign_in_lambda.source_code_hash,
+      aws_lambda_function.sign_up_lambda.source_code_hash
     ]))
   }
 

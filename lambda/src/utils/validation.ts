@@ -1,6 +1,8 @@
 import { z, SafeParseReturnType, ZodIssue } from 'zod';
 import validator from 'validator';
 
+import { confirmMismatchMessage } from './errors';
+
 export function validateSendCode(event: SendCodeEvent): SafeParseReturnType<SendCodeEvent, SendCodeEvent> {
   const schema = z.object({
     phone: z.string().refine(validator.isMobilePhone),
@@ -31,14 +33,16 @@ export function validateSignUp(event: SignUpEvent): SafeParseReturnType<SignUpEv
     if (email !== confirmEmail) {
       ctx.addIssue({
         code: 'custom',
-        message: 'The emails did not match',
+        path: ['email'],
+        message: confirmMismatchMessage,
       });
     }
   }).superRefine(({ password, confirmPassword }, ctx) => {
     if (confirmPassword !== password) {
       ctx.addIssue({
         code: 'custom',
-        message: 'The passwords did not match',
+        path: ['password'],
+        message: confirmMismatchMessage,
       });
     }
   });

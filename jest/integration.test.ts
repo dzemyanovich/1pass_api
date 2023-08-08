@@ -1,4 +1,6 @@
 import axios from 'axios';
+
+import { confirmMismatch, invalidEmail, invalidInput, required, stringButBoolean, stringButNull, stringNotNumber, userNotFound } from '../lambda/src/utils/errors';
 import '../types.d.ts';
 
 function get<T>(url: string): Promise<T> {
@@ -36,7 +38,7 @@ describe('auth-send-code', () => {
     const response: EventResult<void> = await post(URL, {});
 
     expect(response.success).toBe(false);
-    expect(response.errors).toContain('phone: Required');
+    expect(response.errors).toContain(required('phone'));
   });
 
   it('invalid phone (short string)', async () => {
@@ -45,7 +47,7 @@ describe('auth-send-code', () => {
     });
 
     expect(response.success).toBe(false);
-    expect(response.errors).toContain('phone: Invalid input');
+    expect(response.errors).toContain(invalidInput('phone'));
   });
 
   it('invalid phone (number instead of string)', async () => {
@@ -54,8 +56,8 @@ describe('auth-send-code', () => {
     });
 
     expect(response.success).toBe(false);
-    expect(response.errors).toContain('phone: Expected string, received number');
-  });  
+    expect(response.errors).toContain(stringNotNumber('phone'));
+  });
 });
 
 describe('auth-verify-code', () => {
@@ -68,7 +70,7 @@ describe('auth-verify-code', () => {
     });
 
     expect(response.success).toBe(false);
-    expect(response.errors).toContain('phone: Required');
+    expect(response.errors).toContain(required('phone'));
   });
 
   it('code is missing', async () => {
@@ -77,15 +79,15 @@ describe('auth-verify-code', () => {
     });
 
     expect(response.success).toBe(false);
-    expect(response.errors).toContain('code: Required');
+    expect(response.errors).toContain(required('code'));
   });
 
   it('phone and code are missing', async () => {
     const response: EventResult<void> = await post(URL, {});
 
     expect(response.success).toBe(false);
-    expect(response.errors).toContain('phone: Required');
-    expect(response.errors).toContain('code: Required');
+    expect(response.errors).toContain(required('phone'));
+    expect(response.errors).toContain(required('code'));
   });
 
   it('invalid phone and code', async () => {
@@ -95,7 +97,112 @@ describe('auth-verify-code', () => {
     });
 
     expect(response.success).toBe(false);
-    expect(response.errors).toContain('phone: Invalid input');
-    expect(response.errors).toContain('code: Expected string, received null');
+    expect(response.errors).toContain(invalidInput('phone'));
+    expect(response.errors).toContain(stringButNull('code'));
+  });
+});
+
+describe('sign-in', () => {
+  const { API_URL } = process.env;
+  const URL = `${API_URL}/sign-in`;
+
+  it('phone and password are missing', async () => {
+    const response: EventResult<void> = await post(URL, {});
+
+    expect(response.success).toBe(false);
+    expect(response.errors).toContain(required('phone'));
+    expect(response.errors).toContain(required('password'));
+  });
+
+  it('invalid data', async () => {
+    const response: EventResult<void> = await post(URL, {
+      phone: '12412',
+      password: true,
+    });
+
+    expect(response.success).toBe(false);
+    expect(response.errors).toContain(invalidInput('phone'));
+    expect(response.errors).toContain(stringButBoolean('password'));
+  });
+
+  it('user not found', async () => {
+    const response: EventResult<void> = await post(URL, {
+      phone: '+12025550181',
+      password: 'some_password',
+    });
+
+    expect(response.success).toBe(false);
+    expect(response.errors).toContain(userNotFound());
+  });
+});
+
+describe('sign-up', () => {
+  const { API_URL } = process.env;
+  const URL = `${API_URL}/sign-up`;
+
+  it('all data is missing', async () => {
+    const response: EventResult<void> = await post(URL, {});
+
+    expect(response.success).toBe(false);
+    expect(response.errors).toContain(required('phone'));
+    expect(response.errors).toContain(required('firstName'));
+    expect(response.errors).toContain(required('lastName'));
+    expect(response.errors).toContain(required('email'));
+    expect(response.errors).toContain(required('confirmEmail'));
+    expect(response.errors).toContain(required('password'));
+    expect(response.errors).toContain(required('confirmPassword'));
+  });
+
+  it('invalid data', async () => {
+    const response: EventResult<void> = await post(URL, {
+      phone: '123',
+      firstName: 123,
+      lastName: true,
+      email: 'not-email',
+      confirmEmail: 'not-email',
+      password: 333,
+      confirmPassword: 333,
+    });
+
+    expect(response.success).toBe(false);
+    expect(response.errors).toContain(invalidInput('phone'));
+    expect(response.errors).toContain(stringNotNumber('firstName'));
+    expect(response.errors).toContain(stringButBoolean('lastName'));
+    expect(response.errors).toContain(invalidEmail('email'));
+    expect(response.errors).toContain(invalidEmail('confirmEmail'));
+    expect(response.errors).toContain(stringNotNumber('password'));
+    expect(response.errors).toContain(stringNotNumber('confirmPassword'));
+  });
+
+  it('invalid data (email and password do not match)', async () => {
+    const response: EventResult<void> = await post(URL, {
+      phone: '+375333366889a',
+      firstName: 'John',
+      lastName: 'Smith',
+      email: 'smth@mail.ru',
+      confirmEmail: 'smth_2@mail.ru',
+      password: 'password',
+      confirmPassword: 'password_2',
+    });
+
+    expect(response.success).toBe(false);
+    expect(response.errors).toContain(invalidInput('phone'));
+    expect(response.errors).toContain(confirmMismatch('email'));
+    expect(response.errors).toContain(confirmMismatch('password'));
+  });
+
+  it('user not found', async () => {
+    const response: EventResult<void> = await post(URL, {
+      phone: '+375333366889',
+      firstName: 'John',
+      lastName: 'Smith',
+      email: 'smth@mail.ru',
+      confirmEmail: 'smth@mail.ru',
+      password: 'password',
+      confirmPassword: 'password',
+    });
+
+    expect(response.success).toBe(false);
+    expect(response.errors).toContain(userNotFound());
   });
 });

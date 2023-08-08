@@ -1,4 +1,5 @@
-import { getSignInUser, signUp } from './db/utils/repository';
+import { signIn } from './db/utils/repository';
+import { userNotFound } from './utils/errors';
 import { getErrors, validateSignIn } from './utils/validation';
 
 export async function handler(event: SignInEvent): Promise<EventResult<void>> {
@@ -10,7 +11,7 @@ export async function handler(event: SignInEvent): Promise<EventResult<void>> {
     };
   }
 
-  const user = await getSignInUser(event);
+  const user = await signIn(event);
 
   return user
     ? {
@@ -18,6 +19,6 @@ export async function handler(event: SignInEvent): Promise<EventResult<void>> {
     }
     : {
       success: false,
-      errors: ['user not found'],
+      errors: [userNotFound()],
     };
 };
