@@ -6,7 +6,8 @@
   "author": "Aliaksei Dzemyanovich <aliaksei.dzemyanovich@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "compile": "rm -rf lambda/dist && tsc --build tsconfig.prod.json",
+    "clean": "rm -rf lambda/dist",
+    "compile": "tsc --build tsconfig.prod.json",
     "build": "yarn && yarn compile && cd lambda && yarn",
     "tg-validate": "cd terragrunt/live/dev && terragrunt run-all validate",
     "tg-plan": "yarn build && cd terragrunt/live/dev && terragrunt run-all plan",

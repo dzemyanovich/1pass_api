@@ -23,6 +23,7 @@ cache:
 build:
   stage: build
   script:
+    - yarn clean
     - yarn build
 
 test:
