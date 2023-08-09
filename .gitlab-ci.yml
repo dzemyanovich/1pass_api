@@ -28,7 +28,7 @@ build:
 test:
   stage: test
   script:
-    # - yarn lint # todo: uncomment later
+    - yarn lint
     - yarn unit
 
 .plan:
