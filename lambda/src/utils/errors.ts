@@ -36,6 +36,10 @@ export function userExists(phone: string): string {
   return `user with phone = ${phone} already exists`;
 }
 
+export function emailExists(email: string): string {
+  return `user with email = ${email} already exists`;
+}
+
 export function sendCodeStatus(status: string): string {
   return `send code status is ${status}`;
 }

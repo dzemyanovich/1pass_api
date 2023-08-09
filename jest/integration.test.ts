@@ -2,6 +2,7 @@ import axios from 'axios';
 
 import {
   confirmMismatch,
+  emailExists,
   invalidEmail,
   invalidInput,
   required,
@@ -11,6 +12,7 @@ import {
   userExists,
   userNotFound,
 } from '../lambda/src/utils/errors';
+import testUsers from '../lambda/src/db/seeders/test-users';
 
 function get<T>(url: string): Promise<T> {
   return new Promise((resolve) => {
@@ -176,7 +178,22 @@ describe('sign-up', () => {
   });
 
   it('email already exists', async () => {
-    // todo: add
+    const verifiedUser = testUsers.find((user: UserDM) => !user.password && user.verified);
+    const registeredUser = testUsers.find((user: UserDM) => user.password);
+    const email = (registeredUser?.email) as string;
+
+    const response: EventResult<void> = await post(URL, {
+      phone: verifiedUser?.phone,
+      firstName: 'any',
+      lastName: 'any',
+      email,
+      confirmEmail: email,
+      password: 'any_password',
+      confirmPassword: 'any_password',
+    });
+
+    expect(response.success).toBe(false);
+    expect(response.errors).toContain(emailExists(email));
   });
 
   it('all data is missing', async () => {

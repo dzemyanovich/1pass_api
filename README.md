@@ -111,3 +111,5 @@ process.env.TWILIO_AUTH_TOKEN = 'some_value';
 process.env.TWILIO_ACCOUNT_SID = 'some_value';
 process.env.TWILIO_VERIFY_SID = 'some_value';
 ```
+
+To enable husky pre-push, run once: ```npx husky install```

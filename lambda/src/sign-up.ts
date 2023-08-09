@@ -1,5 +1,5 @@
-import { getUser, signUp } from './db/utils/repository';
-import { phoneNotVerified, userExists, userNotFound } from './utils/errors';
+import { getUserByPhone, getUserByEmail, signUp } from './db/utils/repository';
+import { emailExists, phoneNotVerified, userExists, userNotFound } from './utils/errors';
 import { getErrors, validateSignUp } from './utils/validation';
 
 export async function handler(event: SignUpEvent): Promise<EventResult<void>> {
@@ -12,25 +12,35 @@ export async function handler(event: SignUpEvent): Promise<EventResult<void>> {
   }
 
   const { phone } = event;
-  const user = await getUser(phone);
+  const userByPhone = await getUserByPhone(phone);
 
-  if (!user) {
+  if (!userByPhone) {
     return {
       success: false,
       errors: [userNotFound()],
     };
   }
 
-  if (user.password) {
+  if (userByPhone.password) {
     return {
       success: false,
       errors: [userExists(phone)],
     };
   }
-  if (!user.verified) {
+
+  if (!userByPhone.verified) {
     return {
       success: false,
       errors: [phoneNotVerified(phone)],
+    };
+  }
+
+  const { email } = event;
+  const userByEmail = await getUserByEmail(email);
+  if (userByEmail) {
+    return {
+      success: false,
+      errors: [emailExists(email)],
     };
   }
 

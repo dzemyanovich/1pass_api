@@ -1,4 +1,4 @@
-import { getUser, setVerifed } from './db/utils/repository';
+import { getUserByPhone, setVerifed } from './db/utils/repository';
 import { sendCode } from './utils/auth';
 import { sendCodeStatus, userExists } from './utils/errors';
 import { getErrors, validateSendCode } from './utils/validation';
@@ -13,7 +13,7 @@ export async function handler(event: SendCodeEvent): Promise<EventResult<void>> 
   }
 
   const { phone } = event;
-  const user = await getUser(phone);
+  const user = await getUserByPhone(phone);
   if (user) {
     if (user.password) {
       return {

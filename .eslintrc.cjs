@@ -45,6 +45,7 @@ module.exports = {
     '@typescript-eslint/no-use-before-define': 'warn',
     'import/no-import-module-exports': 'warn',
     'import/no-relative-packages': 'warn',
+    'spaced-comment': 'warn',
   },
   ignorePatterns: [
     'lambda/dist',
