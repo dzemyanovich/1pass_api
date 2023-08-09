@@ -21,4 +21,4 @@ export async function handler(event: SignInEvent): Promise<EventResult<void>> {
       success: false,
       errors: [userNotFound()],
     };
-};
+}

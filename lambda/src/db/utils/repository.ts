@@ -39,6 +39,6 @@ export async function signUp(event: SignUpEvent): Promise<UserDM> {
   return User.update({ firstName, lastName, email, password: getHash(password) }, {
     where: {
       phone,
-    }
+    },
   });
 }

@@ -42,11 +42,19 @@
     "integration-lambda": "jest jest/lambda.test.ts --coverage=false --modulePathIgnorePatterns=[] --testEnvironment='node' --watch",
     "integration-lambda-watch": "yarn integration-lambda --watch",
     "unit": "jest --coverage=false",
-    "unit-watch": "yarn unit --watch"
+    "unit-watch": "yarn unit --watch",
+    "lint": "eslint lambda/**/*.{ts,js}"
   },
   "devDependencies": {
     "@types/jest": "^29.5.3",
+    "@typescript-eslint/eslint-plugin": "^6.3.0",
+    "@typescript-eslint/parser": "^6.3.0",
     "axios": "^1.4.0",
+    "eslint": "^8.46.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-airbnb-typescript": "^17.1.0",
+    "eslint-plugin-import": "^2.28.0",
+    "husky": "^8.0.3",
     "jest": "^29.6.1",
     "jest-environment-jsdom": "^29.6.1",
     "mysql2": "^3.5.1",

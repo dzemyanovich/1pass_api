@@ -2,7 +2,7 @@ image: node:16.20.1
 
 stages:
   - build
-  - unit
+  - test
   - plan
   - apply
   - destroy
@@ -25,9 +25,10 @@ build:
   script:
     - yarn build
 
-unit:
-  stage: unit
+test:
+  stage: test
   script:
+    - yarn lint
     - yarn unit
 
 .plan:

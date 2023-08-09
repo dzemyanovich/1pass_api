@@ -34,9 +34,9 @@ export async function handler(event: SignUpEvent): Promise<EventResult<void>> {
     };
   }
 
-  const result = await signUp(event);
+  await signUp(event);
 
   return {
     success: true,
   };
-};
+}

@@ -31,9 +31,9 @@ export async function handler(event: SendCodeEvent): Promise<EventResult<void>> 
   return status !== 'pending'
     ? {
       success: false,
-      errors: [sendCodeStatus(status)]
+      errors: [sendCodeStatus(status)],
     }
     : {
       success: true,
     };
-};
+}

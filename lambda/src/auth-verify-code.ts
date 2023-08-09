@@ -52,4 +52,4 @@ export async function handler(event: VerifyCodeEvent): Promise<EventResult<void>
   return {
     success: true,
   };
-};
+}

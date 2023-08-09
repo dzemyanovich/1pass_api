@@ -6,7 +6,6 @@
     "target": "es6",
     "moduleResolution": "node",
     "outDir": "lambda/dist",
-    "jsx": "react",
     "strict": true
   },
   "exclude": [
