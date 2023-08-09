@@ -12,7 +12,7 @@ import {
   userExists,
   userNotFound,
 } from '../lambda/src/utils/errors';
-import testUsers from '../lambda/src/db/seeders/test-users';
+import testUsers from '../lambda/src/db/utils/test-users';
 
 function get<T>(url: string): Promise<T> {
   return new Promise((resolve) => {
