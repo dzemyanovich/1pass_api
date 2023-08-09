@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "target": "es6",
+    "moduleResolution": "node",
+    "outDir": "lambda/dist",
+    "strict": true
+  },
+  "exclude": [
+    "lambda/dist",
+    "jest",
+    "jest.config.ts"
+  ],
+  "lib": ["es2015"]
+}

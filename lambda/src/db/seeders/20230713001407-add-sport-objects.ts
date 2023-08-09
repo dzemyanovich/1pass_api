@@ -2,7 +2,7 @@
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up(queryInterface) {
+  async up(queryInterface: any) {
     return queryInterface.bulkInsert('SportObjects', [{
       name: 'Poison BOX',
       address: 'ул. Лещинского 8',
@@ -29,7 +29,7 @@ module.exports = {
     }]);
   },
 
-  async down(queryInterface) {
+  async down(queryInterface: any) {
     return queryInterface.bulkDelete('SportObjects', null, {});
   }
 };

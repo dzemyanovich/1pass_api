@@ -1,9 +1,8 @@
 const path = require('path');
 
 module.exports = {
-  // config is ts file so need to take its compiled version from dist folder
   'config': path.resolve('lambda/dist/db', 'config/config.js'),
-  'models-path': path.resolve('lambda/src/db', 'models'),
-  'seeders-path': path.resolve('lambda/src/db', 'seeders'),
-  'migrations-path': path.resolve('lambda/src/db', 'migrations')
+  'models-path': path.resolve('lambda/dist/db', 'models'),
+  'seeders-path': path.resolve('lambda/dist/db', 'seeders'),
+  'migrations-path': path.resolve('lambda/dist/db', 'migrations')
 };

@@ -8,6 +8,7 @@ import {
   stringButBoolean,
   stringButNull,
   stringNotNumber,
+  userExists,
   userNotFound,
 } from '../lambda/src/utils/errors';
 
@@ -114,6 +115,15 @@ describe('sign-in', () => {
   const { API_URL } = process.env;
   const URL = `${API_URL}/sign-in`;
 
+  it('success', async () => {
+    const response: EventResult<void> = await post(URL, {
+      phone: '+375333333333',
+      password: 'test_password_1',
+    });
+
+    expect(response.success).toBe(true);
+  });
+
   it('phone and password are missing', async () => {
     const response: EventResult<void> = await post(URL, {});
 
@@ -147,6 +157,27 @@ describe('sign-in', () => {
 describe('sign-up', () => {
   const { API_URL } = process.env;
   const URL = `${API_URL}/sign-up`;
+
+  it('user already exists', async () => {
+    const phone = '+375333333333';
+
+    const response: EventResult<void> = await post(URL, {
+      phone,
+      firstName: 'John',
+      lastName: 'Smith',
+      email: 'smth@mail.ru',
+      confirmEmail: 'smth@mail.ru',
+      password: 'password',
+      confirmPassword: 'password',
+    });
+
+    expect(response.success).toBe(false);
+    expect(response.errors).toContain(userExists(phone));
+  });
+
+  it('email already exists', async () => {
+    // todo: add
+  });
 
   it('all data is missing', async () => {
     const response: EventResult<void> = await post(URL, {});
