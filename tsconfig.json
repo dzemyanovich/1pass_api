@@ -9,8 +9,6 @@
     "strict": true
   },
   "exclude": [
-    "jest",
-    "jest.config.ts",
     "lambda/dist"
   ],
   "lib": ["es2015"]

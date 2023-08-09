@@ -60,7 +60,7 @@ export function validateSignIn(event: SignInEvent): SafeParseReturnType<SignInEv
 }
 
 export function getErrors<T>(parseResult: SafeParseReturnType<T, T>): string[] {
-  const issues: ZodIssue[] = (parseResult as Zod.SafeParseError<T>).error.issues;
+  const { issues } = (parseResult as Zod.SafeParseError<T>).error;
 
   const errors: string[] = [];
 

@@ -1,27 +1,27 @@
+import twilio from 'twilio';
+
+const { TWILIO_AUTH_TOKEN, TWILIO_ACCOUNT_SID, TWILIO_VERIFY_SID } = process.env;
+const client = twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
+
 export async function sendCode(event: SendCodeEvent): Promise<string> {
   const { phone } = event;
-  const { TWILIO_AUTH_TOKEN, TWILIO_ACCOUNT_SID, TWILIO_VERIFY_SID } = process.env;
-  const client = require('twilio')(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
 
   const verification = await client.verify.v2
-    .services(TWILIO_VERIFY_SID)
+    .services(TWILIO_VERIFY_SID as string)
     .verifications.create({ to: phone, channel: 'sms' });
 
   return verification.status;
-};
+}
 
 export async function verifyCode(event: VerifyCodeEvent): Promise<string> {
   const { phone, code } = event;
-  const { TWILIO_AUTH_TOKEN, TWILIO_ACCOUNT_SID, TWILIO_VERIFY_SID } = process.env;
-
-  const client = require('twilio')(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
 
   const verificationCheck = await client.verify.v2
-    .services(TWILIO_VERIFY_SID)
+    .services(TWILIO_VERIFY_SID as string)
     .verificationChecks.create({ to: phone, code });
 
   return verificationCheck.status;
-};
+}
 
 export function getHash(str: string): number {
   let hash = 0;

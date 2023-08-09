@@ -43,7 +43,7 @@
     "integration-lambda-watch": "yarn integration-lambda --watch",
     "unit": "jest --coverage=false",
     "unit-watch": "yarn unit --watch",
-    "lint": "eslint lambda/**/*.{ts,js}"
+    "lint": "eslint ."
   },
   "devDependencies": {
     "@types/jest": "^29.5.3",

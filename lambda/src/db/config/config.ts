@@ -12,6 +12,7 @@ function getConfig(): DBConfig {
   switch (env) {
     case ENVS.dev:
     case ENVS.test:
+      // eslint-disable-next-line global-require
       require('./env-vars');
 
       return {

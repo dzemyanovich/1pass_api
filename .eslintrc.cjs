@@ -39,6 +39,17 @@ module.exports = {
     'object-curly-newline': 'off',
     'import/prefer-default-export': 'off',
     'arrow-parens': 'off',
+    '@typescript-eslint/no-explicit-any': 'warn',
+    'no-plusplus': 'warn',
+    'no-bitwise': 'warn',
+    '@typescript-eslint/no-use-before-define': 'warn',
+    'import/no-import-module-exports': 'warn',
+    'import/no-relative-packages': 'warn',
   },
-  ignorePatterns: ['lambda/dist', 'node_modules'],
+  ignorePatterns: [
+    'lambda/dist',
+    'lambda/src/db/seeders',
+    'lambda/src/db/models',
+    'lambda/src/db/migrations',
+  ],
 };

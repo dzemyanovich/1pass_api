@@ -6,17 +6,17 @@ const { username, password, host } = config;
 
 export function runSql(sql: string): void {
   const connection = mysql.createConnection({
-    host: host,
+    host,
     user: username,
-    password: password,
+    password,
   });
 
   connection.query(
     sql,
-    function (err, results) {
+    (err, results) => {
       console.log(results);
       console.log(err);
-    }
+    },
   );
 
   connection.end();

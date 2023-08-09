@@ -2,17 +2,17 @@
 
 type SendCodeEvent = {
   phone: string,
-}
+};
 
 type VerifyCodeEvent = {
   phone: string,
   code: string,
-}
+};
 
 type SignInEvent = {
   phone: string,
   password: string,
-}
+};
 
 type SignUpEvent = {
   phone: string,
@@ -22,13 +22,13 @@ type SignUpEvent = {
   confirmEmail: string,
   password: string,
   confirmPassword: string,
-}
+};
 
 type EventResult<T> = {
   success: boolean,
   errors?: string[],
   data?: T,
-}
+};
 
 // ************** DB ****************
 
@@ -39,7 +39,7 @@ type DBConfig = {
   host: string,
   dialect: string,
   seederStorage: string,
-}
+};
 
 // todo: default sequelize types library should be used
 type DBModel<T> = {
@@ -47,12 +47,12 @@ type DBModel<T> = {
   create: (model: any) => T,
   findOne: (where: any) => T,
   update: (what: any, where: any) => T,
-}
+};
 
 type DBModels = {
   SportObject: DBModel<SportObjectDM>,
   User: DBModel<UserDM>,
-}
+};
 
 type SportObjectDM = {
   id: number,
@@ -61,7 +61,7 @@ type SportObjectDM = {
   lat: number,
   long: number,
   createdAt: string,
-}
+};
 
 type SportObjectVM = {
   id: number,
@@ -69,7 +69,7 @@ type SportObjectVM = {
   address: string,
   lat: number,
   long: number,
-}
+};
 
 type UserDM = {
   id: number,
@@ -80,4 +80,4 @@ type UserDM = {
   lastName?: string,
   password?: string,
   createdAt: string,
-}
+};

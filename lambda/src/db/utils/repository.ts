@@ -7,12 +7,12 @@ export async function setVerifed(phone: string, verified: boolean): Promise<User
   return User.update({ verified }, {
     where: {
       phone,
-    }
+    },
   });
 }
 
 export async function getUser(phone: string): Promise<UserDM> {
-  return User.findOne({ where: { phone, } });
+  return User.findOne({ where: { phone } });
 }
 
 export async function getSportObjects(): Promise<SportObjectDM[]> {

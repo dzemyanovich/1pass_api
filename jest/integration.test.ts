@@ -1,12 +1,20 @@
 import axios from 'axios';
 
-import { confirmMismatch, invalidEmail, invalidInput, required, stringButBoolean, stringButNull, stringNotNumber, userNotFound } from '../lambda/src/utils/errors';
-import '../types.d.ts';
+import {
+  confirmMismatch,
+  invalidEmail,
+  invalidInput,
+  required,
+  stringButBoolean,
+  stringButNull,
+  stringNotNumber,
+  userNotFound,
+} from '../lambda/src/utils/errors';
 
 function get<T>(url: string): Promise<T> {
   return new Promise((resolve) => {
     axios.get(url).then((response) => {
-      resolve(response.data);
+      resolve(response.data as T);
     });
   });
 }
@@ -14,7 +22,7 @@ function get<T>(url: string): Promise<T> {
 function post<T>(url: string, data: any): Promise<T> {
   return new Promise((resolve) => {
     axios.post(url, data).then((response) => {
-      resolve(response.data);
+      resolve(response.data as T);
     });
   });
 }
