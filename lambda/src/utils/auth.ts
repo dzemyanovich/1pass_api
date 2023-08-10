@@ -24,11 +24,11 @@ export async function verifyCode(event: VerifyCodeEvent): Promise<string> {
   return verificationCheck.status;
 }
 
-export function getHash(str: string): number {
+export function getHash(str: string): string {
   let hash = 0;
 
   if (str.length === 0) {
-    return hash;
+    return hash.toString();
   }
 
   for (let i = 0; i < str.length; i++) {
@@ -37,5 +37,5 @@ export function getHash(str: string): number {
     hash |= 0; // Convert to 32bit integer
   }
 
-  return hash;
+  return hash.toString();
 }

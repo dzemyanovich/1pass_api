@@ -10,6 +10,7 @@ stages:
   - db-undo
   - db-recreate
   - integration
+  - e2e
 
 variables:
   TG_IMAGE: alpine/terragrunt:1.5.2
@@ -201,5 +202,24 @@ integration-prod:
     - .integration
   script:
     - yarn integration-prod
+  only:
+    - master
+
+.e2e:
+  stage: e2e
+
+e2e-preprod:
+  extends:
+    - .e2e
+  script:
+    - yarn e2e-preprod
+  only:
+    - develop
+
+e2e-prod:
+  extends:
+    - .e2e
+  script:
+    - yarn e2e-prod
   only:
     - master

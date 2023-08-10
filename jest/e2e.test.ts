@@ -1,25 +1,26 @@
 import {
   createUser,
   deleteUser,
+  deleteUserByPhone,
   getUserByEmail,
   getUserByPhone,
   setVerifed,
   signUp,
 } from '../lambda/src/db/utils/repository';
+import { getHash } from '../lambda/src/utils/auth';
 import { userNotFound } from '../lambda/src/utils/errors';
 import { post } from './utils/rest';
 
 describe('sign up + sign in + delete', () => {
   const { API_URL } = process.env;
   const SIGN_IN_URL = `${API_URL}/sign-in`;
+  const phone = '+12025550156';
+  const email = '12025550156@gmail.com';
+  const firstName = 'any';
+  const lastName = 'any';
+  const password = 'password_1';
 
   it('user workflow', async () => {
-    const phone = '+12025550156';
-    const email = '12025550156@gmail.com';
-    const firstName = 'any';
-    const lastName = 'any';
-    const password = 'password_1';
-
     const sinInFail: EventResult<void> = await post(SIGN_IN_URL, {
       phone,
       password,
@@ -31,20 +32,19 @@ describe('sign up + sign in + delete', () => {
     const createdUser = await createUser(phone);
     const notVerifiedUser = await getUserByPhone(phone);
 
-    expect(notVerifiedUser).toMatchObject(createdUser);
+    expect(notVerifiedUser.id).toBe(createdUser.id);
+    expect(notVerifiedUser.phone).toBe(createdUser.phone);
     expect(notVerifiedUser.verified).toBe(false);
     expect(notVerifiedUser.password).toBeFalsy();
-    expect(notVerifiedUser.email).toBeFalsy();
 
     await setVerifed(phone, true);
     const verifiedUser = await getUserByPhone(phone);
 
-    expect(verifiedUser).toMatchObject(createdUser);
+    expect(verifiedUser.id).toBe(createdUser.id);
     expect(verifiedUser.verified).toBe(true);
     expect(verifiedUser.password).toBeFalsy();
-    expect(verifiedUser.email).toBeFalsy();
 
-    const signedUpUser = await signUp({
+    await signUp({
       phone,
       firstName,
       lastName,
@@ -55,9 +55,10 @@ describe('sign up + sign in + delete', () => {
     });
 
     const registeredUser = await getUserByPhone(phone);
-    expect(registeredUser).toMatchObject(signedUpUser);
-    expect(registeredUser.password).toBeTruthy();
-    expect(registeredUser.email).toBeTruthy();
+    expect(registeredUser.firstName).toBe(firstName);
+    expect(registeredUser.lastName).toBe(lastName);
+    expect(registeredUser.email).toBe(email);
+    expect(registeredUser.password).toBe(getHash(password));
 
     const sinInSuccess: EventResult<void> = await post(SIGN_IN_URL, {
       phone,
@@ -73,5 +74,10 @@ describe('sign up + sign in + delete', () => {
 
     expect(userByPhone).toBeFalsy();
     expect(userByEmail).toBeFalsy();
+  });
+
+  afterAll(async () => {
+    // delete test user in case e2e test fails
+    await deleteUserByPhone(phone);
   });
 });

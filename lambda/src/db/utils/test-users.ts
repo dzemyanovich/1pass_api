@@ -6,7 +6,7 @@ export const testUsers: UserDM[] = [
     firstName: 'test_name_1',
     lastName: 'test_last_name_1',
     email: 'test_email_1@mail.ru',
-    password: getHash('test_password_1').toString(),
+    password: getHash('test_password_1'),
     verified: true,
   } as UserDM,
   {

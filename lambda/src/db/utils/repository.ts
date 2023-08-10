@@ -5,8 +5,9 @@ const { SportObject, User } = dbModels as unknown as DBModels;
 
 /************************* USER *************************/
 
-export async function setVerifed(phone: string, verified: boolean): Promise<UserDM> {
-  return User.update({ verified }, {
+export async function setVerifed(phone: string, verified: boolean): Promise<void> {
+  // todo: update method returns just "[1]" however it should return values which was updated
+  await User.update({ verified }, {
     where: {
       phone,
     },
@@ -14,15 +15,15 @@ export async function setVerifed(phone: string, verified: boolean): Promise<User
 }
 
 export async function getUserByPhone(phone: string): Promise<UserDM> {
-  return User.findOne({ where: { phone } });
+  return await User.findOne({ where: { phone } });
 }
 
 export async function getUserByEmail(email: string): Promise<UserDM> {
-  return User.findOne({ where: { email } });
+  return await User.findOne({ where: { email } });
 }
 
 export async function createUser(phone: string): Promise<UserDM> {
-  return User.create({
+  return await User.create({
     phone,
     verified: false,
   });
@@ -31,12 +32,13 @@ export async function createUser(phone: string): Promise<UserDM> {
 export async function signIn(event: SignInEvent): Promise<UserDM> {
   const { phone, password } = event;
 
-  return User.findOne({ where: { phone, password: getHash(password) } });
+  return await User.findOne({ where: { phone, password: getHash(password) } });
 }
 
-export async function signUp(event: SignUpEvent): Promise<UserDM> {
+export async function signUp(event: SignUpEvent): Promise<void> {
   const { phone, firstName, lastName, email, password } = event;
-  return User.update({ firstName, lastName, email, password: getHash(password) }, {
+  // todo: update method returns just "[1]" however it should return values which was updated
+  await User.update({ firstName, lastName, email, password: getHash(password) }, {
     where: {
       phone,
     },
@@ -44,13 +46,23 @@ export async function signUp(event: SignUpEvent): Promise<UserDM> {
 }
 
 export async function deleteUser(id: number): Promise<void> {
-  return User.remove({
-    id,
+  return await User.destroy({
+    where: {
+      id,
+    },
+  });
+}
+
+export async function deleteUserByPhone(phone: string): Promise<void> {
+  return await User.destroy({
+    where: {
+      phone,
+    },
   });
 }
 
 /************************* SPORT OBJECT *************************/
 
 export async function getSportObjects(): Promise<SportObjectDM[]> {
-  return SportObject.findAll();
+  return await SportObject.findAll();
 }
