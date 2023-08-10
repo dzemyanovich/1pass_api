@@ -53,7 +53,9 @@ type DBModel<T> = {
 type DBModels = {
   SportObject: DBModel<SportObjectDM>,
   User: DBModel<UserDM>,
-  sequelize: any,
+  sequelize: {
+    close: () => Promise<void>,
+  },
 };
 
 type SportObjectDM = {
