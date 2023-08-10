@@ -6,7 +6,7 @@ export default {
   ],
   moduleNameMapper: {
     '\\.(scss|svg|jpg|jpeg|png)$': '<rootDir>/jest/unit/emptyMock.js',
-    'sequelize': require.resolve('sequelize'),
+    sequelize: require.resolve('sequelize'),
   },
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
