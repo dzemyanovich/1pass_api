@@ -15,15 +15,15 @@ export async function setVerifed(phone: string, verified: boolean): Promise<void
 }
 
 export async function getUserByPhone(phone: string): Promise<UserDM> {
-  return await User.findOne({ where: { phone } });
+  return User.findOne({ where: { phone } });
 }
 
 export async function getUserByEmail(email: string): Promise<UserDM> {
-  return await User.findOne({ where: { email } });
+  return User.findOne({ where: { email } });
 }
 
 export async function createUser(phone: string): Promise<UserDM> {
-  return await User.create({
+  return User.create({
     phone,
     verified: false,
   });
@@ -32,7 +32,7 @@ export async function createUser(phone: string): Promise<UserDM> {
 export async function signIn(event: SignInEvent): Promise<UserDM> {
   const { phone, password } = event;
 
-  return await User.findOne({ where: { phone, password: getHash(password) } });
+  return User.findOne({ where: { phone, password: getHash(password) } });
 }
 
 export async function signUp(event: SignUpEvent): Promise<void> {
@@ -46,7 +46,7 @@ export async function signUp(event: SignUpEvent): Promise<void> {
 }
 
 export async function deleteUser(id: number): Promise<void> {
-  return await User.destroy({
+  return User.destroy({
     where: {
       id,
     },
@@ -54,7 +54,7 @@ export async function deleteUser(id: number): Promise<void> {
 }
 
 export async function deleteUserByPhone(phone: string): Promise<void> {
-  return await User.destroy({
+  return User.destroy({
     where: {
       phone,
     },
@@ -64,5 +64,5 @@ export async function deleteUserByPhone(phone: string): Promise<void> {
 /************************* SPORT OBJECT *************************/
 
 export async function getSportObjects(): Promise<SportObjectDM[]> {
-  return await SportObject.findAll();
+  return SportObject.findAll();
 }

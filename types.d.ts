@@ -43,11 +43,11 @@ type DBConfig = {
 
 // todo: default sequelize types library should be used
 type DBModel<T> = {
-  findAll: () => T[],
-  create: (model: any) => T,
-  findOne: (where: any) => T,
-  update: (what: any, where: any) => T,
-  destroy: (where: any) => void,
+  findAll: () => Promise<T[]>,
+  create: (model: any) => Promise<T>,
+  findOne: (where: any) => Promise<T>,
+  update: (what: any, where: any) => Promise<void>,
+  destroy: (where: any) => Promise<void>,
 };
 
 type DBModels = {
