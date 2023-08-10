@@ -1,7 +1,7 @@
 import { getHash } from '../../utils/auth';
 import * as dbModels from '../models';
 
-const { SportObject, User } = dbModels as unknown as DBModels;
+const { SportObject, User, sequelize } = dbModels as unknown as DBModels;
 
 /************************* USER *************************/
 
@@ -65,4 +65,8 @@ export async function deleteUserByPhone(phone: string): Promise<void> {
 
 export async function getSportObjects(): Promise<SportObjectDM[]> {
   return SportObject.findAll();
+}
+
+export async function closeConnection() {
+  await sequelize.close();
 }

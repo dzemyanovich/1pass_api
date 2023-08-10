@@ -53,6 +53,7 @@ type DBModel<T> = {
 type DBModels = {
   SportObject: DBModel<SportObjectDM>,
   User: DBModel<UserDM>,
+  sequelize: any,
 };
 
 type SportObjectDM = {
