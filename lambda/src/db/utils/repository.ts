@@ -3,6 +3,10 @@ import * as dbModels from '../models';
 
 const { SportObject, User, sequelize } = dbModels as unknown as DBModels;
 
+export async function closeConnection() {
+  await sequelize.close();
+}
+
 /************************* USER *************************/
 
 export async function setVerifed(phone: string, verified: boolean): Promise<void> {
@@ -65,8 +69,4 @@ export async function deleteUserByPhone(phone: string): Promise<void> {
 
 export async function getSportObjects(): Promise<SportObjectDM[]> {
   return SportObject.findAll();
-}
-
-export async function closeConnection() {
-  await sequelize.close();
 }
