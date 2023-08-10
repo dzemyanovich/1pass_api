@@ -5,6 +5,7 @@ import {
   emailExists,
   invalidEmail,
   invalidInput,
+  phoneNotVerified,
   required,
   stringButBoolean,
   stringButNull,
@@ -12,7 +13,7 @@ import {
   userExists,
   userNotFound,
 } from '../lambda/src/utils/errors';
-import testUsers from '../lambda/src/db/utils/test-users';
+import { verifiedUser, registeredUser, notVerifiedUser } from '../lambda/src/db/utils/test-users';
 
 function get<T>(url: string): Promise<T> {
   return new Promise((resolve) => {
@@ -161,7 +162,7 @@ describe('sign-up', () => {
   const URL = `${API_URL}/sign-up`;
 
   it('user already exists', async () => {
-    const phone = '+375333333333';
+    const { phone } = registeredUser;
 
     const response: EventResult<void> = await post(URL, {
       phone,
@@ -177,10 +178,25 @@ describe('sign-up', () => {
     expect(response.errors).toContain(userExists(phone));
   });
 
+  it('phone not verified', async () => {
+    const { phone } = notVerifiedUser;
+
+    const response: EventResult<void> = await post(URL, {
+      phone,
+      firstName: 'John',
+      lastName: 'Smith',
+      email: 'smth@mail.ru',
+      confirmEmail: 'smth@mail.ru',
+      password: 'password',
+      confirmPassword: 'password',
+    });
+
+    expect(response.success).toBe(false);
+    expect(response.errors).toContain(phoneNotVerified(phone));
+  });
+
   it('email already exists', async () => {
-    const verifiedUser = testUsers.find((user: UserDM) => !user.password && user.verified);
-    const registeredUser = testUsers.find((user: UserDM) => user.password);
-    const email = (registeredUser?.email) as string;
+    const email = registeredUser.email as string;
 
     const response: EventResult<void> = await post(URL, {
       phone: verifiedUser?.phone,

@@ -1,6 +1,6 @@
 import { getHash } from '../../utils/auth';
 
-const testUsers: UserDM[] = [
+export const testUsers: UserDM[] = [
   {
     phone: '+375333333333',
     firstName: 'test_name_1',
@@ -19,4 +19,6 @@ const testUsers: UserDM[] = [
   } as UserDM,
 ];
 
-export default testUsers;
+export const verifiedUser = testUsers.find((user: UserDM) => !user.password && user.verified) as UserDM;
+export const notVerifiedUser = testUsers.find((user: UserDM) => !user.password && !user.verified) as UserDM;
+export const registeredUser = testUsers.find((user: UserDM) => user.password) as UserDM;

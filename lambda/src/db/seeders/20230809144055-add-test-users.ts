@@ -1,6 +1,6 @@
 'use strict';
 
-import testUsers from '../utils/test-users';
+import { testUsers } from '../utils/test-users';
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
