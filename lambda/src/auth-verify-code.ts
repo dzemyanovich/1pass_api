@@ -1,6 +1,6 @@
-import { getUserByPhone, createUser, setVerifed } from './db/utils/repository';
+import { getUserByPhone, setVerifed } from './db/utils/repository';
 import { verifyCode } from './utils/auth';
-import { userExists, verifyCodeStatus } from './utils/errors';
+import { userExists, userNotFound, verifyCodeStatus } from './utils/errors';
 import { getErrors, validateVerifyCode } from './utils/validation';
 
 export async function handler(event: VerifyCodeEvent): Promise<EventResult<void>> {
@@ -15,13 +15,18 @@ export async function handler(event: VerifyCodeEvent): Promise<EventResult<void>
   const { phone } = event;
   const user = await getUserByPhone(phone);
 
-  if (user) {
-    if (user.password) {
-      return {
-        success: false,
-        errors: [userExists(phone)],
-      };
-    }
+  if (!user) {
+    return {
+      success: false,
+      errors: [userNotFound()],
+    };
+  }
+
+  if (user.password) {
+    return {
+      success: false,
+      errors: [userExists(phone)],
+    };
   }
 
   const status = await verifyCode(event);
@@ -33,21 +38,7 @@ export async function handler(event: VerifyCodeEvent): Promise<EventResult<void>
     };
   }
 
-  if (user) {
-    if (user.verified) {
-      return {
-        success: true,
-      };
-    }
-
-    await setVerifed(phone, true);
-
-    return {
-      success: true,
-    };
-  }
-
-  await createUser(event);
+  await setVerifed(phone, true);
 
   return {
     success: true,

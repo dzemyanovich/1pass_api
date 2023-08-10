@@ -21,12 +21,10 @@ export async function getUserByEmail(email: string): Promise<UserDM> {
   return User.findOne({ where: { email } });
 }
 
-export async function createUser(event: VerifyCodeEvent): Promise<UserDM> {
-  const { phone } = event;
-
+export async function createUser(phone: string): Promise<UserDM> {
   return User.create({
     phone,
-    verified: true,
+    verified: false,
   });
 }
 
@@ -42,6 +40,12 @@ export async function signUp(event: SignUpEvent): Promise<UserDM> {
     where: {
       phone,
     },
+  });
+}
+
+export async function deleteUser(id: number): Promise<void> {
+  return User.remove({
+    id,
   });
 }
 

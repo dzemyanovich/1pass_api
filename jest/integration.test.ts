@@ -1,5 +1,3 @@
-import axios from 'axios';
-
 import {
   confirmMismatch,
   emailExists,
@@ -14,22 +12,7 @@ import {
   userNotFound,
 } from '../lambda/src/utils/errors';
 import { verifiedUser, registeredUser, notVerifiedUser } from '../lambda/src/db/utils/test-users';
-
-function get<T>(url: string): Promise<T> {
-  return new Promise((resolve) => {
-    axios.get(url).then((response) => {
-      resolve(response.data as T);
-    });
-  });
-}
-
-function post<T>(url: string, data: any): Promise<T> {
-  return new Promise((resolve) => {
-    axios.post(url, data).then((response) => {
-      resolve(response.data as T);
-    });
-  });
-}
+import { get, post } from './utils/rest';
 
 describe('get-sport-objects', () => {
   const { API_URL } = process.env;

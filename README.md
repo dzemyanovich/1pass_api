@@ -105,7 +105,7 @@ process.env.DEV_DB_HOST = 'some_value';
 process.env.DEV_DB_NAME = 'some_value';
 ```
 
-In order to run twilio integration tests, create `jest/twilio.setup.js`:
+In order to run twilio integration tests, create `jest/setup/lambda.setup.js`:
 ```
 process.env.TWILIO_AUTH_TOKEN = 'some_value';
 process.env.TWILIO_ACCOUNT_SID = 'some_value';

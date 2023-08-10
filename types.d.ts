@@ -47,6 +47,7 @@ type DBModel<T> = {
   create: (model: any) => T,
   findOne: (where: any) => T,
   update: (what: any, where: any) => T,
+  remove: (where: any) => void,
 };
 
 type DBModels = {

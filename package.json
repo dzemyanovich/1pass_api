@@ -39,13 +39,18 @@
     "db-undo-latest-seed-preprod": "export NODE_ENV=preprod && npx sequelize-cli db:seed:undo",
     "db-undo-seeds-prod": "export NODE_ENV=prod && npx sequelize-cli db:seed:undo:all",
     "db-undo-latest-seed-prod": "export NODE_ENV=prod && npx sequelize-cli db:seed:undo",
-    "integration-dev-local": "jest jest/integration.test.ts --coverage=false --modulePathIgnorePatterns=[] --setupFilesAfterEnv '<rootDir>/jest/setup.dev.ts'",
-    "integration-preprod": "jest jest/integration.test.ts --coverage=false --modulePathIgnorePatterns=[] --setupFilesAfterEnv '<rootDir>/jest/setup.preprod.ts'",
-    "integration-preprod-local": "jest jest/integration.test.ts --coverage=false --modulePathIgnorePatterns=[] --setupFilesAfterEnv '<rootDir>/jest/setup.preprod.ts'",
-    "integration-prod": "jest jest/integration.test.ts --coverage=false --modulePathIgnorePatterns=[] --setupFilesAfterEnv '<rootDir>/jest/setup.prod.ts'",
-    "integration-prod-local": "jest jest/integration.test.ts --coverage=false --modulePathIgnorePatterns=[] --setupFilesAfterEnv '<rootDir>/jest/setup.prod.ts'",
+    "integration-dev-local": "jest jest/integration.test.ts --coverage=false --modulePathIgnorePatterns=[] --setupFilesAfterEnv '<rootDir>/jest/setup/setup.dev.ts'",
+    "integration-preprod": "jest jest/integration.test.ts --coverage=false --modulePathIgnorePatterns=[] --setupFilesAfterEnv '<rootDir>/jest/setup/setup.preprod.ts'",
+    "integration-preprod-local": "jest jest/integration.test.ts --coverage=false --modulePathIgnorePatterns=[] --setupFilesAfterEnv '<rootDir>/jest/setup/setup.preprod.ts'",
+    "integration-prod": "jest jest/integration.test.ts --coverage=false --modulePathIgnorePatterns=[] --setupFilesAfterEnv '<rootDir>/jest/setup/setup.prod.ts'",
+    "integration-prod-local": "jest jest/integration.test.ts --coverage=false --modulePathIgnorePatterns=[] --setupFilesAfterEnv '<rootDir>/jest/setup/setup.prod.ts'",
     "integration-lambda": "jest jest/lambda.test.ts --coverage=false --modulePathIgnorePatterns=[] --testEnvironment='node' --watch",
     "integration-lambda-watch": "yarn integration-lambda --watch",
+    "e2e-dev-local": "jest jest/e2e.test.ts --coverage=false --modulePathIgnorePatterns=[] --setupFilesAfterEnv '<rootDir>/jest/setup/setup.dev.ts'",
+    "e2e-preprod": "jest jest/e2e.test.ts --coverage=false --modulePathIgnorePatterns=[] --setupFilesAfterEnv '<rootDir>/jest/setup/setup.preprod.ts'",
+    "e2e-preprod-local": "jest jest/e2e.test.ts --coverage=false --modulePathIgnorePatterns=[] --setupFilesAfterEnv '<rootDir>/jest/setup/setup.preprod.ts'",
+    "e2e-prod": "jest jest/e2e.test.ts --coverage=false --modulePathIgnorePatterns=[] --setupFilesAfterEnv '<rootDir>/jest/setup/setup.prod.ts'",
+    "e2e-prod-local": "jest jest/e2e.test.ts --coverage=false --modulePathIgnorePatterns=[] --setupFilesAfterEnv '<rootDir>/jest/setup/setup.prod.ts'",
     "unit": "jest --coverage=false",
     "unit-watch": "yarn unit --watch",
     "lint": "eslint ."
@@ -54,7 +59,6 @@
     "@types/jest": "^29.5.3",
     "@typescript-eslint/eslint-plugin": "^6.3.0",
     "@typescript-eslint/parser": "^6.3.0",
-    "axios": "^1.4.0",
     "eslint": "^8.46.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-airbnb-typescript": "^17.1.0",
@@ -69,5 +73,8 @@
     "ts-jest": "^29.1.1",
     "ts-node": "^10.9.1",
     "typescript": "^5.1.6"
+  },
+  "dependencies": {
+    "axios": "^1.4.0"
   }
 }

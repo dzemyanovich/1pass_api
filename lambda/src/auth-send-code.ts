@@ -1,4 +1,4 @@
-import { getUserByPhone, setVerifed } from './db/utils/repository';
+import { createUser, getUserByPhone, setVerifed } from './db/utils/repository';
 import { sendCode } from './utils/auth';
 import { sendCodeStatus, userExists } from './utils/errors';
 import { getErrors, validateSendCode } from './utils/validation';
@@ -28,12 +28,16 @@ export async function handler(event: SendCodeEvent): Promise<EventResult<void>> 
 
   const status = await sendCode(event);
 
-  return status !== 'pending'
-    ? {
+  if (status !== 'pending') {
+    return {
       success: false,
       errors: [sendCodeStatus(status)],
-    }
-    : {
-      success: true,
     };
+  }
+
+  await createUser(phone);
+
+  return {
+    success: true,
+  };
 }

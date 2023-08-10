@@ -1,7 +1,7 @@
 import { sendCode, verifyCode } from '../lambda/src/utils/auth';
 import { handler as authSendCode } from '../lambda/src/auth-send-code';
 import { handler as authVerifyCode } from '../lambda/src/auth-verify-code';
-import './lambda.setup';
+import './setup/lambda.setup';
 
 describe.skip('twilio', () => {
   it.only('send code', async () => {

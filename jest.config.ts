@@ -14,5 +14,6 @@ export default {
   },
   transformIgnorePatterns: [
     '<rootDir>/node_modules/',
+    '<rootDir>/lambda/node_modules/',
   ],
 };
