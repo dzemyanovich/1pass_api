@@ -46,11 +46,9 @@ module.exports = {
     'import/no-import-module-exports': 'warn',
     'import/no-relative-packages': 'warn',
     'spaced-comment': 'warn',
+    '@typescript-eslint/indent': 'warn',
   },
   ignorePatterns: [
     'lambda/dist',
-    'lambda/src/db/seeders',
-    'lambda/src/db/models',
-    'lambda/src/db/migrations',
   ],
 };

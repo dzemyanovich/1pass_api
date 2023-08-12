@@ -68,7 +68,7 @@ describe('sign up + sign in + delete', () => {
 
     expect(sinInSuccess.success).toBe(true);
 
-    await deleteUser(registeredUser.id);
+    await deleteUser(registeredUser.id as number);
 
     const userByPhone = await getUserByPhone(phone);
     const userByEmail = await getUserByEmail(email);

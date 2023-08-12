@@ -1,21 +1,18 @@
-'use strict';
-
+import { QueryInterface, Op } from 'sequelize';
 import { testUsers } from '../utils/test-users';
 
-/** @type {import('sequelize-cli').Migration} */
-module.exports = {
-  async up(queryInterface: any, Sequelize: any) {
+export default {
+  async up(queryInterface: QueryInterface): Promise<object | number> {
     return queryInterface.bulkInsert('Users', testUsers);
   },
 
-  async down(queryInterface: any, Sequelize: any) {
-    const Op = Sequelize.Op;
-    const where: { phone: string }[] = []
+  async down(queryInterface: QueryInterface): Promise<object> {
+    const where: { phone: string }[] = [];
     testUsers.forEach(({ phone }) => where.push({ phone }));
 
     return queryInterface.bulkDelete(
       'Users',
-      { [Op.or]: where }
+      { [Op.or]: where },
     );
-  }
+  },
 };

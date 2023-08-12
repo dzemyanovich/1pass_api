@@ -32,56 +32,10 @@ type EventResult<T> = {
 
 // ************** DB ****************
 
-type DBConfig = {
-  username: string,
-  password: string,
-  database: string,
-  host: string,
-  dialect: string,
-  seederStorage: string,
-};
-
-// todo: default sequelize types library should be used
-type DBModel<T> = {
-  findAll: () => Promise<T[]>,
-  create: (model: any) => Promise<T>,
-  findOne: (where: any) => Promise<T>,
-  update: (what: any, where: any) => Promise<void>,
-  destroy: (where: any) => Promise<void>,
-};
-
-type DBModels = {
-  SportObject: DBModel<SportObjectDM>,
-  User: DBModel<UserDM>,
-  sequelize: {
-    close: () => Promise<void>,
-  },
-};
-
-type SportObjectDM = {
-  id: number,
-  name: string,
-  address: string,
-  lat: number,
-  long: number,
-  createdAt: string,
-};
-
 type SportObjectVM = {
   id: number,
   name: string,
   address: string,
   lat: number,
   long: number,
-};
-
-type UserDM = {
-  id: number,
-  phone: string,
-  verified: boolean,
-  email?: string,
-  firstName?: string,
-  lastName?: string,
-  password?: string,
-  createdAt: string,
 };

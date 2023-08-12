@@ -1,8 +1,7 @@
-'use strict';
+import { QueryInterface } from 'sequelize';
 
-/** @type {import('sequelize-cli').Migration} */
-module.exports = {
-  async up(queryInterface: any) {
+export default {
+  async up(queryInterface: QueryInterface): Promise<object | number> {
     return queryInterface.bulkInsert('SportObjects', [{
       name: 'Poison BOX',
       address: 'ул. Лещинского 8',
@@ -29,7 +28,7 @@ module.exports = {
     }]);
   },
 
-  async down(queryInterface: any) {
-    return queryInterface.bulkDelete('SportObjects', null, {});
-  }
+  async down(queryInterface: QueryInterface): Promise<object> {
+    return queryInterface.bulkDelete('SportObjects', {}, {});
+  },
 };

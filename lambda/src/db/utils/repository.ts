@@ -1,55 +1,56 @@
+import { Sequelize } from 'sequelize';
 import { getHash } from '../../utils/auth';
-import * as dbModels from '../models';
+import db from '../models';
+import User from '../models/user';
+import SportObject from '../models/sport-object';
 
-const { SportObject, User, sequelize } = dbModels as unknown as DBModels;
+const { sequelize }: { sequelize: Sequelize } = db.sequelize;
 
-export async function closeConnection() {
+export async function closeConnection(): Promise<void> {
   await sequelize.close();
 }
 
 /************************* USER *************************/
 
-export async function setVerifed(phone: string, verified: boolean): Promise<void> {
-  // todo: update method returns just "[1]" however it should return values which was updated
-  await User.update({ verified }, {
+export async function setVerifed(phone: string, verified: boolean): Promise<[affectedCount: number]> {
+  return User.update({ verified }, {
     where: {
       phone,
     },
   });
 }
 
-export async function getUserByPhone(phone: string): Promise<UserDM> {
-  return User.findOne({ where: { phone } });
+export async function getUserByPhone(phone: string): Promise<User> {
+  return User.findOne({ where: { phone } }) as Promise<User>;
 }
 
-export async function getUserByEmail(email: string): Promise<UserDM> {
-  return User.findOne({ where: { email } });
+export async function getUserByEmail(email: string): Promise<User> {
+  return User.findOne({ where: { email } }) as Promise<User>;
 }
 
-export async function createUser(phone: string): Promise<UserDM> {
+export async function createUser(phone: string): Promise<User> {
   return User.create({
     phone,
     verified: false,
   });
 }
 
-export async function signIn(event: SignInEvent): Promise<UserDM> {
+export async function signIn(event: SignInEvent): Promise<User> {
   const { phone, password } = event;
 
-  return User.findOne({ where: { phone, password: getHash(password) } });
+  return User.findOne({ where: { phone, password: getHash(password) } }) as Promise<User>;
 }
 
-export async function signUp(event: SignUpEvent): Promise<void> {
+export async function signUp(event: SignUpEvent): Promise<[affectedCount: number]> {
   const { phone, firstName, lastName, email, password } = event;
-  // todo: update method returns just "[1]" however it should return values which was updated
-  await User.update({ firstName, lastName, email, password: getHash(password) }, {
+  return User.update({ firstName, lastName, email, password: getHash(password) }, {
     where: {
       phone,
     },
   });
 }
 
-export async function deleteUser(id: number): Promise<void> {
+export async function deleteUser(id: number): Promise<number> {
   return User.destroy({
     where: {
       id,
@@ -57,7 +58,7 @@ export async function deleteUser(id: number): Promise<void> {
   });
 }
 
-export async function deleteUserByPhone(phone: string): Promise<void> {
+export async function deleteUserByPhone(phone: string): Promise<number> {
   return User.destroy({
     where: {
       phone,
@@ -67,6 +68,6 @@ export async function deleteUserByPhone(phone: string): Promise<void> {
 
 /************************* SPORT OBJECT *************************/
 
-export async function getSportObjects(): Promise<SportObjectDM[]> {
+export async function getSportObjects(): Promise<SportObject[]> {
   return SportObject.findAll();
 }

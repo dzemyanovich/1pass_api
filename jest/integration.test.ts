@@ -179,7 +179,7 @@ describe('sign-up', () => {
   });
 
   it('email already exists', async () => {
-    const email = registeredUser.email as string;
+    const { email } = registeredUser;
 
     const response: EventResult<void> = await post(URL, {
       phone: verifiedUser?.phone,

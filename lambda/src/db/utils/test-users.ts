@@ -1,6 +1,7 @@
 import { getHash } from '../../utils/auth';
+import User from '../models/user';
 
-export const testUsers: UserDM[] = [
+export const testUsers: User[] = [
   {
     phone: '+375333333333',
     firstName: 'test_name_1',
@@ -8,17 +9,17 @@ export const testUsers: UserDM[] = [
     email: 'test_email_1@mail.ru',
     password: getHash('test_password_1'),
     verified: true,
-  } as UserDM,
+  } as User,
   {
     phone: '+375333333334',
     verified: false,
-  } as UserDM,
+  } as User,
   {
     phone: '+375333333335',
     verified: true,
-  } as UserDM,
+  } as User,
 ];
 
-export const verifiedUser = testUsers.find((user: UserDM) => !user.password && user.verified) as UserDM;
-export const notVerifiedUser = testUsers.find((user: UserDM) => !user.password && !user.verified) as UserDM;
-export const registeredUser = testUsers.find((user: UserDM) => user.password) as UserDM;
+export const verifiedUser = testUsers.find((user: User) => !user.password && user.verified) as User;
+export const notVerifiedUser = testUsers.find((user: User) => !user.password && !user.verified) as User;
+export const registeredUser = testUsers.find((user: User) => user.password) as User;

@@ -4,9 +4,12 @@
     "module": "commonjs",
     "esModuleInterop": true,
     "target": "es6",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "moduleResolution": "node",
     "outDir": "lambda/dist",
-    "strict": true
+    "strict": true,
+    "strictPropertyInitialization": false
   },
   "exclude": [
     "lambda/dist"

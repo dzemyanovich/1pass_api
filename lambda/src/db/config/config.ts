@@ -1,12 +1,20 @@
-import ENVS from '../enums/envs';
+import { SequelizeOptions } from 'sequelize-typescript';
 
-const config: DBConfig = getConfig();
+import SportObject from '../models/sport-object';
+import User from '../models/user';
+import ENVS from '../utils/envs';
+
+const config: SequelizeOptions = getConfig();
 
 export default config;
 // required for sequilize
 module.exports = config;
 
-function getConfig(): DBConfig {
+function getConfig(): SequelizeOptions {
+  const configBase = {
+    dialect: 'mysql',
+    models: [User, SportObject],
+  };
   const env = getEnv();
 
   switch (env) {
@@ -20,27 +28,24 @@ function getConfig(): DBConfig {
         password: process.env.DEV_DB_PASSWORD as string,
         database: process.env.DEV_DB_NAME as string,
         host: process.env.DEV_DB_HOST as string,
-        dialect: 'mysql',
-        seederStorage: 'sequelize',
-      };
+        ...configBase,
+      } as SequelizeOptions;
     case ENVS.preprod:
       return {
         username: process.env.PREPROD_DB_USERNAME as string,
         password: process.env.PREPROD_DB_PASSWORD as string,
         database: process.env.PREPROD_DB_NAME as string,
         host: process.env.PREPROD_DB_HOST as string,
-        dialect: 'mysql',
-        seederStorage: 'sequelize',
-      };
+        ...configBase,
+      } as SequelizeOptions;
     case ENVS.prod:
       return {
         username: process.env.PROD_DB_USERNAME as string,
         password: process.env.PROD_DB_PASSWORD as string,
         database: process.env.PROD_DB_NAME as string,
         host: process.env.PROD_DB_HOST as string,
-        dialect: 'mysql',
-        seederStorage: 'sequelize',
-      };
+        ...configBase,
+      } as SequelizeOptions;
     default:
       throw new Error(`env ${env} not supported`);
   }
