@@ -1,10 +1,7 @@
-import { Sequelize } from 'sequelize';
 import { getHash } from '../../utils/auth';
-import db from '../models';
+import sequelize from '../models';
 import User from '../models/user';
 import SportObject from '../models/sport-object';
-
-const { sequelize }: { sequelize: Sequelize } = db.sequelize;
 
 export async function closeConnection(): Promise<void> {
   await sequelize.close();

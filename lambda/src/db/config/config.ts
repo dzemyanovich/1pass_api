@@ -1,8 +1,8 @@
 import { SequelizeOptions } from 'sequelize-typescript';
 
-import SportObject from '../models/sport-object';
-import User from '../models/user';
 import ENVS from '../utils/envs';
+import User from '../models/user';
+import SportObject from '../models/sport-object';
 
 const config: SequelizeOptions = getConfig();
 
@@ -13,7 +13,7 @@ module.exports = config;
 function getConfig(): SequelizeOptions {
   const configBase = {
     dialect: 'mysql',
-    models: [User, SportObject],
+    models: [User, SportObject], // todo: use path for models folder
   };
   const env = getEnv();
 
