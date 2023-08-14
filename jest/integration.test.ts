@@ -18,7 +18,7 @@ import {
   registeredUserPassword,
 } from '../lambda/src/db/utils/test-users';
 import { get, post } from './utils/rest';
-import { getToken } from '../lambda/src/utils/auth';
+import { getToken, validateToken } from '../lambda/src/utils/auth';
 import { closeConnection, getUserByPhone } from '../lambda/src/db/utils/repository';
 
 describe('get-sport-objects', () => {
@@ -104,11 +104,12 @@ describe('auth-verify-code', () => {
   });
 });
 
-describe.only('sign-in', () => {
+describe('sign-in', () => {
+  const TEST_TIMEOUT_SEC = 10;
   const { API_URL } = process.env;
   const URL = `${API_URL}/sign-in`;
 
-  it.only('success', async () => {
+  it('success', async () => {
     const { phone } = registeredUser;
     const response: EventResult<string> = await post(URL, {
       phone,
@@ -117,11 +118,10 @@ describe.only('sign-in', () => {
     const user = await getUserByPhone(phone);
     const token = getToken(user.id as number);
 
-    expect(response).toBe({
-      success: true,
-      data: token,
-    });
-  });
+    expect(response.success).toBe(true);
+    expect(response.data).toBeTruthy();
+    expect(validateToken(token)).toEqual(validateToken(response.data as string));
+  }, TEST_TIMEOUT_SEC * 1000);
 
   it('phone and password are missing', async () => {
     const response: EventResult<string> = await post(URL, {});

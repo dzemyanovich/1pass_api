@@ -3,7 +3,6 @@ import { getToken } from './utils/auth';
 import { emailExists, phoneNotVerified, userExists, userNotFound } from './utils/errors';
 import { getErrors, validateSignUp } from './utils/validation';
 
-// todo: update all tests using singUp functionality (add check for token)
 export async function handler(event: SignUpEvent): Promise<EventResult<string>> {
   const validationResult = validateSignUp(event);
   if (!validationResult.success) {

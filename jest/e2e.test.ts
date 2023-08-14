@@ -8,7 +8,7 @@ import {
   setVerifed,
   signUp,
 } from '../lambda/src/db/utils/repository';
-import { getHash, getToken } from '../lambda/src/utils/auth';
+import { getHash, getToken, validateToken } from '../lambda/src/utils/auth';
 import { userNotFound } from '../lambda/src/utils/errors';
 import { post } from './utils/rest';
 
@@ -16,6 +16,7 @@ describe('sign up + sign in + delete', () => {
   const TEST_TIMEOUT_SEC = 10;
   const { API_URL } = process.env;
   const SIGN_IN_URL = `${API_URL}/sign-in`;
+  const SIGN_UP_URL = `${API_URL}/sign-up`;
   const phone = '+12025550156';
   const email = '12025550156@gmail.com';
   const firstName = 'any';
@@ -46,8 +47,7 @@ describe('sign up + sign in + delete', () => {
     expect(verifiedUser.verified).toBe(true);
     expect(verifiedUser.password).toBeFalsy();
 
-    // todo: use 'sign-up' api endpoint instead of repository method
-    await signUp({
+    const signUpResult: EventResult<string> = await post(SIGN_UP_URL, {
       phone,
       firstName,
       lastName,
@@ -56,6 +56,9 @@ describe('sign up + sign in + delete', () => {
       password,
       confirmPassword: password,
     });
+
+    expect(signUpResult.success).toBe(true);
+    expect(signUpResult.data).toBeTruthy();
 
     const registeredUser = await getUserByPhone(phone);
     expect(registeredUser.firstName).toBe(firstName);
@@ -69,11 +72,12 @@ describe('sign up + sign in + delete', () => {
     });
     const user = await getUserByPhone(phone);
     const token = getToken(user.id as number);
+    const userId = validateToken(token);
 
-    expect(sinInSuccess).toBe({
-      success: true,
-      data: token,
-    });
+    expect(sinInSuccess.success).toBe(true);
+    expect(sinInSuccess.data).toBeTruthy();
+    expect(userId).toEqual(validateToken(sinInSuccess.data as string));
+    expect(userId).toEqual(validateToken(signUpResult.data as string));
 
     await deleteUser(registeredUser.id as number);
 
