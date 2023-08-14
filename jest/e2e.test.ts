@@ -6,7 +6,6 @@ import {
   getUserByEmail,
   getUserByPhone,
   setVerifed,
-  signUp,
 } from '../lambda/src/db/utils/repository';
 import { getHash, getToken, validateToken } from '../lambda/src/utils/auth';
 import { userNotFound } from '../lambda/src/utils/errors';
