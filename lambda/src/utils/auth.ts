@@ -61,7 +61,7 @@ export function validateToken(token: string): number | null {
   }
 
   const millisecondsPassed = Date.now() - payload.createdAt;
-  const jwtExpireMilliseconds = Number(process.env.JWT_EXPIRE_DAYS) * 1000 * 60 * 60 * 24;
+  const jwtExpireMilliseconds = process.env.JWT_EXPIRE_DAYS * 1000 * 60 * 60 * 24;
 
   return millisecondsPassed < jwtExpireMilliseconds
     ? payload.userId

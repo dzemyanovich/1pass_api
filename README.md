@@ -79,6 +79,7 @@ Before running pipeline set the following env vars (variables should be **not pr
 | TWILIO_AUTH_TOKEN            | "some_value" | Required for Twilio                                   |
 | TWILIO_ACCOUNT_SID           | "some_value" | Required for Twilio                                   |
 | TWILIO_VERIFY_SID            | "some_value" | Required for Twilio                                   |
+| TF_VAR_JWT_SECRET            | "some_value" | Required for token generation                         |
 
 > `TF_VAR_db_username` and `TF_VAR_db_password` are the same for all envs
 
@@ -91,9 +92,10 @@ db_password = "some_value"
 ```
 - create `terragrunt/modules/lambda/terraform.tfvars`:
 ```
-TWILIO_AUTH_TOKEN = "some_value"
+TWILIO_AUTH_TOKEN  = "some_value"
 TWILIO_ACCOUNT_SID = "some_value"
-TWILIO_VERIFY_SID = "some_value"
+TWILIO_VERIFY_SID  = "some_value"
+JWT_SECRET         = "some_value"
 ```
 
 # Local setup
@@ -111,7 +113,6 @@ process.env.TWILIO_AUTH_TOKEN = 'some_value';
 process.env.TWILIO_ACCOUNT_SID = 'some_value';
 process.env.TWILIO_VERIFY_SID = 'some_value';
 process.env.JWT_SECRET = 'some_value';
-process.env.JWT_EXPIRE_DAYS = 'some_value';
 ```
 
 To enable husky pre-push, run once: ```npx husky install```

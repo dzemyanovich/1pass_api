@@ -10,10 +10,14 @@ locals {
     PROD_DB_NAME        = var.PROD_DB_NAME
     PROD_DB_HOST        = var.PROD_DB_HOST
   }
-  twilio_env_vars = merge(local.base_env_vars, {
+  auth_env_vars = merge(local.base_env_vars, {
     TWILIO_AUTH_TOKEN   = var.TWILIO_AUTH_TOKEN
     TWILIO_ACCOUNT_SID  = var.TWILIO_ACCOUNT_SID
     TWILIO_VERIFY_SID   = var.TWILIO_VERIFY_SID
+  })
+  jwt_env_vars = merge(local.base_env_vars, {
+    JWT_SECRET       = var.JWT_SECRET
+    JWT_EXPIRE_DAYS  = var.JWT_EXPIRE_DAYS
   })
 }
 
@@ -65,7 +69,7 @@ resource "aws_lambda_function" "auth_send_code_lambda" {
   timeout           = 10
 
   environment {
-    variables = local.twilio_env_vars
+    variables = local.auth_env_vars
   }
 }
 
@@ -79,7 +83,7 @@ resource "aws_lambda_function" "auth_verify_code_lambda" {
   timeout           = 10
 
   environment {
-    variables = local.twilio_env_vars
+    variables = local.auth_env_vars
   }
 }
 
@@ -92,7 +96,7 @@ resource "aws_lambda_function" "sign_in_lambda" {
   runtime           = "nodejs18.x"
 
   environment {
-    variables = local.base_env_vars
+    variables = local.jwt_env_vars
   }
 }
 
@@ -105,6 +109,6 @@ resource "aws_lambda_function" "sign_up_lambda" {
   runtime           = "nodejs18.x"
 
   environment {
-    variables = local.base_env_vars
+    variables = local.jwt_env_vars
   }
 }

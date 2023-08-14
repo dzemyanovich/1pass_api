@@ -65,3 +65,13 @@ variable "TWILIO_VERIFY_SID" {
   type    = string
   default = ""
 }
+
+variable "JWT_SECRET" {
+  type    = string
+  default = ""
+}
+
+variable "JWT_EXPIRE_DAYS" {
+  type    = number
+  default = 30
+}
