@@ -1,10 +1,10 @@
 import { getHash } from '../../utils/auth';
-import sequelize from '../models';
+import sequelizeInstance from '../config/sequelize-instance';
 import User from '../models/user';
 import SportObject from '../models/sport-object';
 
 export async function closeConnection(): Promise<void> {
-  await sequelize.close();
+  await sequelizeInstance.close();
 }
 
 /************************* USER *************************/

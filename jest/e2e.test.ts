@@ -13,6 +13,7 @@ import { userNotFound } from '../lambda/src/utils/errors';
 import { post } from './utils/rest';
 
 describe('sign up + sign in + delete', () => {
+  const TEST_TIMEOUT_SEC = 10;
   const { API_URL } = process.env;
   const SIGN_IN_URL = `${API_URL}/sign-in`;
   const phone = '+12025550156';
@@ -75,12 +76,11 @@ describe('sign up + sign in + delete', () => {
 
     expect(userByPhone).toBeFalsy();
     expect(userByEmail).toBeFalsy();
-  });
+  }, TEST_TIMEOUT_SEC * 1000);
 
   afterAll(async () => {
     // delete test user in case e2e test fails
     await deleteUserByPhone(phone);
-    // todo: do we need to close connection in lambdas?
     await closeConnection();
   });
 });
