@@ -11,6 +11,7 @@ module.exports = config;
 function getConfig(): SequelizeOptions {
   const configBase = {
     dialect: 'mysql',
+    seederStorage: 'sequelize',
     models: [`${__dirname}/../models/`],
   };
   const env = getEnv();
