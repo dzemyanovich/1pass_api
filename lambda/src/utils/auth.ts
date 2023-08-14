@@ -53,7 +53,7 @@ export function getToken(userId: number): string {
     createdAt: Date.now(),
   };
 
-  return jwt.encode(payload, JWT_SECRET as string);
+  return jwt.encode(payload, JWT_SECRET);
 }
 
 // returns user id if token is valid
