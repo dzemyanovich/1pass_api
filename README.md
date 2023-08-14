@@ -79,7 +79,7 @@ Before running pipeline set the following env vars (variables should be **not pr
 | TWILIO_AUTH_TOKEN            | "some_value" | Required for Twilio                                   |
 | TWILIO_ACCOUNT_SID           | "some_value" | Required for Twilio                                   |
 | TWILIO_VERIFY_SID            | "some_value" | Required for Twilio                                   |
-| TF_VAR_JWT_SECRET            | "some_value" | Required for token generation                         |
+| JWT_SECRET                   | "some_value" | Required for token generation                         |
 
 > `TF_VAR_db_username` and `TF_VAR_db_password` are the same for all envs
 
