@@ -1,8 +1,9 @@
-import { getHash } from '../../utils/auth';
 import sequelizeInstance from '../config/sequelize-instance';
 import User from '../models/user';
 import SportObject from '../models/sport-object';
+import { getHash } from '../../utils/auth';
 
+// todo: use repository mode from sequelize
 export async function closeConnection(): Promise<void> {
   await sequelizeInstance.close();
 }
@@ -23,6 +24,10 @@ export async function getUserByPhone(phone: string): Promise<User> {
 
 export async function getUserByEmail(email: string): Promise<User> {
   return User.findOne({ where: { email } }) as Promise<User>;
+}
+
+export async function getUserById(id: number): Promise<User> {
+  return User.findOne({ where: { id } }) as Promise<User>;
 }
 
 export async function createUser(phone: string): Promise<User> {

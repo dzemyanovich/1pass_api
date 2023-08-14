@@ -1,8 +1,10 @@
 import { getUserByPhone, getUserByEmail, signUp } from './db/utils/repository';
+import { getToken } from './utils/auth';
 import { emailExists, phoneNotVerified, userExists, userNotFound } from './utils/errors';
 import { getErrors, validateSignUp } from './utils/validation';
 
-export async function handler(event: SignUpEvent): Promise<EventResult<void>> {
+// todo: update all tests using singUp functionality (add check for token)
+export async function handler(event: SignUpEvent): Promise<EventResult<string>> {
   const validationResult = validateSignUp(event);
   if (!validationResult.success) {
     return {
@@ -48,5 +50,6 @@ export async function handler(event: SignUpEvent): Promise<EventResult<void>> {
 
   return {
     success: true,
+    data: getToken(userByPhone.id as number),
   };
 }

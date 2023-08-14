@@ -8,7 +8,7 @@ import {
   setVerifed,
   signUp,
 } from '../lambda/src/db/utils/repository';
-import { getHash } from '../lambda/src/utils/auth';
+import { getHash, getToken } from '../lambda/src/utils/auth';
 import { userNotFound } from '../lambda/src/utils/errors';
 import { post } from './utils/rest';
 
@@ -23,7 +23,7 @@ describe('sign up + sign in + delete', () => {
   const password = 'password_1';
 
   it('user workflow', async () => {
-    const sinInFail: EventResult<void> = await post(SIGN_IN_URL, {
+    const sinInFail: EventResult<string> = await post(SIGN_IN_URL, {
       phone,
       password,
     });
@@ -46,6 +46,7 @@ describe('sign up + sign in + delete', () => {
     expect(verifiedUser.verified).toBe(true);
     expect(verifiedUser.password).toBeFalsy();
 
+    // todo: use 'sign-up' api endpoint instead of repository method
     await signUp({
       phone,
       firstName,
@@ -62,12 +63,17 @@ describe('sign up + sign in + delete', () => {
     expect(registeredUser.email).toBe(email);
     expect(registeredUser.password).toBe(getHash(password));
 
-    const sinInSuccess: EventResult<void> = await post(SIGN_IN_URL, {
+    const sinInSuccess: EventResult<string> = await post(SIGN_IN_URL, {
       phone,
       password,
     });
+    const user = await getUserByPhone(phone);
+    const token = getToken(user.id as number);
 
-    expect(sinInSuccess.success).toBe(true);
+    expect(sinInSuccess).toBe({
+      success: true,
+      data: token,
+    });
 
     await deleteUser(registeredUser.id as number);
 

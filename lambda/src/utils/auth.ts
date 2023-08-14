@@ -1,4 +1,5 @@
 import twilio from 'twilio';
+import jwt from 'jwt-simple';
 
 export async function sendCode(event: SendCodeEvent): Promise<string> {
   const { phone } = event;
@@ -38,4 +39,31 @@ export function getHash(str: string): string {
   }
 
   return hash.toString();
+}
+
+export function getToken(userId: number): string {
+  const payload: TokenData = {
+    userId,
+    createdAt: Date.now(),
+  };
+
+  return jwt.encode(payload, process.env.JWT_SECRET as string);
+}
+
+// returns user id if token is valid
+export function validateToken(token: string): number | null {
+  let payload: TokenData;
+  try {
+    payload = jwt.decode(token, process.env.JWT_SECRET as string) as TokenData;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+
+  const millisecondsPassed = Date.now() - payload.createdAt;
+  const jwtExpireMilliseconds = Number(process.env.JWT_EXPIRE_DAYS) * 1000 * 60 * 60 * 24;
+
+  return millisecondsPassed < jwtExpireMilliseconds
+    ? payload.userId
+    : null;
 }

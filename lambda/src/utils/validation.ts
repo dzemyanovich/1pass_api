@@ -59,6 +59,16 @@ export function validateSignIn(event: SignInEvent): SafeParseReturnType<SignInEv
   return schema.safeParse(event);
 }
 
+export function validateTokenEvent(
+  event: ValidateTokenEvent,
+): SafeParseReturnType<ValidateTokenEvent, ValidateTokenEvent> {
+  const schema = z.object({
+    token: z.string(),
+  });
+
+  return schema.safeParse(event);
+}
+
 export function getErrors<T>(parseResult: SafeParseReturnType<T, T>): string[] {
   const { issues } = (parseResult as Zod.SafeParseError<T>).error;
 

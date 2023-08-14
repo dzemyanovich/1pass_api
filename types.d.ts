@@ -24,10 +24,19 @@ type SignUpEvent = {
   confirmPassword: string,
 };
 
+type ValidateTokenEvent = {
+  token: string,
+};
+
 type EventResult<T> = {
   success: boolean,
   errors?: string[],
   data?: T,
+};
+
+type TokenData = {
+  userId: number,
+  createdAt: number,
 };
 
 // ************** DB ****************
