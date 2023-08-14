@@ -51,3 +51,7 @@ export function verifyCodeStatus(status: string): string {
 export function phoneNotVerified(phone: string): string {
   return `phone ${phone} is not verified`;
 }
+
+export function noEnvVar(envVarName: string): string {
+  return `process.env.${envVarName} is not set`;
+}
