@@ -6,7 +6,7 @@ import {
   getUserByPhone,
   setVerifed,
 } from '../lambda/src/db/utils/repository';
-import { getHash, getToken, validateToken } from '../lambda/src/utils/auth';
+import { getHash, getToken, getUserId } from '../lambda/src/utils/auth';
 import { userNotFound } from '../lambda/src/utils/errors';
 import { post } from './utils/rest';
 
@@ -79,7 +79,7 @@ describe('sign up + sign in + delete', () => {
     expect(validateTokenResult.success).toBe(true);
     expect(sinInSuccess.success).toBe(true);
     expect(sinInSuccess.data).toBeTruthy();
-    expect(validateToken(sinInSuccess.data as string)).toEqual(validateToken(signUpResult.data as string));
+    expect(getUserId(sinInSuccess.data as string)).toEqual(getUserId(signUpResult.data as string));
 
     await deleteUser(registeredUser.id as number);
 

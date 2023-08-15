@@ -18,7 +18,7 @@ import {
   userPasswords,
 } from '../lambda/src/db/utils/test-users';
 import { get, post } from './utils/rest';
-import { getToken, validateToken } from '../lambda/src/utils/auth';
+import { getToken, getUserId } from '../lambda/src/utils/auth';
 import { getUserByPhone } from '../lambda/src/db/utils/repository';
 
 describe('get-sport-objects', () => {
@@ -120,7 +120,7 @@ describe('sign-in', () => {
 
     expect(response.success).toBe(true);
     expect(response.data).toBeTruthy();
-    expect(validateToken(token)).toEqual(validateToken(response.data as string));
+    expect(getUserId(token)).toEqual(getUserId(response.data as string));
   }, TEST_TIMEOUT_SEC * 1000);
 
   it('phone and password are missing', async () => {

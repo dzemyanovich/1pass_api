@@ -28,7 +28,7 @@ type ValidateTokenEvent = {
   token: string,
 };
 
-type MakeBookingEvent = {
+type CreateBookingEvent = {
   token: string,
   sportObjectId: number,
 };

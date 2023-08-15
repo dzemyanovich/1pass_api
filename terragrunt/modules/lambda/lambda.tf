@@ -126,3 +126,29 @@ resource "aws_lambda_function" "validate_token_lambda" {
     variables = local.jwt_env_vars
   }
 }
+
+resource "aws_lambda_function" "create_booking_lambda" {
+  filename          = data.archive_file.lambda_zip.output_path
+  function_name     = "${var.product}-${var.env}-create-booking"
+  role              = aws_iam_role.iam_for_lambda.arn
+  handler           = "dist/create-booking.handler"
+  source_code_hash  = data.archive_file.lambda_zip.output_base64sha256
+  runtime           = local.runtime
+
+  environment {
+    variables = local.jwt_env_vars
+  }
+}
+
+resource "aws_lambda_function" "cancel_booking_lambda" {
+  filename          = data.archive_file.lambda_zip.output_path
+  function_name     = "${var.product}-${var.env}-cancel-booking"
+  role              = aws_iam_role.iam_for_lambda.arn
+  handler           = "dist/cancel-booking.handler"
+  source_code_hash  = data.archive_file.lambda_zip.output_base64sha256
+  runtime           = local.runtime
+
+  environment {
+    variables = local.jwt_env_vars
+  }
+}

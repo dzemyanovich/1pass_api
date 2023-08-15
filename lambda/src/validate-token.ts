@@ -1,5 +1,5 @@
 import { getUserById } from './db/utils/repository';
-import { validateToken } from './utils/auth';
+import { getUserId } from './utils/auth';
 import { getErrors, validateTokenEvent } from './utils/validation';
 
 export async function handler(event: ValidateTokenEvent): Promise<EventResult<void>> {
@@ -12,7 +12,7 @@ export async function handler(event: ValidateTokenEvent): Promise<EventResult<vo
   }
 
   const { token } = event;
-  const userId = validateToken(token);
+  const userId = getUserId(token);
 
   if (!userId) {
     return {

@@ -55,3 +55,23 @@ export function phoneNotVerified(phone: string): string {
 export function noEnvVar(envVarName: string): string {
   return `process.env.${envVarName} is not set`;
 }
+
+export function invalidToken(): string {
+  return 'Invalid token';
+}
+
+export function noSportObject(): string {
+  return 'Sport object does not exist';
+}
+
+export function alreadyBooked(): string {
+  return 'Sport object is already booked';
+}
+
+export function noBooking(): string {
+  return 'No booking found';
+}
+
+export function noBookingCancel(): string {
+  return 'Cannot cancel past booking';
+}

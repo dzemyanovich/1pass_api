@@ -56,8 +56,7 @@ export function getToken(userId: number): string {
   return jwt.encode(payload, JWT_SECRET);
 }
 
-// returns user id if token is valid
-export function validateToken(token: string): number | null {
+export function getUserId(token: string): number | null {
   const { JWT_SECRET, JWT_EXPIRE_DAYS } = process.env;
   if (!JWT_SECRET) {
     throw new Error(noEnvVar('JWT_SECRET'));
