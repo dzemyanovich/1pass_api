@@ -1,5 +1,4 @@
 import {
-  closeConnection,
   createUser,
   deleteUser,
   deleteUserByPhone,
@@ -94,6 +93,5 @@ describe('sign up + sign in + delete', () => {
   afterAll(async () => {
     // delete test user in case e2e test fails
     await deleteUserByPhone(phone);
-    await closeConnection();
   });
 });

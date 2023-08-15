@@ -19,7 +19,7 @@ import {
 } from '../lambda/src/db/utils/test-users';
 import { get, post } from './utils/rest';
 import { getToken, validateToken } from '../lambda/src/utils/auth';
-import { closeConnection, getUserByPhone } from '../lambda/src/db/utils/repository';
+import { getUserByPhone } from '../lambda/src/db/utils/repository';
 
 describe('get-sport-objects', () => {
   const { API_URL } = process.env;
@@ -150,10 +150,6 @@ describe('sign-in', () => {
 
     expect(response.success).toBe(false);
     expect(response.errors).toContain(userNotFound());
-  });
-
-  afterAll(async () => {
-    await closeConnection();
   });
 });
 
@@ -332,9 +328,5 @@ describe('validate-token', () => {
 
     expect(response.success).toBe(false);
     expect(response.errors).toContain(required('token'));
-  });
-
-  afterAll(async () => {
-    await closeConnection();
   });
 });

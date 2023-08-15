@@ -69,6 +69,17 @@ export function validateTokenEvent(
   return schema.safeParse(event);
 }
 
+export function validateMakeBooking(
+  event: MakeBookingEvent,
+): SafeParseReturnType<MakeBookingEvent, MakeBookingEvent> {
+  const schema = z.object({
+    token: z.string(),
+    sportObjectId: z.number(),
+  });
+
+  return schema.safeParse(event);
+}
+
 export function getErrors<T>(parseResult: SafeParseReturnType<T, T>): string[] {
   const { issues } = (parseResult as Zod.SafeParseError<T>).error;
 

@@ -3,10 +3,6 @@ import User from '../models/user';
 import SportObject from '../models/sport-object';
 import { getHash } from '../../utils/auth';
 
-export async function closeConnection(): Promise<void> {
-  await sequelizeInstance.close();
-}
-
 /************************* USER *************************/
 
 export async function setVerifed(phone: string, verified: boolean): Promise<[affectedCount: number]> {

@@ -28,6 +28,11 @@ type ValidateTokenEvent = {
   token: string,
 };
 
+type MakeBookingEvent = {
+  token: string,
+  sportObjectId: number,
+};
+
 type EventResult<T> = {
   success: boolean,
   errors?: string[],
