@@ -80,6 +80,17 @@ export function validateMakeBooking(
   return schema.safeParse(event);
 }
 
+export function validateCancelBooking(
+  event: CancelBookingEvent,
+): SafeParseReturnType<CancelBookingEvent, CancelBookingEvent> {
+  const schema = z.object({
+    token: z.string(),
+    bookingId: z.number(),
+  });
+
+  return schema.safeParse(event);
+}
+
 export function getErrors<T>(parseResult: SafeParseReturnType<T, T>): string[] {
   const { issues } = (parseResult as Zod.SafeParseError<T>).error;
 

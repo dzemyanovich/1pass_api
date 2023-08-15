@@ -33,6 +33,11 @@ type MakeBookingEvent = {
   sportObjectId: number,
 };
 
+type CancelBookingEvent = {
+  token: string,
+  bookingId: number,
+};
+
 type EventResult<T> = {
   success: boolean,
   errors?: string[],
