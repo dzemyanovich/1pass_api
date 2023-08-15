@@ -278,3 +278,63 @@ describe('sign-up', () => {
     expect(response.errors).toContain(userNotFound());
   });
 });
+
+describe('validate-token', () => {
+  const { API_URL } = process.env;
+  const VALIDATE_TOKEN_URL = `${API_URL}/validate-token`;
+
+  it('success', async () => {
+    const { phone } = registeredUser;
+    const user = await getUserByPhone(phone);
+    const token = getToken(user.id as number);
+
+    const response: EventResult<void> = await post(VALIDATE_TOKEN_URL, {
+      token,
+    });
+
+    expect(response.success).toBe(true);
+  });
+
+  it('fail (not verified user)', async () => {
+    const { phone } = notVerifiedUser;
+    const user = await getUserByPhone(phone);
+    const token = getToken(user.id as number);
+
+    const response: EventResult<void> = await post(VALIDATE_TOKEN_URL, {
+      token,
+    });
+
+    expect(response.success).toBe(false);
+  });
+
+  it('fail (verified user)', async () => {
+    const { phone } = verifiedUser;
+    const user = await getUserByPhone(phone);
+    const token = getToken(user.id as number);
+
+    const response: EventResult<void> = await post(VALIDATE_TOKEN_URL, {
+      token,
+    });
+
+    expect(response.success).toBe(false);
+  });
+
+  it('fail (invalid token)', async () => {
+    const response: EventResult<void> = await post(VALIDATE_TOKEN_URL, {
+      token: 'anything',
+    });
+
+    expect(response.success).toBe(false);
+  });
+
+  it('fail (token missing)', async () => {
+    const response: EventResult<void> = await post(VALIDATE_TOKEN_URL, {});
+
+    expect(response.success).toBe(false);
+    expect(response.errors).toContain(required('token'));
+  });
+
+  afterAll(async () => {
+    await closeConnection();
+  });
+});

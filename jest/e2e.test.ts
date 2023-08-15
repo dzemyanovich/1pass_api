@@ -16,6 +16,7 @@ describe('sign up + sign in + delete', () => {
   const { API_URL } = process.env;
   const SIGN_IN_URL = `${API_URL}/sign-in`;
   const SIGN_UP_URL = `${API_URL}/sign-up`;
+  const VALIDATE_TOKEN_URL = `${API_URL}/validate-token`;
   const phone = '+12025550156';
   const email = '12025550156@gmail.com';
   const firstName = 'any';
@@ -71,12 +72,15 @@ describe('sign up + sign in + delete', () => {
     });
     const user = await getUserByPhone(phone);
     const token = getToken(user.id as number);
-    const userId = validateToken(token);
 
+    const validateTokenResult: EventResult<void> = await post(VALIDATE_TOKEN_URL, {
+      token,
+    });
+
+    expect(validateTokenResult.success).toBe(true);
     expect(sinInSuccess.success).toBe(true);
     expect(sinInSuccess.data).toBeTruthy();
-    expect(userId).toEqual(validateToken(sinInSuccess.data as string));
-    expect(userId).toEqual(validateToken(signUpResult.data as string));
+    expect(validateToken(sinInSuccess.data as string)).toEqual(validateToken(signUpResult.data as string));
 
     await deleteUser(registeredUser.id as number);
 
