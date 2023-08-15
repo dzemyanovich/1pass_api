@@ -1,4 +1,5 @@
 locals {
+  runtime = "nodejs18.x"
   base_env_vars = {
     NODE_ENV            = var.env
     PREPROD_DB_USERNAME = var.PREPROD_DB_USERNAME
@@ -52,7 +53,7 @@ resource "aws_lambda_function" "get_sport_objects_lambda" {
   role              = aws_iam_role.iam_for_lambda.arn
   handler           = "dist/get-sport-objects.handler"
   source_code_hash  = data.archive_file.lambda_zip.output_base64sha256
-  runtime           = "nodejs18.x"
+  runtime           = local.runtime
 
   environment {
     variables = local.base_env_vars
@@ -65,7 +66,7 @@ resource "aws_lambda_function" "auth_send_code_lambda" {
   role              = aws_iam_role.iam_for_lambda.arn
   handler           = "dist/auth-send-code.handler"
   source_code_hash  = data.archive_file.lambda_zip.output_base64sha256
-  runtime           = "nodejs18.x"
+  runtime           = local.runtime
   timeout           = 10
 
   environment {
@@ -79,7 +80,7 @@ resource "aws_lambda_function" "auth_verify_code_lambda" {
   role              = aws_iam_role.iam_for_lambda.arn
   handler           = "dist/auth-verify-code.handler"
   source_code_hash  = data.archive_file.lambda_zip.output_base64sha256
-  runtime           = "nodejs18.x"
+  runtime           = local.runtime
   timeout           = 10
 
   environment {
@@ -93,7 +94,7 @@ resource "aws_lambda_function" "sign_in_lambda" {
   role              = aws_iam_role.iam_for_lambda.arn
   handler           = "dist/sign-in.handler"
   source_code_hash  = data.archive_file.lambda_zip.output_base64sha256
-  runtime           = "nodejs18.x"
+  runtime           = local.runtime
 
   environment {
     variables = local.jwt_env_vars
@@ -106,7 +107,20 @@ resource "aws_lambda_function" "sign_up_lambda" {
   role              = aws_iam_role.iam_for_lambda.arn
   handler           = "dist/sign-up.handler"
   source_code_hash  = data.archive_file.lambda_zip.output_base64sha256
-  runtime           = "nodejs18.x"
+  runtime           = local.runtime
+
+  environment {
+    variables = local.jwt_env_vars
+  }
+}
+
+resource "aws_lambda_function" "validate_token_lambda" {
+  filename          = data.archive_file.lambda_zip.output_path
+  function_name     = "${var.product}-${var.env}-validate-token"
+  role              = aws_iam_role.iam_for_lambda.arn
+  handler           = "dist/validate-token.handler"
+  source_code_hash  = data.archive_file.lambda_zip.output_base64sha256
+  runtime           = local.runtime
 
   environment {
     variables = local.jwt_env_vars
