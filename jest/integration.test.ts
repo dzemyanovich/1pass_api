@@ -104,12 +104,12 @@ describe('auth-verify-code', () => {
   });
 });
 
-describe.only('sign-in', () => {
+describe('sign-in', () => {
   const TEST_TIMEOUT_SEC = 10;
   const { API_URL } = process.env;
   const SIGN_IN_URL = `${API_URL}/sign-in`;
 
-  it.only('success', async () => {
+  it('success', async () => {
     const { phone } = registeredUser;
     const response: EventResult<string> = await post(SIGN_IN_URL, {
       phone,
