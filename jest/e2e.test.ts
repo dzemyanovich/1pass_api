@@ -12,7 +12,7 @@ import { userNotFound } from '../lambda/src/utils/errors';
 import { post } from './utils/rest';
 
 describe('sign up + sign in + delete', () => {
-  const TEST_TIMEOUT_SEC = 10;
+  const TEST_TIMEOUT_SEC = 20;
   const { API_URL } = process.env;
   const SIGN_IN_URL = `${API_URL}/sign-in`;
   const SIGN_UP_URL = `${API_URL}/sign-up`;
