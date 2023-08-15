@@ -23,6 +23,6 @@ export async function handler(event: ValidateTokenEvent): Promise<EventResult<vo
   const user = await getUserById(userId);
 
   return {
-    success: !!user,
+    success: !!user && !!user.password,
   };
 }

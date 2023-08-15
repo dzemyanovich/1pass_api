@@ -15,7 +15,7 @@ import {
   verifiedUser,
   registeredUser,
   notVerifiedUser,
-  registeredUserPassword,
+  userPasswords,
 } from '../lambda/src/db/utils/test-users';
 import { get, post } from './utils/rest';
 import { getToken, validateToken } from '../lambda/src/utils/auth';
@@ -23,10 +23,10 @@ import { closeConnection, getUserByPhone } from '../lambda/src/db/utils/reposito
 
 describe('get-sport-objects', () => {
   const { API_URL } = process.env;
-  const URL = `${API_URL}/get-sport-objects`;
+  const SPORT_OBJECTS_URL = `${API_URL}/get-sport-objects`;
 
   it('gets all sport objects', async () => {
-    const response: SportObjectVM[] = await get(URL);
+    const response: SportObjectVM[] = await get(SPORT_OBJECTS_URL);
 
     expect(response.length).toBeGreaterThan(0);
   });
@@ -34,17 +34,17 @@ describe('get-sport-objects', () => {
 
 describe('auth-send-code', () => {
   const { API_URL } = process.env;
-  const URL = `${API_URL}/auth-send-code`;
+  const SEND_CODE_URL = `${API_URL}/auth-send-code`;
 
   it('phone is missing', async () => {
-    const response: EventResult<string> = await post(URL, {});
+    const response: EventResult<string> = await post(SEND_CODE_URL, {});
 
     expect(response.success).toBe(false);
     expect(response.errors).toContain(required('phone'));
   });
 
   it('invalid phone (short string)', async () => {
-    const response: EventResult<string> = await post(URL, {
+    const response: EventResult<string> = await post(SEND_CODE_URL, {
       phone: '543',
     });
 
@@ -53,7 +53,7 @@ describe('auth-send-code', () => {
   });
 
   it('invalid phone (number instead of string)', async () => {
-    const response: EventResult<string> = await post(URL, {
+    const response: EventResult<string> = await post(SEND_CODE_URL, {
       phone: 142 as unknown as string,
     });
 
@@ -64,10 +64,10 @@ describe('auth-send-code', () => {
 
 describe('auth-verify-code', () => {
   const { API_URL } = process.env;
-  const URL = `${API_URL}/auth-verify-code`;
+  const VERIFY_CODE_URL = `${API_URL}/auth-verify-code`;
 
   it('phone is missing', async () => {
-    const response: EventResult<string> = await post(URL, {
+    const response: EventResult<string> = await post(VERIFY_CODE_URL, {
       code: 'some_code',
     });
 
@@ -76,7 +76,7 @@ describe('auth-verify-code', () => {
   });
 
   it('code is missing', async () => {
-    const response: EventResult<string> = await post(URL, {
+    const response: EventResult<string> = await post(VERIFY_CODE_URL, {
       phone: '+375333366883',
     });
 
@@ -85,7 +85,7 @@ describe('auth-verify-code', () => {
   });
 
   it('phone and code are missing', async () => {
-    const response: EventResult<string> = await post(URL, {});
+    const response: EventResult<string> = await post(VERIFY_CODE_URL, {});
 
     expect(response.success).toBe(false);
     expect(response.errors).toContain(required('phone'));
@@ -93,7 +93,7 @@ describe('auth-verify-code', () => {
   });
 
   it('invalid phone and code', async () => {
-    const response: EventResult<string> = await post(URL, {
+    const response: EventResult<string> = await post(VERIFY_CODE_URL, {
       phone: 'string',
       code: null,
     });
@@ -104,16 +104,16 @@ describe('auth-verify-code', () => {
   });
 });
 
-describe('sign-in', () => {
+describe.only('sign-in', () => {
   const TEST_TIMEOUT_SEC = 10;
   const { API_URL } = process.env;
-  const URL = `${API_URL}/sign-in`;
+  const SIGN_IN_URL = `${API_URL}/sign-in`;
 
-  it('success', async () => {
+  it.only('success', async () => {
     const { phone } = registeredUser;
-    const response: EventResult<string> = await post(URL, {
+    const response: EventResult<string> = await post(SIGN_IN_URL, {
       phone,
-      password: registeredUserPassword,
+      password: userPasswords[phone],
     });
     const user = await getUserByPhone(phone);
     const token = getToken(user.id as number);
@@ -124,7 +124,7 @@ describe('sign-in', () => {
   }, TEST_TIMEOUT_SEC * 1000);
 
   it('phone and password are missing', async () => {
-    const response: EventResult<string> = await post(URL, {});
+    const response: EventResult<string> = await post(SIGN_IN_URL, {});
 
     expect(response.success).toBe(false);
     expect(response.errors).toContain(required('phone'));
@@ -132,7 +132,7 @@ describe('sign-in', () => {
   });
 
   it('invalid data', async () => {
-    const response: EventResult<string> = await post(URL, {
+    const response: EventResult<string> = await post(SIGN_IN_URL, {
       phone: '12412',
       password: true,
     });
@@ -143,7 +143,7 @@ describe('sign-in', () => {
   });
 
   it('user not found', async () => {
-    const response: EventResult<string> = await post(URL, {
+    const response: EventResult<string> = await post(SIGN_IN_URL, {
       phone: '+12025550181',
       password: 'some_password',
     });
@@ -159,12 +159,12 @@ describe('sign-in', () => {
 
 describe('sign-up', () => {
   const { API_URL } = process.env;
-  const URL = `${API_URL}/sign-up`;
+  const SIGN_UP_URL = `${API_URL}/sign-up`;
 
   it('user already exists', async () => {
     const { phone } = registeredUser;
 
-    const response: EventResult<string> = await post(URL, {
+    const response: EventResult<string> = await post(SIGN_UP_URL, {
       phone,
       firstName: 'John',
       lastName: 'Smith',
@@ -181,7 +181,7 @@ describe('sign-up', () => {
   it('phone not verified', async () => {
     const { phone } = notVerifiedUser;
 
-    const response: EventResult<string> = await post(URL, {
+    const response: EventResult<string> = await post(SIGN_UP_URL, {
       phone,
       firstName: 'John',
       lastName: 'Smith',
@@ -198,7 +198,7 @@ describe('sign-up', () => {
   it('email already exists', async () => {
     const { email } = registeredUser;
 
-    const response: EventResult<string> = await post(URL, {
+    const response: EventResult<string> = await post(SIGN_UP_URL, {
       phone: verifiedUser?.phone,
       firstName: 'any',
       lastName: 'any',
@@ -213,7 +213,7 @@ describe('sign-up', () => {
   });
 
   it('all data is missing', async () => {
-    const response: EventResult<string> = await post(URL, {});
+    const response: EventResult<string> = await post(SIGN_UP_URL, {});
 
     expect(response.success).toBe(false);
     expect(response.errors).toContain(required('phone'));
@@ -226,7 +226,7 @@ describe('sign-up', () => {
   });
 
   it('invalid data', async () => {
-    const response: EventResult<string> = await post(URL, {
+    const response: EventResult<string> = await post(SIGN_UP_URL, {
       phone: '123',
       firstName: 123,
       lastName: true,
@@ -247,7 +247,7 @@ describe('sign-up', () => {
   });
 
   it('invalid data (email and password do not match)', async () => {
-    const response: EventResult<string> = await post(URL, {
+    const response: EventResult<string> = await post(SIGN_UP_URL, {
       phone: '+375333366889a',
       firstName: 'John',
       lastName: 'Smith',
@@ -264,7 +264,7 @@ describe('sign-up', () => {
   });
 
   it('user not found', async () => {
-    const response: EventResult<string> = await post(URL, {
+    const response: EventResult<string> = await post(SIGN_UP_URL, {
       phone: '+375333366889',
       firstName: 'John',
       lastName: 'Smith',
