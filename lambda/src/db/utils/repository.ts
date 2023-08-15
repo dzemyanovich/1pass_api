@@ -1,4 +1,4 @@
-import sequelizeInstance from '../config/sequelize-instance';
+import '../config/sequelize-instance'; // init sequelize
 import User from '../models/user';
 import SportObject from '../models/sport-object';
 import { getHash } from '../../utils/auth';
