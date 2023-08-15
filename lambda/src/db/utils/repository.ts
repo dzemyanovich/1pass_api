@@ -3,7 +3,6 @@ import User from '../models/user';
 import SportObject from '../models/sport-object';
 import { getHash } from '../../utils/auth';
 
-// todo: use repository mode from sequelize
 export async function closeConnection(): Promise<void> {
   await sequelizeInstance.close();
 }

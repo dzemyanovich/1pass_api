@@ -78,7 +78,10 @@
     "tedious": "^16.2.0",
     "ts-jest": "^29.1.1",
     "ts-node": "^10.9.1",
-    "typescript": "^5.1.6"
+    "twilio": "^4.15.0",
+    "typescript": "^5.1.6",
+    "validator": "^13.11.0",
+    "zod": "^3.22.0"
   },
   "dependencies": {
     "axios": "^1.4.0"
