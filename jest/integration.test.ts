@@ -21,10 +21,15 @@ import { get, post } from './utils/rest';
 import { getToken, getUserId } from '../lambda/src/utils/auth';
 import { getUserByPhone } from '../lambda/src/db/utils/repository';
 
-describe('get-sport-objects', () => {
-  const { API_URL } = process.env;
-  const SPORT_OBJECTS_URL = `${API_URL}/get-sport-objects`;
+const { API_URL } = process.env;
+const SIGN_IN_URL = `${API_URL}/sign-in`;
+const SIGN_UP_URL = `${API_URL}/sign-up`;
+const SPORT_OBJECTS_URL = `${API_URL}/get-sport-objects`;
+const VALIDATE_TOKEN_URL = `${API_URL}/validate-token`;
+const SEND_CODE_URL = `${API_URL}/auth-send-code`;
+const VERIFY_CODE_URL = `${API_URL}/auth-verify-code`;
 
+describe('get-sport-objects', () => {
   it('gets all sport objects', async () => {
     const response: SportObjectVM[] = await get(SPORT_OBJECTS_URL);
 
@@ -33,9 +38,6 @@ describe('get-sport-objects', () => {
 });
 
 describe('auth-send-code', () => {
-  const { API_URL } = process.env;
-  const SEND_CODE_URL = `${API_URL}/auth-send-code`;
-
   it('phone is missing', async () => {
     const response: EventResult<string> = await post(SEND_CODE_URL, {});
 
@@ -63,9 +65,6 @@ describe('auth-send-code', () => {
 });
 
 describe('auth-verify-code', () => {
-  const { API_URL } = process.env;
-  const VERIFY_CODE_URL = `${API_URL}/auth-verify-code`;
-
   it('phone is missing', async () => {
     const response: EventResult<string> = await post(VERIFY_CODE_URL, {
       code: 'some_code',
@@ -106,8 +105,6 @@ describe('auth-verify-code', () => {
 
 describe('sign-in', () => {
   const TEST_TIMEOUT_SEC = 10;
-  const { API_URL } = process.env;
-  const SIGN_IN_URL = `${API_URL}/sign-in`;
 
   it('success', async () => {
     const { phone } = registeredUser;
@@ -154,9 +151,6 @@ describe('sign-in', () => {
 });
 
 describe('sign-up', () => {
-  const { API_URL } = process.env;
-  const SIGN_UP_URL = `${API_URL}/sign-up`;
-
   it('user already exists', async () => {
     const { phone } = registeredUser;
 
@@ -276,9 +270,6 @@ describe('sign-up', () => {
 });
 
 describe('validate-token', () => {
-  const { API_URL } = process.env;
-  const VALIDATE_TOKEN_URL = `${API_URL}/validate-token`;
-
   it('success', async () => {
     const { phone } = registeredUser;
     const user = await getUserByPhone(phone);

@@ -1,28 +1,35 @@
+import Booking from '../lambda/src/db/models/booking';
 import {
   createUser,
   deleteUser,
   deleteUserByPhone,
+  getBookingById,
   getUserByEmail,
   getUserByPhone,
   setVerifed,
 } from '../lambda/src/db/utils/repository';
+import { registeredUser, userPasswords } from '../lambda/src/db/utils/test-users';
 import { getHash, getToken, getUserId } from '../lambda/src/utils/auth';
 import { userNotFound } from '../lambda/src/utils/errors';
-import { post } from './utils/rest';
+import { get, post } from './utils/rest';
 
-describe('sign up + sign in + delete', () => {
-  const TEST_TIMEOUT_SEC = 20;
-  const { API_URL } = process.env;
-  const SIGN_IN_URL = `${API_URL}/sign-in`;
-  const SIGN_UP_URL = `${API_URL}/sign-up`;
-  const VALIDATE_TOKEN_URL = `${API_URL}/validate-token`;
+const { API_URL } = process.env;
+const SIGN_IN_URL = `${API_URL}/sign-in`;
+const SIGN_UP_URL = `${API_URL}/sign-up`;
+const SPORT_OBJECTS_URL = `${API_URL}/get-sport-objects`;
+const VALIDATE_TOKEN_URL = `${API_URL}/validate-token`;
+const CREATE_BOOKING_URL = `${API_URL}/create-booking`;
+const CANCEL_BOOKING_URL = `${API_URL}/cancel-booking`;
+const TEST_TIMEOUT_SEC = 20;
+
+describe('user workflow', () => {
   const phone = '+12025550156';
   const email = '12025550156@gmail.com';
   const firstName = 'any';
   const lastName = 'any';
   const password = 'password_1';
 
-  it('user workflow', async () => {
+  it('sign up + sign in + delete', async () => {
     const sinInFail: EventResult<string> = await post(SIGN_IN_URL, {
       phone,
       password,
@@ -59,11 +66,11 @@ describe('sign up + sign in + delete', () => {
     expect(signUpResult.success).toBe(true);
     expect(signUpResult.data).toBeTruthy();
 
-    const registeredUser = await getUserByPhone(phone);
-    expect(registeredUser.firstName).toBe(firstName);
-    expect(registeredUser.lastName).toBe(lastName);
-    expect(registeredUser.email).toBe(email);
-    expect(registeredUser.password).toBe(getHash(password));
+    const newUser = await getUserByPhone(phone);
+    expect(newUser.firstName).toBe(firstName);
+    expect(newUser.lastName).toBe(lastName);
+    expect(newUser.email).toBe(email);
+    expect(newUser.password).toBe(getHash(password));
 
     const sinInSuccess: EventResult<string> = await post(SIGN_IN_URL, {
       phone,
@@ -81,7 +88,7 @@ describe('sign up + sign in + delete', () => {
     expect(sinInSuccess.data).toBeTruthy();
     expect(getUserId(sinInSuccess.data as string)).toEqual(getUserId(signUpResult.data as string));
 
-    await deleteUser(registeredUser.id as number);
+    await deleteUser(newUser.id as number);
 
     const userByPhone = await getUserByPhone(phone);
     const userByEmail = await getUserByEmail(email);
@@ -94,4 +101,36 @@ describe('sign up + sign in + delete', () => {
     // delete test user in case e2e test fails
     await deleteUserByPhone(phone);
   });
+});
+
+describe('booking workflow', () => {
+  it('create + delete booking', async () => {
+    const { phone } = registeredUser;
+    const signInResponse: EventResult<string> = await post(SIGN_IN_URL, {
+      phone,
+      password: userPasswords[phone],
+    });
+
+    const sportObjects: SportObjectVM[] = await get(SPORT_OBJECTS_URL);
+
+    const createBookingResponse: EventResult<number> = await post(CREATE_BOOKING_URL, {
+      token: signInResponse.data,
+      sportObjectId: sportObjects[0].id,
+    });
+    const bookingId = createBookingResponse.data;
+    const newBooking = (await getBookingById(bookingId as number)) as Booking;
+
+    expect(createBookingResponse.success).toBe(true);
+    expect(typeof bookingId).toBe('number');
+    expect(newBooking.id).toEqual(bookingId);
+
+    const cancelBookingResponse: EventResult<void> = await post(CANCEL_BOOKING_URL, {
+      token: signInResponse.data,
+      bookingId,
+    });
+    const deletedBooking = await getBookingById(bookingId as number);
+
+    expect(cancelBookingResponse.success).toBe(true);
+    expect(deletedBooking).toBeNull();
+  }, TEST_TIMEOUT_SEC * 1000);
 });
