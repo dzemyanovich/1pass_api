@@ -3,11 +3,15 @@ import {
   emailExists,
   invalidEmail,
   invalidInput,
+  invalidToken,
+  noBooking,
+  noSportObject,
+  numberButString,
   phoneNotVerified,
   required,
   stringButBoolean,
   stringButNull,
-  stringNotNumber,
+  stringButNumber,
   userExists,
   userNotFound,
 } from '../lambda/src/utils/errors';
@@ -28,6 +32,8 @@ const SPORT_OBJECTS_URL = `${API_URL}/get-sport-objects`;
 const VALIDATE_TOKEN_URL = `${API_URL}/validate-token`;
 const SEND_CODE_URL = `${API_URL}/auth-send-code`;
 const VERIFY_CODE_URL = `${API_URL}/auth-verify-code`;
+const CREATE_BOOKING_URL = `${API_URL}/create-booking`;
+const CANCEL_BOOKING_URL = `${API_URL}/cancel-booking`;
 
 describe('get-sport-objects', () => {
   it('gets all sport objects', async () => {
@@ -60,7 +66,7 @@ describe('auth-send-code', () => {
     });
 
     expect(response.success).toBe(false);
-    expect(response.errors).toContain(stringNotNumber('phone'));
+    expect(response.errors).toContain(stringButNumber('phone'));
   });
 });
 
@@ -228,12 +234,12 @@ describe('sign-up', () => {
 
     expect(response.success).toBe(false);
     expect(response.errors).toContain(invalidInput('phone'));
-    expect(response.errors).toContain(stringNotNumber('firstName'));
+    expect(response.errors).toContain(stringButNumber('firstName'));
     expect(response.errors).toContain(stringButBoolean('lastName'));
     expect(response.errors).toContain(invalidEmail('email'));
     expect(response.errors).toContain(invalidEmail('confirmEmail'));
-    expect(response.errors).toContain(stringNotNumber('password'));
-    expect(response.errors).toContain(stringNotNumber('confirmPassword'));
+    expect(response.errors).toContain(stringButNumber('password'));
+    expect(response.errors).toContain(stringButNumber('confirmPassword'));
   });
 
   it('invalid data (email and password do not match)', async () => {
@@ -319,5 +325,101 @@ describe('validate-token', () => {
 
     expect(response.success).toBe(false);
     expect(response.errors).toContain(required('token'));
+  });
+});
+
+describe('create-booking', () => {
+  it('invalid types', async () => {
+    const response: EventResult<number> = await post(CREATE_BOOKING_URL, {
+      token: 1,
+      sportObjectId: 'asdf',
+    });
+
+    expect(response.success).toBe(false);
+    expect(response.errors).toContain(stringButNumber('token'));
+    expect(response.errors).toContain(numberButString('sportObjectId'));
+  });
+
+  it('data missting', async () => {
+    const response: EventResult<number> = await post(CREATE_BOOKING_URL, {});
+
+    expect(response.success).toBe(false);
+    expect(response.errors).toContain(required('token'));
+    expect(response.errors).toContain(required('sportObjectId'));
+  });
+
+  it('invalid token', async () => {
+    const response: EventResult<number> = await post(CREATE_BOOKING_URL, {
+      token: 'anything',
+      sportObjectId: 1,
+    });
+
+    expect(response.success).toBe(false);
+    expect(response.errors).toContain(invalidToken());
+  });
+
+  it('no sport object', async () => {
+    const { phone } = registeredUser;
+    const signInResponse: EventResult<string> = await post(SIGN_IN_URL, {
+      phone,
+      password: userPasswords[phone],
+    });
+
+    const response: EventResult<number> = await post(CREATE_BOOKING_URL, {
+      token: signInResponse.data,
+      sportObjectId: -124,
+    });
+
+    expect(response.success).toBe(false);
+    expect(response.errors).toContain(noSportObject());
+  });
+});
+
+describe('cancel-booking', () => {
+  it('invalid types', async () => {
+    const response: EventResult<number> = await post(CANCEL_BOOKING_URL, {
+      token: 1,
+      bookingId: 'asdf',
+    });
+
+    expect(response.success).toBe(false);
+    expect(response.errors).toContain(stringButNumber('token'));
+    expect(response.errors).toContain(numberButString('bookingId'));
+  });
+
+  it('data missting', async () => {
+    const response: EventResult<number> = await post(CANCEL_BOOKING_URL, {});
+
+    expect(response.success).toBe(false);
+    expect(response.errors).toContain(required('token'));
+    expect(response.errors).toContain(required('bookingId'));
+  });
+
+  it('invalid token', async () => {
+    const response: EventResult<number> = await post(CANCEL_BOOKING_URL, {
+      token: 'anything',
+      bookingId: 344,
+    });
+
+    expect(response.success).toBe(false);
+    expect(response.errors).toContain(invalidToken());
+  });
+
+  it('no booking', async () => {
+    const { phone } = registeredUser;
+    const signInResponse: EventResult<string> = await post(SIGN_IN_URL, {
+      phone,
+      password: userPasswords[phone],
+    });
+
+    const token = signInResponse.data;
+
+    const response: EventResult<number> = await post(CANCEL_BOOKING_URL, {
+      token,
+      bookingId: -343,
+    });
+
+    expect(response.success).toBe(false);
+    expect(response.errors).toContain(noBooking());
   });
 });

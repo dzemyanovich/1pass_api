@@ -1,16 +1,19 @@
 import Booking from '../lambda/src/db/models/booking';
 import {
+  confirmVisit,
   createUser,
+  deleteBooking,
   deleteUser,
   deleteUserByPhone,
   getBookingById,
+  getTodayBooking,
   getUserByEmail,
   getUserByPhone,
   setVerifed,
 } from '../lambda/src/db/utils/repository';
 import { registeredUser, userPasswords } from '../lambda/src/db/utils/test-users';
 import { getHash, getToken, getUserId } from '../lambda/src/utils/auth';
-import { userNotFound } from '../lambda/src/utils/errors';
+import { alreadyBooked, pastBooking, userNotFound } from '../lambda/src/utils/errors';
 import { get, post } from './utils/rest';
 
 const { API_URL } = process.env;
@@ -98,12 +101,13 @@ describe('user workflow', () => {
   }, TEST_TIMEOUT_SEC * 1000);
 
   afterAll(async () => {
-    // delete test user in case e2e test fails
     await deleteUserByPhone(phone);
   });
 });
 
 describe('booking workflow', () => {
+  let bookingId: number;
+
   it('create + delete booking', async () => {
     const { phone } = registeredUser;
     const signInResponse: EventResult<string> = await post(SIGN_IN_URL, {
@@ -112,25 +116,135 @@ describe('booking workflow', () => {
     });
 
     const sportObjects: SportObjectVM[] = await get(SPORT_OBJECTS_URL);
+    const sportObjectId = sportObjects[0].id;
 
     const createBookingResponse: EventResult<number> = await post(CREATE_BOOKING_URL, {
       token: signInResponse.data,
-      sportObjectId: sportObjects[0].id,
+      sportObjectId,
     });
-    const bookingId = createBookingResponse.data;
-    const newBooking = (await getBookingById(bookingId as number)) as Booking;
+    bookingId = createBookingResponse.data as number;
+    const newBooking = (await getBookingById(bookingId)) as Booking;
 
     expect(createBookingResponse.success).toBe(true);
     expect(typeof bookingId).toBe('number');
     expect(newBooking.id).toEqual(bookingId);
+    expect(newBooking).toMatchObject({
+      id: bookingId,
+      userId: expect.any(Number),
+      sportObjectId,
+      bookingTime: expect.any(Date),
+      visitTime: null,
+    });
 
     const cancelBookingResponse: EventResult<void> = await post(CANCEL_BOOKING_URL, {
       token: signInResponse.data,
       bookingId,
     });
-    const deletedBooking = await getBookingById(bookingId as number);
+    const deletedBooking = await getBookingById(bookingId);
 
     expect(cancelBookingResponse.success).toBe(true);
     expect(deletedBooking).toBeNull();
   }, TEST_TIMEOUT_SEC * 1000);
+
+  afterAll(async () => {
+    if (bookingId) {
+      await deleteBooking(bookingId);
+    }
+  });
+});
+
+// todo: test fails
+describe.only('create-booking', () => {
+  const bookingIds: number[] = [];
+
+  it('already booked', async () => {
+    const { phone } = registeredUser;
+    const signInResponse: EventResult<string> = await post(SIGN_IN_URL, {
+      phone,
+      password: userPasswords[phone],
+    });
+    const sportObjects: SportObjectVM[] = await get(SPORT_OBJECTS_URL);
+    const sportObjectId = sportObjects[0].id;
+    const token = signInResponse.data;
+
+    const successResponse: EventResult<number> = await post(CREATE_BOOKING_URL, {
+      token,
+      sportObjectId,
+    });
+    const bookingId = successResponse.data as number;
+    if (bookingId) {
+      bookingIds.push(bookingId);
+    }
+
+    expect(successResponse).toMatchObject({
+      success: true,
+      data: expect.any(Number),
+    });
+
+    const failResponse: EventResult<number> = await post(CREATE_BOOKING_URL, {
+      token,
+      sportObjectId,
+    });
+
+    if (failResponse.data) {
+      bookingIds.push(failResponse.data);
+    }
+
+    expect(failResponse.success).toBe(false);
+    expect(failResponse.errors).toContain(alreadyBooked());
+
+    await deleteBooking(bookingId);
+  });
+
+  afterAll(async () => {
+    for (const bookingId of bookingIds) {
+      await deleteBooking(bookingId);
+    }
+  });
+});
+
+// todo: test does not work
+describe('cancel-booking -> already visited', () => {
+  let bookingId: number;
+
+  it('cannot cancel past booking: already visited', async () => {
+    const { phone } = registeredUser;
+    const signInResponse: EventResult<string> = await post(SIGN_IN_URL, {
+      phone,
+      password: userPasswords[phone],
+    });
+    const sportObjects: SportObjectVM[] = await get(SPORT_OBJECTS_URL);
+    const sportObjectId = sportObjects[0].id;
+    const token = signInResponse.data;
+
+    const successResponse: EventResult<number> = await post(CREATE_BOOKING_URL, {
+      token,
+      sportObjectId,
+    });
+    bookingId = successResponse.data as number;
+
+    expect(successResponse).toMatchObject({
+      success: true,
+      data: expect.any(Number),
+    });
+
+    const confirmVisitResult = await confirmVisit(bookingId);
+    expect(confirmVisitResult).toBe([1]);
+
+    const response: EventResult<number> = await post(CANCEL_BOOKING_URL, {
+      token,
+      bookingId,
+    });
+
+    expect(response.success).toBe(false);
+    expect(response.errors).toContain(pastBooking());
+
+    await deleteBooking(bookingId);
+  });
+
+  afterAll(async () => {
+    if (bookingId) {
+      await deleteBooking(bookingId);
+    }
+  });
 });

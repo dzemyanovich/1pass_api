@@ -12,7 +12,7 @@ export function invalidInput(fieldName: string): string {
   return `${fieldName}: Invalid input`;
 }
 
-export function stringNotNumber(fieldName: string): string {
+export function stringButNumber(fieldName: string): string {
   return `${fieldName}: Expected string, received number`;
 }
 
@@ -22,6 +22,10 @@ export function stringButNull(fieldName: string): string {
 
 export function stringButBoolean(fieldName: string): string {
   return `${fieldName}: Expected string, received boolean`;
+}
+
+export function numberButString(fieldName: string): string {
+  return `${fieldName}: Expected number, received string`;
 }
 
 export function userNotFound(): string {
@@ -72,6 +76,6 @@ export function noBooking(): string {
   return 'No booking found';
 }
 
-export function noBookingCancel(): string {
+export function pastBooking(): string {
   return 'Cannot cancel past booking';
 }

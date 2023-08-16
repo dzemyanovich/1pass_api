@@ -86,6 +86,14 @@ export async function createBooking(userId: number, sportObjectId: number): Prom
   });
 }
 
+export async function confirmVisit(bookingId: number): Promise<[affectedCount: number]> {
+  return Booking.update({ visitTime: new Date() }, {
+    where: {
+      bookingId,
+    },
+  });
+}
+
 export async function getBookingById(bookingId: number): Promise<Booking | null> {
   return Booking.findOne({
     where: {
@@ -103,8 +111,8 @@ export async function getTodayBooking(userId: number, sportObjectId: number): Pr
       userId,
       sportObjectId,
       bookingTime: {
-        [Op.gt]: todayStart,
-        [Op.lt]: now,
+        [Op.gte]: todayStart,
+        [Op.lte]: now,
       },
     },
   });
