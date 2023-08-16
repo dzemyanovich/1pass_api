@@ -1,4 +1,4 @@
-import { isToday } from './utils';
+import { addDays, isToday } from './utils';
 
 describe('isToday', () => {
   it('returns true #1', async () => {
@@ -30,8 +30,3 @@ describe('isToday', () => {
     expect(result).toBe(false);
   });
 });
-
-function addDays(date: Date, days: number): Date {
-  date.setDate(date.getDate() + days);
-  return date;
-}

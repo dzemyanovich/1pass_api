@@ -86,10 +86,19 @@ export async function createBooking(userId: number, sportObjectId: number): Prom
   });
 }
 
+// used for testing
+export async function createTestBooking(userId: number, sportObjectId: number, bookingTime: Date): Promise<Booking> {
+  return Booking.create({
+    userId,
+    sportObjectId,
+    bookingTime,
+  });
+}
+
 export async function confirmVisit(bookingId: number): Promise<[affectedCount: number]> {
   return Booking.update({ visitTime: new Date() }, {
     where: {
-      bookingId,
+      id: bookingId,
     },
   });
 }
