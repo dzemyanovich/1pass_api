@@ -29,6 +29,7 @@ export default {
   },
 
   async down(queryInterface: QueryInterface): Promise<object> {
-    return queryInterface.bulkDelete('SportObjects', {}, {});
+    // todo: delete only objects created from 'up' function
+    return queryInterface.bulkDelete('SportObjects', {});
   },
 };

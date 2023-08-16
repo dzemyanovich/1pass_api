@@ -21,7 +21,6 @@
     "db-drop-dev": "export NODE_ENV=dev && node lambda/dist/db/drop-db.js",
     "db-drop-preprod": "export NODE_ENV=preprod && node lambda/dist/db/drop-db.js",
     "db-drop-prod": "export NODE_ENV=prod && node lambda/dist/db/drop-db.js",
-    "db-migration": "npx sequelize-cli model:generate --name SportObject --attributes name:string,address:string,lat:float,long:float",
     "db-empty-migration": "npx sequelize-cli migration:generate --name migration-skeleton",
     "db-migrate-dev": "export NODE_ENV=dev && npx sequelize-cli db:migrate",
     "db-migrate-preprod": "export NODE_ENV=preprod && npx sequelize-cli db:migrate",
