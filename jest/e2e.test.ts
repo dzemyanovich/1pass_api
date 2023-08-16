@@ -6,7 +6,6 @@ import {
   deleteUser,
   deleteUserByPhone,
   getBookingById,
-  getTodayBooking,
   getUserByEmail,
   getUserByPhone,
   setVerifed,
@@ -153,8 +152,7 @@ describe('booking workflow', () => {
   });
 });
 
-// todo: test fails
-describe.only('create-booking', () => {
+describe('create-booking', () => {
   const bookingIds: number[] = [];
 
   it('already booked', async () => {
@@ -197,7 +195,9 @@ describe.only('create-booking', () => {
   });
 
   afterAll(async () => {
+    // eslint-disable-next-line no-restricted-syntax
     for (const bookingId of bookingIds) {
+      // eslint-disable-next-line no-await-in-loop
       await deleteBooking(bookingId);
     }
   });
