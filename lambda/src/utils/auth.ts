@@ -84,7 +84,7 @@ export function getUserId(token: string): number | null {
     return null;
   }
 
-  return isTokenExpired(payload.createdAt)
+  return !isTokenExpired(payload.createdAt)
     ? payload.userId
     : null;
 }
