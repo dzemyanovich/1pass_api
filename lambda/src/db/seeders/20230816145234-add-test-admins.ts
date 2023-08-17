@@ -1,4 +1,4 @@
-import { QueryInterface } from 'sequelize';
+import { QueryInterface, Op } from 'sequelize';
 import { getSportObjects } from '../utils/repository';
 import SportObject from '../models/sport-object';
 import Admin from '../models/admin';
@@ -19,7 +19,9 @@ export default {
   },
 
   async down(queryInterface: QueryInterface): Promise<object> {
-    // todo: delete only test admins
-    return queryInterface.bulkDelete('Admins', {});
+    return queryInterface.bulkDelete(
+      'Admins',
+      { username: { [Op.like]: `${TEST_ADMIN_PREFIX}%` } },
+    );
   },
 };
