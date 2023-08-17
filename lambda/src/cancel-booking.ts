@@ -1,7 +1,7 @@
 import { deleteBooking, getBookingById } from './db/utils/repository';
 import { getUserId } from './utils/auth';
 import { invalidToken, noBooking, pastBooking } from './utils/errors';
-import { isToday } from './utils/utils';
+import { isPastBooking } from './utils/utils';
 import { getErrors, validateCancelBooking } from './utils/validation';
 
 export async function handler(event: CancelBookingEvent): Promise<EventResult<void>> {
@@ -31,7 +31,7 @@ export async function handler(event: CancelBookingEvent): Promise<EventResult<vo
     };
   }
 
-  if (!isToday(booking.bookingTime) || booking.visitTime) {
+  if (isPastBooking(booking)) {
     return {
       success: false,
       errors: [pastBooking()],

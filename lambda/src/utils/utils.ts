@@ -1,3 +1,5 @@
+import Booking from '../db/models/booking';
+
 export function isToday(date: Date): boolean {
   const todaysDate = new Date();
 
@@ -7,4 +9,8 @@ export function isToday(date: Date): boolean {
 export function addDays(date: Date, days: number): Date {
   date.setDate(date.getDate() + days);
   return date;
+}
+
+export function isPastBooking(booking: Booking) {
+  return !isToday(booking.bookingTime) || booking.visitTime;
 }

@@ -79,8 +79,10 @@ Before running pipeline set the following env vars (variables should be **not pr
 | TWILIO_AUTH_TOKEN            | "some_value"         | Required for Twilio                                   |
 | TWILIO_ACCOUNT_SID           | "some_value"         | Required for Twilio                                   |
 | TWILIO_VERIFY_SID            | "some_value"         | Required for Twilio                                   |
-| JWT_SECRET                   | "some_value"         | Required for token generation (used in tests)         |
-| TF_VAR_JWT_SECRET            | $JWT_SECRET          | Required for token generation (used in lambdas)       |
+| JWT_SECRET                   | "some_value"         | Required for user token generation (used in tests)    |
+| TF_VAR_JWT_SECRET            | $JWT_SECRET          | Required for user token generation (used in lambdas)  |
+| ADMIN_JWT_SECRET             | "some_value"         | Required for amdin token generation (used in tests)   |
+| TF_VAR_ADMIN_JWT_SECRET      | $ADMIN_JWT_SECRET    | Required for admin token generation (used in lambdas) |
 
 > `TF_VAR_db_username` and `TF_VAR_db_password` are the same for all envs
 
@@ -97,6 +99,7 @@ TWILIO_AUTH_TOKEN  = "some_value"
 TWILIO_ACCOUNT_SID = "some_value"
 TWILIO_VERIFY_SID  = "some_value"
 JWT_SECRET         = "some_value"
+ADMIN_JWT_SECRET   = "some_value"
 ```
 
 # Local setup
@@ -114,6 +117,7 @@ process.env.TWILIO_AUTH_TOKEN = 'some_value';
 process.env.TWILIO_ACCOUNT_SID = 'some_value';
 process.env.TWILIO_VERIFY_SID = 'some_value';
 process.env.JWT_SECRET = 'some_value';
+process.env.ADMIN_JWT_SECRET = 'some_value';
 ```
 
 To enable husky pre-push, run once: ```npx husky install```

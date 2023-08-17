@@ -3,6 +3,34 @@ import validator from 'validator';
 
 import { confirmMismatchMessage } from './errors';
 
+/*********************** SHARED ***********************/
+
+export function getErrors<T>(parseResult: SafeParseReturnType<T, T>): string[] {
+  const { issues } = (parseResult as Zod.SafeParseError<T>).error;
+
+  const errors: string[] = [];
+
+  issues.forEach((issue: ZodIssue) => {
+    issue.path.forEach((path: string | number) => {
+      errors.push(`${path}: ${issue.message}`);
+    });
+  });
+
+  return errors;
+}
+
+export function validateTokenEvent(
+  event: TokenEvent,
+): SafeParseReturnType<TokenEvent, TokenEvent> {
+  const schema = z.object({
+    token: z.string(),
+  });
+
+  return schema.safeParse(event);
+}
+
+/*********************** USER API ***********************/
+
 export function validateSendCode(event: SendCodeEvent): SafeParseReturnType<SendCodeEvent, SendCodeEvent> {
   const schema = z.object({
     phone: z.string().refine(validator.isMobilePhone),
@@ -59,16 +87,6 @@ export function validateSignIn(event: SignInEvent): SafeParseReturnType<SignInEv
   return schema.safeParse(event);
 }
 
-export function validateTokenEvent(
-  event: ValidateTokenEvent,
-): SafeParseReturnType<ValidateTokenEvent, ValidateTokenEvent> {
-  const schema = z.object({
-    token: z.string(),
-  });
-
-  return schema.safeParse(event);
-}
-
 export function validateCreateBooking(
   event: CreateBookingEvent,
 ): SafeParseReturnType<CreateBookingEvent, CreateBookingEvent> {
@@ -91,16 +109,24 @@ export function validateCancelBooking(
   return schema.safeParse(event);
 }
 
-export function getErrors<T>(parseResult: SafeParseReturnType<T, T>): string[] {
-  const { issues } = (parseResult as Zod.SafeParseError<T>).error;
+/*********************** ADMIN API ***********************/
 
-  const errors: string[] = [];
-
-  issues.forEach((issue: ZodIssue) => {
-    issue.path.forEach((path: string | number) => {
-      errors.push(`${path}: ${issue.message}`);
-    });
+export function validateConfirmVisit(
+  event: ConfirmVisitEvent,
+): SafeParseReturnType<ConfirmVisitEvent, ConfirmVisitEvent> {
+  const schema = z.object({
+    token: z.string(),
+    bookingId: z.number(),
   });
 
-  return errors;
+  return schema.safeParse(event);
+}
+
+export function validateAdminSignIn(event: AdminSignInEvent): SafeParseReturnType<AdminSignInEvent, AdminSignInEvent> {
+  const schema = z.object({
+    username: z.string(),
+    password: z.string(),
+  });
+
+  return schema.safeParse(event);
 }

@@ -79,3 +79,7 @@ export function noBooking(): string {
 export function pastBooking(): string {
   return 'Cannot cancel past booking';
 }
+
+export function noBookingAccess(): string {
+  return 'Not enough permissions to edit this booking';
+}

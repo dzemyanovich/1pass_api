@@ -18,6 +18,7 @@ locals {
   })
   jwt_env_vars = merge(local.base_env_vars, {
     JWT_SECRET       = var.JWT_SECRET
+    ADMIN_JWT_SECRET = var.ADMIN_JWT_SECRET
     JWT_EXPIRE_DAYS  = var.JWT_EXPIRE_DAYS
   })
 }

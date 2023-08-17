@@ -56,13 +56,24 @@ export function getToken(userId: number): string {
   return jwt.encode(payload, JWT_SECRET);
 }
 
+export function getAdminToken(adminId: number): string {
+  const { ADMIN_JWT_SECRET } = process.env;
+  if (!ADMIN_JWT_SECRET) {
+    throw new Error(noEnvVar('ADMIN_JWT_SECRET'));
+  }
+
+  const payload: AdminTokenData = {
+    adminId,
+    createdAt: Date.now(),
+  };
+
+  return jwt.encode(payload, ADMIN_JWT_SECRET);
+}
+
 export function getUserId(token: string): number | null {
-  const { JWT_SECRET, JWT_EXPIRE_DAYS } = process.env;
+  const { JWT_SECRET } = process.env;
   if (!JWT_SECRET) {
     throw new Error(noEnvVar('JWT_SECRET'));
-  }
-  if (!JWT_EXPIRE_DAYS) {
-    throw new Error(noEnvVar('JWT_EXPIRE_DAYS'));
   }
 
   let payload: TokenData;
@@ -73,10 +84,38 @@ export function getUserId(token: string): number | null {
     return null;
   }
 
-  const millisecondsPassed = Date.now() - payload.createdAt;
-  const jwtExpireMilliseconds = Number(JWT_EXPIRE_DAYS) * 1000 * 60 * 60 * 24;
-
-  return millisecondsPassed < jwtExpireMilliseconds
+  return isTokenExpired(payload.createdAt)
     ? payload.userId
     : null;
+}
+
+export function getAdminId(token: string): number | null {
+  const { JWT_SECRET } = process.env;
+  if (!JWT_SECRET) {
+    throw new Error(noEnvVar('JWT_SECRET'));
+  }
+
+  let payload: AdminTokenData;
+  try {
+    payload = jwt.decode(token, JWT_SECRET) as AdminTokenData;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+
+  return isTokenExpired(payload.createdAt)
+    ? payload.adminId
+    : null;
+}
+
+function isTokenExpired(createdAt: number): boolean {
+  const { JWT_EXPIRE_DAYS } = process.env;
+  if (!JWT_EXPIRE_DAYS) {
+    throw new Error(noEnvVar('JWT_EXPIRE_DAYS'));
+  }
+
+  const millisecondsPassed = Date.now() - createdAt;
+  const jwtExpireMilliseconds = Number(JWT_EXPIRE_DAYS) * 1000 * 60 * 60 * 24;
+
+  return millisecondsPassed >= jwtExpireMilliseconds;
 }

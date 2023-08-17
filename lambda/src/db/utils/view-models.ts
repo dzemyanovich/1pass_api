@@ -1,3 +1,4 @@
+import Booking from '../models/booking';
 import SportObject from '../models/sport-object';
 
 export function toSportObject(sportObject: SportObject): SportObjectVM {
@@ -9,5 +10,17 @@ export function toSportObject(sportObject: SportObject): SportObjectVM {
     address,
     lat,
     long,
+  };
+}
+
+export function toBooking(booking: Booking): BookingVM {
+  const { id, userId, sportObjectId, bookingTime, visitTime } = booking;
+
+  return {
+    id,
+    userId,
+    sportObjectId,
+    bookingTime,
+    visitTime,
   };
 }

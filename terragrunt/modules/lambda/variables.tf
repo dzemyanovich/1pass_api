@@ -71,6 +71,11 @@ variable "JWT_SECRET" {
   default = ""
 }
 
+variable "ADMIN_JWT_SECRET" {
+  type    = string
+  default = ""
+}
+
 variable "JWT_EXPIRE_DAYS" {
   type    = number
   default = 30

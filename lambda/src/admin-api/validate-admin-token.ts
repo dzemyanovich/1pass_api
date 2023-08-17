@@ -1,6 +1,6 @@
-import { getUserById } from './db/utils/repository';
-import { getUserId } from './utils/auth';
-import { getErrors, validateTokenEvent } from './utils/validation';
+import { getAdminById } from '../db/utils/repository';
+import { getAdminId } from '../utils/auth';
+import { getErrors, validateTokenEvent } from '../utils/validation';
 
 export async function handler(event: TokenEvent): Promise<EventResult<void>> {
   const validationResult = validateTokenEvent(event);
@@ -12,17 +12,17 @@ export async function handler(event: TokenEvent): Promise<EventResult<void>> {
   }
 
   const { token } = event;
-  const userId = getUserId(token);
+  const adminId = getAdminId(token);
 
-  if (!userId) {
+  if (!adminId) {
     return {
       success: false,
     };
   }
 
-  const user = await getUserById(userId);
+  const admin = await getAdminById(adminId);
 
   return {
-    success: !!user && !!user.password,
+    success: !!admin,
   };
 }

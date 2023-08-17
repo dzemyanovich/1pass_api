@@ -1,4 +1,16 @@
-// ************** Lambda ****************
+// ************** LAMBDA ****************
+
+type EventResult<T> = {
+  success: boolean,
+  errors?: string[],
+  data?: T,
+};
+
+type TokenEvent = {
+  token: string,
+};
+
+// ************** USER API ****************
 
 type SendCodeEvent = {
   phone: string,
@@ -24,10 +36,6 @@ type SignUpEvent = {
   confirmPassword: string,
 };
 
-type ValidateTokenEvent = {
-  token: string,
-};
-
 type CreateBookingEvent = {
   token: string,
   sportObjectId: number,
@@ -38,14 +46,25 @@ type CancelBookingEvent = {
   bookingId: number,
 };
 
-type EventResult<T> = {
-  success: boolean,
-  errors?: string[],
-  data?: T,
-};
-
 type TokenData = {
   userId: number,
+  createdAt: number,
+};
+
+// ************** ADMIN API ****************
+
+type AdminSignInEvent = {
+  username: string,
+  password: string,
+};
+
+type ConfirmVisitEvent = {
+  token: string,
+  bookingId: number,
+};
+
+type AdminTokenData = {
+  adminId: number,
   createdAt: number,
 };
 
@@ -57,4 +76,12 @@ type SportObjectVM = {
   address: string,
   lat: number,
   long: number,
+};
+
+type BookingVM = {
+  id: number,
+  userId: number,
+  sportObjectId: number,
+  bookingTime: Date,
+  visitTime: Date,
 };

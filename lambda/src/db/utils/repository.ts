@@ -1,10 +1,11 @@
 import { Op } from 'sequelize';
 
 import '../config/sequelize-instance'; // init sequelize
+import { getHash } from '../../utils/auth';
 import User from '../models/user';
 import SportObject from '../models/sport-object';
-import { getHash } from '../../utils/auth';
 import Booking from '../models/booking';
+import Admin from '../models/admin';
 
 /************************* SPORT OBJECT *************************/
 
@@ -127,10 +128,26 @@ export async function getTodayBooking(userId: number, sportObjectId: number): Pr
   });
 }
 
+export async function getBookings(sportObjectId: number): Promise<Booking[]> {
+  return Booking.findAll({ where: { sportObjectId } });
+}
+
 export async function deleteBooking(id: number): Promise<number> {
   return Booking.destroy({
     where: {
       id,
     },
   });
+}
+
+/************************* ADMIN *************************/
+
+export async function getAdminById(id: number): Promise<Admin> {
+  return Admin.findOne({ where: { id } }) as Promise<Admin>;
+}
+
+export async function adminSignIn(event: AdminSignInEvent): Promise<Admin> {
+  const { username, password } = event;
+
+  return Admin.findOne({ where: { username, password: getHash(password) } }) as Promise<Admin>;
 }
