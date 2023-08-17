@@ -151,3 +151,7 @@ export async function adminSignIn(event: AdminSignInEvent): Promise<Admin> {
 
   return Admin.findOne({ where: { username, password: getHash(password) } }) as Promise<Admin>;
 }
+
+export async function getAdminBySportObjectId(sportObjectId: number): Promise<Admin> {
+  return Admin.findOne({ where: { sportObjectId } }) as Promise<Admin>;
+}

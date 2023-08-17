@@ -3,15 +3,14 @@ import { getSportObjects } from '../utils/repository';
 import SportObject from '../models/sport-object';
 import Admin from '../models/admin';
 import { getHash } from '../../utils/auth';
-
-const TEST_ADMIN_PREFIX = 'test_admin_';
+import { getTestAdminName, TEST_ADMIN_PASSWORD, TEST_ADMIN_PREFIX } from '../utils/utils';
 
 export default {
   async up(queryInterface: QueryInterface): Promise<object | number> {
     const sportObjects = await getSportObjects();
     const admins: Admin[] = sportObjects.map((sportObject: SportObject, index: number) => ({
-      username: `${TEST_ADMIN_PREFIX}${index}`,
-      password: getHash(`admin_password_${index}`),
+      username: getTestAdminName(index),
+      password: getHash(TEST_ADMIN_PASSWORD),
       sportObjectId: sportObject.id,
     }) as Admin);
 

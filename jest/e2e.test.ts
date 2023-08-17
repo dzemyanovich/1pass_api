@@ -1,29 +1,32 @@
 import Booking from '../lambda/src/db/models/booking';
 import {
-  confirmVisit,
   createTestBooking,
   createUser,
   deleteBooking,
   deleteUser,
   deleteUserByPhone,
+  getAdminBySportObjectId,
   getBookingById,
   getUserByEmail,
   getUserByPhone,
   setVerifed,
 } from '../lambda/src/db/utils/repository';
 import { registeredUser, userPasswords } from '../lambda/src/db/utils/test-users';
+import { TEST_ADMIN_PASSWORD } from '../lambda/src/db/utils/utils';
 import { getHash, getToken, getUserId } from '../lambda/src/utils/auth';
 import { alreadyBooked, pastBooking, userNotFound } from '../lambda/src/utils/errors';
-import { addDays } from '../lambda/src/utils/utils';
+import { addDays, isToday } from '../lambda/src/utils/utils';
 import { get, post } from './utils/rest';
 
-const { API_URL } = process.env;
+const { API_URL, ADMIN_API_URL } = process.env;
 const SIGN_IN_URL = `${API_URL}/sign-in`;
 const SIGN_UP_URL = `${API_URL}/sign-up`;
 const SPORT_OBJECTS_URL = `${API_URL}/get-sport-objects`;
 const VALIDATE_TOKEN_URL = `${API_URL}/validate-token`;
 const CREATE_BOOKING_URL = `${API_URL}/create-booking`;
 const CANCEL_BOOKING_URL = `${API_URL}/cancel-booking`;
+const ADMIN_SIGN_IN_URL = `${ADMIN_API_URL}/admin-sign-in`;
+const CONFIRM_VISIT_URL = `${ADMIN_API_URL}/confirm-visit`;
 const LONG_TEST_MS = 20 * 1000;
 
 describe('user workflow', () => {
@@ -229,8 +232,22 @@ describe('cancel-booking -> already visited', () => {
       data: expect.any(Number),
     });
 
-    const confirmVisitResult = await confirmVisit(bookingId);
-    expect(confirmVisitResult).toEqual([1]);
+    const admin = await getAdminBySportObjectId(sportObjectId);
+
+    const adminSignInResult: EventResult<string> = await post(ADMIN_SIGN_IN_URL, {
+      username: admin.username,
+      password: TEST_ADMIN_PASSWORD,
+    });
+    expect(adminSignInResult.success).toBe(true);
+
+    const confirmVisitResult: EventResult<void> = await post(CONFIRM_VISIT_URL, {
+      token: adminSignInResult.data,
+      bookingId,
+    });
+    const booking = await getBookingById(bookingId) as Booking;
+
+    expect(confirmVisitResult.success).toBe(true);
+    expect(isToday(booking.visitTime)).toBe(true);
 
     const response: EventResult<number> = await post(CANCEL_BOOKING_URL, {
       token,

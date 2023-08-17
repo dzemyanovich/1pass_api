@@ -80,32 +80,34 @@ export function getUserId(token: string): number | null {
   try {
     payload = jwt.decode(token, JWT_SECRET) as TokenData;
   } catch (error) {
-    console.error(error);
-    return null;
-  }
-
-  return !isTokenExpired(payload.createdAt)
-    ? payload.userId
-    : null;
-}
-
-export function getAdminId(token: string): number | null {
-  const { JWT_SECRET } = process.env;
-  if (!JWT_SECRET) {
-    throw new Error(noEnvVar('JWT_SECRET'));
-  }
-
-  let payload: AdminTokenData;
-  try {
-    payload = jwt.decode(token, JWT_SECRET) as AdminTokenData;
-  } catch (error) {
+    // eslint-disable-next-line no-console
     console.error(error);
     return null;
   }
 
   return isTokenExpired(payload.createdAt)
-    ? payload.adminId
-    : null;
+    ? null
+    : payload.userId;
+}
+
+export function getAdminId(token: string): number | null {
+  const { ADMIN_JWT_SECRET } = process.env;
+  if (!ADMIN_JWT_SECRET) {
+    throw new Error(noEnvVar('ADMIN_JWT_SECRET'));
+  }
+
+  let payload: AdminTokenData;
+  try {
+    payload = jwt.decode(token, ADMIN_JWT_SECRET) as AdminTokenData;
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error(error);
+    return null;
+  }
+
+  return isTokenExpired(payload.createdAt)
+    ? null
+    : payload.adminId;
 }
 
 function isTokenExpired(createdAt: number): boolean {
