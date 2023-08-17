@@ -48,6 +48,8 @@ resource "aws_iam_role_policy_attachment" "lambda_basic_access" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
+#################### USER API ####################
+
 resource "aws_lambda_function" "get_sport_objects_lambda" {
   filename          = data.archive_file.lambda_zip.output_path
   function_name     = "${var.product}-${var.env}-get-sport-objects"
@@ -146,6 +148,47 @@ resource "aws_lambda_function" "cancel_booking_lambda" {
   function_name     = "${var.product}-${var.env}-cancel-booking"
   role              = aws_iam_role.iam_for_lambda.arn
   handler           = "dist/cancel-booking.handler"
+  source_code_hash  = data.archive_file.lambda_zip.output_base64sha256
+  runtime           = local.runtime
+
+  environment {
+    variables = local.jwt_env_vars
+  }
+}
+
+#################### ADMIN API ####################
+
+resource "aws_lambda_function" "get_bookings_lambda" {
+  filename          = data.archive_file.lambda_zip.output_path
+  function_name     = "${var.product}-${var.env}-get-bookings"
+  role              = aws_iam_role.iam_for_lambda.arn
+  handler           = "dist/admin-api/get-bookings.handler"
+  source_code_hash  = data.archive_file.lambda_zip.output_base64sha256
+  runtime           = local.runtime
+
+  environment {
+    variables = local.jwt_env_vars
+  }
+}
+
+resource "aws_lambda_function" "confirm_visit_lambda" {
+  filename          = data.archive_file.lambda_zip.output_path
+  function_name     = "${var.product}-${var.env}-confirm-visit"
+  role              = aws_iam_role.iam_for_lambda.arn
+  handler           = "dist/admin-api/confirm-visit.handler"
+  source_code_hash  = data.archive_file.lambda_zip.output_base64sha256
+  runtime           = local.runtime
+
+  environment {
+    variables = local.jwt_env_vars
+  }
+}
+
+resource "aws_lambda_function" "admin_sign_in_lambda" {
+  filename          = data.archive_file.lambda_zip.output_path
+  function_name     = "${var.product}-${var.env}-admin-sign-in"
+  role              = aws_iam_role.iam_for_lambda.arn
+  handler           = "dist/admin-api/admin-sign-in.handler"
   source_code_hash  = data.archive_file.lambda_zip.output_base64sha256
   runtime           = local.runtime
 

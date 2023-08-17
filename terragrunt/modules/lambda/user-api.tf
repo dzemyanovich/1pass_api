@@ -684,7 +684,7 @@ resource "aws_api_gateway_integration_response" "validate_token_post_integration
   ]
 }
 
-############## OPTIONS sign-in (for cors) ##############
+############## OPTIONS validate-token (for cors) ##############
 
 resource "aws_api_gateway_method" "validate_token_options_method" {
   rest_api_id   = aws_api_gateway_rest_api.user_api.id
