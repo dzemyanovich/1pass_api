@@ -1,6 +1,7 @@
 import { getAdminById, getBookings } from '../db/utils/repository';
 import { toBooking } from '../db/utils/view-models';
 import { getAdminId } from '../utils/auth';
+import { invalidToken } from '../utils/errors';
 import { getErrors, validateTokenEvent } from '../utils/validation';
 
 // todo: delete validate-token api endpoint, use this endpoint instead
@@ -19,6 +20,7 @@ export async function handler(event: TokenEvent): Promise<EventResult<BookingVM[
   if (!adminId) {
     return {
       success: false,
+      errors: [invalidToken()],
     };
   }
 

@@ -1,4 +1,5 @@
 import { QueryInterface, Op } from 'sequelize';
+
 import { testUsers } from '../utils/test-users';
 
 export default {

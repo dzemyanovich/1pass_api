@@ -6,6 +6,7 @@ import User from '../models/user';
 import SportObject from '../models/sport-object';
 import Booking from '../models/booking';
 import Admin from '../models/admin';
+import { TEST_USER_PREFIX } from './utils';
 
 async function runQuery<T>(query: () => Promise<T>): Promise<T> {
   let result: T;
@@ -39,6 +40,17 @@ export async function createUser(phone: string): Promise<User> {
   return runQuery(() => User.create({
     phone,
     verified: false,
+  }));
+}
+
+export async function getTestUsers(): Promise<User[]> {
+  return runQuery(() => User.findAll({
+    where: {
+      verified: true,
+      email: {
+        [Op.like]: `${TEST_USER_PREFIX}%`,
+      },
+    },
   }));
 }
 
@@ -122,7 +134,11 @@ export async function createBooking(userId: number, sportObjectId: number): Prom
 }
 
 // used for testing
-export async function createTestBooking(userId: number, sportObjectId: number, bookingTime: Date): Promise<Booking> {
+export async function createTestBooking(
+  userId: number,
+  sportObjectId: number,
+  bookingTime: Date,
+): Promise<Booking> {
   return runQuery(() => Booking.create({
     userId,
     sportObjectId,

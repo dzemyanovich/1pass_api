@@ -1,4 +1,5 @@
 import { QueryInterface, Op } from 'sequelize';
+
 import SportObject from '../models/sport-object';
 
 const sportObjects: SportObject[] = [

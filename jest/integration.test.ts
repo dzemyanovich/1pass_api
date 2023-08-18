@@ -19,11 +19,11 @@ import {
   verifiedUser,
   registeredUser,
   notVerifiedUser,
-  userPasswords,
 } from '../lambda/src/db/utils/test-users';
 import { get, post } from './utils/rest';
 import { getToken, getUserId } from '../lambda/src/utils/auth';
 import { getUserByPhone } from '../lambda/src/db/utils/repository';
+import { TEST_USER_PASSWORD } from '../lambda/src/db/utils/utils';
 
 const { API_URL } = process.env;
 const SIGN_IN_URL = `${API_URL}/sign-in`;
@@ -37,9 +37,10 @@ const CANCEL_BOOKING_URL = `${API_URL}/cancel-booking`;
 
 describe('get-sport-objects', () => {
   it('gets all sport objects', async () => {
-    const response: SportObjectVM[] = await get(SPORT_OBJECTS_URL);
+    const response: EventResult<SportObjectVM[]> = await get(SPORT_OBJECTS_URL);
 
-    expect(response.length).toBeGreaterThan(0);
+    expect(response.success).toBe(true);
+    expect(response.data?.length).toBeGreaterThan(0);
   });
 });
 
@@ -116,7 +117,7 @@ describe('sign-in', () => {
     const { phone } = registeredUser;
     const response: EventResult<string> = await post(SIGN_IN_URL, {
       phone,
-      password: userPasswords[phone],
+      password: TEST_USER_PASSWORD,
     });
     const user = await getUserByPhone(phone);
     const token = getToken(user.id as number);
@@ -362,7 +363,7 @@ describe('create-booking', () => {
     const { phone } = registeredUser;
     const signInResponse: EventResult<string> = await post(SIGN_IN_URL, {
       phone,
-      password: userPasswords[phone],
+      password: TEST_USER_PASSWORD,
     });
 
     const response: EventResult<number> = await post(CREATE_BOOKING_URL, {
@@ -409,7 +410,7 @@ describe('cancel-booking', () => {
     const { phone } = registeredUser;
     const signInResponse: EventResult<string> = await post(SIGN_IN_URL, {
       phone,
-      password: userPasswords[phone],
+      password: TEST_USER_PASSWORD,
     });
 
     const token = signInResponse.data;

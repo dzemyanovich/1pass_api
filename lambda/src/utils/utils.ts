@@ -14,3 +14,7 @@ export function addDays(date: Date, days: number): Date {
 export function isPastBooking(booking: Booking) {
   return !isToday(booking.bookingTime) || booking.visitTime;
 }
+
+export function getRandomValue<T>(array: T[]): T {
+  return array[Math.floor(Math.random() * array.length)];
+}
