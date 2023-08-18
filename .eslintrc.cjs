@@ -48,6 +48,8 @@ module.exports = {
     'spaced-comment': 'off',
     '@typescript-eslint/indent': 'off',
     'no-console': 'error',
+    'no-await-in-loop': 'off',
+    'no-restricted-syntax': 'off',
   },
   ignorePatterns: [
     'lambda/dist',

@@ -81,7 +81,7 @@ export function noBooking(): string {
 }
 
 export function pastBooking(): string {
-  return 'Cannot cancel past booking';
+  return 'Booking is in the past or has already been used';
 }
 
 export function noBookingAccess(): string {
