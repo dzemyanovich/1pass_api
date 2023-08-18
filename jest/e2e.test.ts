@@ -14,6 +14,7 @@ import {
   alreadyBooked,
   invalidToken,
   noBooking,
+  noBookingAccess,
   numberButBoolean,
   pastBooking,
   required,
@@ -379,6 +380,8 @@ describe('admin-sign-in', () => {
 });
 
 describe('confirm-visit', () => {
+  let bookingId: number;
+
   it('invalid types', async () => {
     const confirmVisitResult: EventResult<void> = await post(CONFIRM_VISIT_URL, {
       token: 123,
@@ -429,4 +432,38 @@ describe('confirm-visit', () => {
     expect(confirmVisitResult.success).toBe(false);
     expect(confirmVisitResult.errors).toContain(noBooking());
   }, LONG_TEST_MS);
+
+  it('no booking access', async () => {
+    const sportObjects: SportObjectVM[] = await get(SPORT_OBJECTS_URL);
+    const sportObjectId = sportObjects[0].id;
+
+    const admin = await getAdminBySportObjectId(sportObjectId);
+
+    const adminSignInResult: EventResult<string> = await post(ADMIN_SIGN_IN_URL, {
+      username: admin.username,
+      password: TEST_ADMIN_PASSWORD,
+    });
+
+    expect(adminSignInResult.success).toBe(true);
+
+    const user = await getUserByPhone(registeredUser.phone);
+    const booking = await createTestBooking(user.id as number, sportObjects[1].id, new Date());
+    bookingId = booking.id;
+
+    const confirmVisitResult: EventResult<void> = await post(CONFIRM_VISIT_URL, {
+      token: adminSignInResult.data,
+      bookingId,
+    });
+
+    expect(confirmVisitResult.success).toBe(false);
+    expect(confirmVisitResult.errors).toContain(noBookingAccess());
+
+    await deleteBooking(bookingId);
+  }, LONG_TEST_MS);
+
+  afterAll(async () => {
+    if (bookingId) {
+      await deleteBooking(bookingId);
+    }
+  });
 });
