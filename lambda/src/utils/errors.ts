@@ -28,6 +28,10 @@ export function numberButString(fieldName: string): string {
   return `${fieldName}: Expected number, received string`;
 }
 
+export function numberButBoolean(fieldName: string): string {
+  return `${fieldName}: Expected number, received boolean`;
+}
+
 export function userNotFound(): string {
   return 'user not found';
 }

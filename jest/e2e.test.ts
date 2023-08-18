@@ -1,4 +1,3 @@
-import Booking from '../lambda/src/db/models/booking';
 import {
   createTestBooking,
   createUser,
@@ -11,10 +10,21 @@ import {
   getUserByPhone,
   setVerifed,
 } from '../lambda/src/db/utils/repository';
+import {
+  alreadyBooked,
+  invalidToken,
+  noBooking,
+  numberButBoolean,
+  pastBooking,
+  required,
+  stringButBoolean,
+  stringButNumber,
+  userNotFound,
+} from '../lambda/src/utils/errors';
+import Booking from '../lambda/src/db/models/booking';
 import { registeredUser, userPasswords } from '../lambda/src/db/utils/test-users';
 import { TEST_ADMIN_PASSWORD } from '../lambda/src/db/utils/utils';
 import { getHash, getToken, getUserId } from '../lambda/src/utils/auth';
-import { alreadyBooked, pastBooking, userNotFound } from '../lambda/src/utils/errors';
 import { addDays, isToday } from '../lambda/src/utils/utils';
 import { get, post } from './utils/rest';
 
@@ -306,4 +316,117 @@ describe('cancel-booking -> booking date is in the past', () => {
       await deleteBooking(bookingId);
     }
   });
+});
+
+describe('admin-sign-in', () => {
+  it('invalid types', async () => {
+    const adminSignInResult: EventResult<string> = await post(ADMIN_SIGN_IN_URL, {
+      username: 123,
+      password: true,
+    });
+
+    expect(adminSignInResult.success).toBe(false);
+    expect(adminSignInResult.errors).toContain(stringButNumber('username'));
+    expect(adminSignInResult.errors).toContain(stringButBoolean('password'));
+  });
+
+  it('data missig', async () => {
+    const adminSignInResult: EventResult<string> = await post(ADMIN_SIGN_IN_URL, {});
+
+    expect(adminSignInResult.success).toBe(false);
+    expect(adminSignInResult.errors).toContain(required('username'));
+    expect(adminSignInResult.errors).toContain(required('password'));
+  });
+
+  it('user not found (incorrect username and password)', async () => {
+    const adminSignInResult: EventResult<string> = await post(ADMIN_SIGN_IN_URL, {
+      username: 'asdf',
+      password: 'adf',
+    });
+
+    expect(adminSignInResult.success).toBe(false);
+    expect(adminSignInResult.errors).toContain(userNotFound());
+  });
+
+  it('user not found (incorrect password)', async () => {
+    const sportObjects: SportObjectVM[] = await get(SPORT_OBJECTS_URL);
+    const sportObjectId = sportObjects[0].id;
+
+    const admin = await getAdminBySportObjectId(sportObjectId);
+
+    const adminSignInResult: EventResult<string> = await post(ADMIN_SIGN_IN_URL, {
+      username: admin.username,
+      password: `${TEST_ADMIN_PASSWORD}_incorrect_one`,
+    });
+
+    expect(adminSignInResult.success).toBe(false);
+    expect(adminSignInResult.errors).toContain(userNotFound());
+  });
+
+  it('success', async () => {
+    const sportObjects: SportObjectVM[] = await get(SPORT_OBJECTS_URL);
+    const sportObjectId = sportObjects[0].id;
+
+    const admin = await getAdminBySportObjectId(sportObjectId);
+
+    const adminSignInResult: EventResult<string> = await post(ADMIN_SIGN_IN_URL, {
+      username: admin.username,
+      password: TEST_ADMIN_PASSWORD,
+    });
+
+    expect(adminSignInResult.success).toBe(true);
+  });
+});
+
+describe('confirm-visit', () => {
+  it('invalid types', async () => {
+    const confirmVisitResult: EventResult<void> = await post(CONFIRM_VISIT_URL, {
+      token: 123,
+      bookingId: true,
+    });
+
+    expect(confirmVisitResult.success).toBe(false);
+    expect(confirmVisitResult.errors).toContain(stringButNumber('token'));
+    expect(confirmVisitResult.errors).toContain(numberButBoolean('bookingId'));
+  });
+
+  it('data missig', async () => {
+    const confirmVisitResult: EventResult<void> = await post(CONFIRM_VISIT_URL, {});
+
+    expect(confirmVisitResult.success).toBe(false);
+    expect(confirmVisitResult.errors).toContain(required('token'));
+    expect(confirmVisitResult.errors).toContain(required('bookingId'));
+  });
+
+  it('invalid token', async () => {
+    const confirmVisitResult: EventResult<void> = await post(CONFIRM_VISIT_URL, {
+      token: '123',
+      bookingId: 333,
+    });
+
+    expect(confirmVisitResult.success).toBe(false);
+    expect(confirmVisitResult.errors).toContain(invalidToken());
+  });
+
+  it('no booking found', async () => {
+    const sportObjects: SportObjectVM[] = await get(SPORT_OBJECTS_URL);
+    const sportObjectId = sportObjects[0].id;
+
+    const admin = await getAdminBySportObjectId(sportObjectId);
+
+    const adminSignInResult: EventResult<string> = await post(ADMIN_SIGN_IN_URL, {
+      username: admin.username,
+      password: TEST_ADMIN_PASSWORD,
+    });
+
+    expect(adminSignInResult.success).toBe(true);
+
+    const confirmVisitResult: EventResult<void> = await post(CONFIRM_VISIT_URL, {
+      token: adminSignInResult.data,
+      bookingId: -133,
+    });
+
+    expect(confirmVisitResult.success).toBe(false);
+    expect(confirmVisitResult.errors).toContain(noBooking());
+  }, LONG_TEST_MS);
 });
