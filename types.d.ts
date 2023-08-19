@@ -17,6 +17,17 @@ type GetRequest<T> = {
 
 // ************** USER API ****************
 
+type UserData = {
+  sportObjects: SportObjectVM[],
+  bookings?: BookingVM[],
+  userInfo?: {
+    phone: string,
+    email: string,
+    firstName: string,
+    lastName: string,
+  },
+};
+
 type SendCodeEvent = {
   phone: string,
 };

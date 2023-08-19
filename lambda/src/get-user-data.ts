@@ -5,10 +5,9 @@ import { getUserId } from './utils/auth';
 import { invalidToken } from './utils/errors';
 import { getErrors, validateTokenEvent } from './utils/validation';
 
-// todo: change to get-initial-data
 export async function handler(
   { queryStringParameters }: GetRequest<TokenEvent>,
-): Promise<EventResult<SportObjectVM[]>> {
+): Promise<EventResult<UserData>> {
   const { token } = queryStringParameters;
 
   if (token) {
@@ -34,8 +33,11 @@ export async function handler(
   }
 
   const sportObjects: SportObject[] = await getSportObjects();
+ 
   return {
     success: true,
-    data: sportObjects.map(toSportObject),
+    data: {
+      sportObjects: sportObjects.map(toSportObject),
+    }
   };
 }

@@ -50,11 +50,11 @@ resource "aws_iam_role_policy_attachment" "lambda_basic_access" {
 
 #################### USER API ####################
 
-resource "aws_lambda_function" "get_sport_objects_lambda" {
+resource "aws_lambda_function" "get_user_data_lambda" {
   filename          = data.archive_file.lambda_zip.output_path
-  function_name     = "${var.product}-${var.env}-get-sport-objects"
+  function_name     = "${var.product}-${var.env}-get-user-data"
   role              = aws_iam_role.iam_for_lambda.arn
-  handler           = "dist/get-sport-objects.handler"
+  handler           = "dist/get-user-data.handler"
   source_code_hash  = data.archive_file.lambda_zip.output_base64sha256
   runtime           = local.runtime
 

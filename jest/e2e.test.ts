@@ -27,14 +27,14 @@ import {
 import Booking from '../lambda/src/db/models/booking';
 import { registeredUser } from '../lambda/src/db/utils/test-users';
 import { TEST_ADMIN_PASSWORD, TEST_USER_PASSWORD } from '../lambda/src/db/utils/utils';
-import { getHash, getToken, getUserId } from '../lambda/src/utils/auth';
+import { getHash, getUserId } from '../lambda/src/utils/auth';
 import { addDays, isToday } from '../lambda/src/utils/utils';
 import { get, post } from './utils/rest';
 
 const { API_URL, ADMIN_API_URL } = process.env;
 const SIGN_IN_URL = `${API_URL}/sign-in`;
 const SIGN_UP_URL = `${API_URL}/sign-up`;
-const SPORT_OBJECTS_URL = `${API_URL}/get-sport-objects`;
+const USER_DATA_URL = `${API_URL}/get-user-data`;
 const CREATE_BOOKING_URL = `${API_URL}/create-booking`;
 const CANCEL_BOOKING_URL = `${API_URL}/cancel-booking`;
 const ADMIN_SIGN_IN_URL = `${ADMIN_API_URL}/admin-sign-in`;
@@ -126,8 +126,8 @@ describe('booking workflow', () => {
       password: TEST_USER_PASSWORD,
     });
 
-    const sportObjectsResponse: EventResult<SportObjectVM[]> = await get(SPORT_OBJECTS_URL);
-    const sportObjects = sportObjectsResponse.data as SportObjectVM[];
+    const userDataResponse: EventResult<UserData> = await get(USER_DATA_URL);
+    const sportObjects = userDataResponse.data?.sportObjects as SportObjectVM[];
     const sportObjectId = sportObjects[0].id;
 
     const createBookingResponse: EventResult<number> = await post(CREATE_BOOKING_URL, {
@@ -174,8 +174,8 @@ describe('create-booking', () => {
       phone,
       password: TEST_USER_PASSWORD,
     });
-    const sportObjectsResponse: EventResult<SportObjectVM[]> = await get(SPORT_OBJECTS_URL);
-    const sportObjects = sportObjectsResponse.data as SportObjectVM[];
+    const userDataResponse: EventResult<UserData> = await get(USER_DATA_URL);
+    const sportObjects = userDataResponse.data?.sportObjects as SportObjectVM[];
     const sportObjectId = sportObjects[0].id;
     const token = signInResponse.data;
 
@@ -224,8 +224,8 @@ describe('cancel-booking -> already visited', () => {
       phone,
       password: TEST_USER_PASSWORD,
     });
-    const sportObjectsResponse: EventResult<SportObjectVM[]> = await get(SPORT_OBJECTS_URL);
-    const sportObjects = sportObjectsResponse.data as SportObjectVM[];
+    const userDataResponse: EventResult<UserData> = await get(USER_DATA_URL);
+    const sportObjects = userDataResponse.data?.sportObjects as SportObjectVM[];
     const sportObjectId = sportObjects[0].id;
     const token = signInResponse.data;
 
@@ -286,8 +286,8 @@ describe('cancel-booking -> booking date is in the past', () => {
     });
     const token = signInResponse.data as string;
     const userId = getUserId(token) as number;
-    const sportObjectsResponse: EventResult<SportObjectVM[]> = await get(SPORT_OBJECTS_URL);
-    const sportObjects = sportObjectsResponse.data as SportObjectVM[];
+    const userDataResponse: EventResult<UserData> = await get(USER_DATA_URL);
+    const sportObjects = userDataResponse.data?.sportObjects as SportObjectVM[];
     const sportObjectId = sportObjects[0].id;
     const yesterday = addDays(new Date(), -1);
     const booking = await createTestBooking(userId, sportObjectId, yesterday);
@@ -348,8 +348,8 @@ describe('admin-sign-in', () => {
   });
 
   it('user not found (incorrect password)', async () => {
-    const sportObjectsResponse: EventResult<SportObjectVM[]> = await get(SPORT_OBJECTS_URL);
-    const sportObjects = sportObjectsResponse.data as SportObjectVM[];
+    const userDataResponse: EventResult<UserData> = await get(USER_DATA_URL);
+    const sportObjects = userDataResponse.data?.sportObjects as SportObjectVM[];
     const sportObjectId = sportObjects[0].id;
 
     const admin = await getAdminBySportObjectId(sportObjectId);
@@ -364,8 +364,8 @@ describe('admin-sign-in', () => {
   });
 
   it('success', async () => {
-    const sportObjectsResponse: EventResult<SportObjectVM[]> = await get(SPORT_OBJECTS_URL);
-    const sportObjects = sportObjectsResponse.data as SportObjectVM[];
+    const userDataResponse: EventResult<UserData> = await get(USER_DATA_URL);
+    const sportObjects = userDataResponse.data?.sportObjects as SportObjectVM[];
     const sportObjectId = sportObjects[0].id;
 
     const admin = await getAdminBySportObjectId(sportObjectId);
@@ -383,8 +383,8 @@ describe('confirm-visit', () => {
   const bookingIds: number[] = [];
 
   it('success', async () => {
-    const sportObjectsResponse: EventResult<SportObjectVM[]> = await get(SPORT_OBJECTS_URL);
-    const sportObjects = sportObjectsResponse.data as SportObjectVM[];
+    const userDataResponse: EventResult<UserData> = await get(USER_DATA_URL);
+    const sportObjects = userDataResponse.data?.sportObjects as SportObjectVM[];
     const sportObjectId = sportObjects[0].id;
 
     const admin = await getAdminBySportObjectId(sportObjectId);
@@ -441,8 +441,8 @@ describe('confirm-visit', () => {
   });
 
   it('no booking found', async () => {
-    const sportObjectsResponse: EventResult<SportObjectVM[]> = await get(SPORT_OBJECTS_URL);
-    const sportObjects = sportObjectsResponse.data as SportObjectVM[];
+    const userDataResponse: EventResult<UserData> = await get(USER_DATA_URL);
+    const sportObjects = userDataResponse.data?.sportObjects as SportObjectVM[];
     const sportObjectId = sportObjects[0].id;
 
     const admin = await getAdminBySportObjectId(sportObjectId);
@@ -464,8 +464,8 @@ describe('confirm-visit', () => {
   }, LONG_TEST_MS);
 
   it('no booking access', async () => {
-    const sportObjectsResponse: EventResult<SportObjectVM[]> = await get(SPORT_OBJECTS_URL);
-    const sportObjects = sportObjectsResponse.data as SportObjectVM[];
+    const userDataResponse: EventResult<UserData> = await get(USER_DATA_URL);
+    const sportObjects = userDataResponse.data?.sportObjects as SportObjectVM[];
     const sportObjectId = sportObjects[0].id;
 
     const admin = await getAdminBySportObjectId(sportObjectId);
@@ -494,8 +494,8 @@ describe('confirm-visit', () => {
   }, LONG_TEST_MS);
 
   it('booking is in the past', async () => {
-    const sportObjectsResponse: EventResult<SportObjectVM[]> = await get(SPORT_OBJECTS_URL);
-    const sportObjects = sportObjectsResponse.data as SportObjectVM[];
+    const userDataResponse: EventResult<UserData> = await get(USER_DATA_URL);
+    const sportObjects = userDataResponse.data?.sportObjects as SportObjectVM[];
     const sportObjectId = sportObjects[0].id;
 
     const admin = await getAdminBySportObjectId(sportObjectId);
@@ -525,8 +525,8 @@ describe('confirm-visit', () => {
   }, LONG_TEST_MS);
 
   it('booking is already used', async () => {
-    const sportObjectsResponse: EventResult<SportObjectVM[]> = await get(SPORT_OBJECTS_URL);
-    const sportObjects = sportObjectsResponse.data as SportObjectVM[];
+    const userDataResponse: EventResult<UserData> = await get(USER_DATA_URL);
+    const sportObjects = userDataResponse.data?.sportObjects as SportObjectVM[];
     const sportObjectId = sportObjects[0].id;
 
     const admin = await getAdminBySportObjectId(sportObjectId);
@@ -568,8 +568,7 @@ describe('confirm-visit', () => {
   });
 });
 
-// todo: remove only
-describe.only('get-bookings', () => {
+describe('get-bookings', () => {
   it('success', async () => {
     const admins = await getAdmins();
     const admin = admins[0];
