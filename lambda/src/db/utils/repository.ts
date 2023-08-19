@@ -186,6 +186,15 @@ export async function getBookings(sportObjectId: number): Promise<Booking[]> {
   }));
 }
 
+// todo: order by date desc
+export async function getUserBookings(userId: number): Promise<Booking[]> {
+  return runQuery(() => Booking.findAll({
+    where: {
+      userId,
+    },
+  }));
+}
+
 export async function deleteBooking(id: number): Promise<number> {
   return runQuery(() => Booking.destroy({
     where: {

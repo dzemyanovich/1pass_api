@@ -9,6 +9,7 @@ import {
   getAdmins,
   getBookingById,
   getUserByEmail,
+  getUserById,
   getUserByPhone,
   setVerifed,
 } from '../lambda/src/db/utils/repository';
@@ -30,6 +31,7 @@ import { TEST_ADMIN_PASSWORD, TEST_USER_PASSWORD } from '../lambda/src/db/utils/
 import { getHash, getUserId } from '../lambda/src/utils/auth';
 import { addDays, isToday } from '../lambda/src/utils/utils';
 import { get, post } from './utils/rest';
+import User from '../lambda/src/db/models/user';
 
 const { API_URL, ADMIN_API_URL } = process.env;
 const SIGN_IN_URL = `${API_URL}/sign-in`;
@@ -41,6 +43,29 @@ const ADMIN_SIGN_IN_URL = `${ADMIN_API_URL}/admin-sign-in`;
 const CONFIRM_VISIT_URL = `${ADMIN_API_URL}/confirm-visit`;
 const GET_BOOKINGS_URL = `${ADMIN_API_URL}/get-bookings`;
 const LONG_TEST_MS = 20 * 1000;
+
+describe('get-user-data', () => {
+  it('gets full user data', async () => {
+    const { phone } = registeredUser;
+    const signInResponse: EventResult<string> = await post(SIGN_IN_URL, {
+      phone,
+      password: TEST_USER_PASSWORD,
+    });
+    const token = signInResponse.data as string;
+    const user: User = await getUserByPhone(phone);
+    const response: EventResult<UserData> = await get(USER_DATA_URL, { token });
+
+    expect(response.success).toBe(true);
+    expect(response.data?.sportObjects.length).toBeGreaterThan(0);
+    expect(response.data?.bookings?.length).toBeGreaterThan(0);
+    expect(response.data?.userInfo).toMatchObject({
+      phone: user.phone,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.firstName,
+    });
+  });
+});
 
 describe('user workflow', () => {
   const phone = '+12025550156';
