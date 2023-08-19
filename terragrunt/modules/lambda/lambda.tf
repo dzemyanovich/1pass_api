@@ -117,19 +117,6 @@ resource "aws_lambda_function" "sign_up_lambda" {
   }
 }
 
-resource "aws_lambda_function" "validate_token_lambda" {
-  filename          = data.archive_file.lambda_zip.output_path
-  function_name     = "${var.product}-${var.env}-validate-token"
-  role              = aws_iam_role.iam_for_lambda.arn
-  handler           = "dist/validate-token.handler"
-  source_code_hash  = data.archive_file.lambda_zip.output_base64sha256
-  runtime           = local.runtime
-
-  environment {
-    variables = local.jwt_env_vars
-  }
-}
-
 resource "aws_lambda_function" "create_booking_lambda" {
   filename          = data.archive_file.lambda_zip.output_path
   function_name     = "${var.product}-${var.env}-create-booking"

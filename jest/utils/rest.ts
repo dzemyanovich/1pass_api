@@ -1,8 +1,8 @@
 import axios from 'axios';
 
-export function get<T>(url: string): Promise<T> {
+export function get<T>(url: string, params = {}): Promise<T> {
   return new Promise((resolve) => {
-    axios.get(url).then((response) => {
+    axios.get(url, params).then((response) => {
       resolve(response.data as T);
     });
   });

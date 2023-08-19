@@ -196,6 +196,10 @@ export async function deleteBooking(id: number): Promise<number> {
 
 /************************* ADMIN *************************/
 
+export async function getAdmins(): Promise<Admin[]> {
+  return runQuery(() => Admin.findAll());
+}
+
 export async function getAdminById(id: number): Promise<Admin> {
   return runQuery(() => Admin.findOne({
     where: {

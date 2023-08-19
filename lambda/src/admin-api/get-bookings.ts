@@ -4,9 +4,8 @@ import { getAdminId } from '../utils/auth';
 import { invalidToken } from '../utils/errors';
 import { getErrors, validateTokenEvent } from '../utils/validation';
 
-// todo: delete validate-token api endpoint, use this endpoint instead
-export async function handler(event: TokenEvent): Promise<EventResult<BookingVM[]>> {
-  const validationResult = validateTokenEvent(event);
+export async function handler({ queryStringParameters }: GetRequest<TokenEvent>): Promise<EventResult<BookingVM[]>> {
+  const validationResult = validateTokenEvent(queryStringParameters);
   if (!validationResult.success) {
     return {
       success: false,
@@ -14,7 +13,7 @@ export async function handler(event: TokenEvent): Promise<EventResult<BookingVM[
     };
   }
 
-  const { token } = event;
+  const { token } = queryStringParameters;
   const adminId = getAdminId(token);
 
   if (!adminId) {

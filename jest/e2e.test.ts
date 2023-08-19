@@ -6,6 +6,7 @@ import {
   deleteUser,
   deleteUserByPhone,
   getAdminBySportObjectId,
+  getAdmins,
   getBookingById,
   getUserByEmail,
   getUserByPhone,
@@ -34,11 +35,11 @@ const { API_URL, ADMIN_API_URL } = process.env;
 const SIGN_IN_URL = `${API_URL}/sign-in`;
 const SIGN_UP_URL = `${API_URL}/sign-up`;
 const SPORT_OBJECTS_URL = `${API_URL}/get-sport-objects`;
-const VALIDATE_TOKEN_URL = `${API_URL}/validate-token`;
 const CREATE_BOOKING_URL = `${API_URL}/create-booking`;
 const CANCEL_BOOKING_URL = `${API_URL}/cancel-booking`;
 const ADMIN_SIGN_IN_URL = `${ADMIN_API_URL}/admin-sign-in`;
 const CONFIRM_VISIT_URL = `${ADMIN_API_URL}/confirm-visit`;
+const GET_BOOKINGS_URL = `${ADMIN_API_URL}/get-bookings`;
 const LONG_TEST_MS = 20 * 1000;
 
 describe('user workflow', () => {
@@ -96,13 +97,7 @@ describe('user workflow', () => {
       password,
     });
     const user = await getUserByPhone(phone);
-    const token = getToken(user.id as number);
 
-    const validateTokenResult: EventResult<void> = await post(VALIDATE_TOKEN_URL, {
-      token,
-    });
-
-    expect(validateTokenResult.success).toBe(true);
     expect(sinInSuccess.success).toBe(true);
     expect(sinInSuccess.data).toBeTruthy();
     expect(getUserId(sinInSuccess.data as string)).toEqual(getUserId(signUpResult.data as string));
@@ -570,5 +565,47 @@ describe('confirm-visit', () => {
         await deleteBooking(bookingId);
       }
     }
+  });
+});
+
+// todo: remove only
+describe.only('get-bookings', () => {
+  it('success', async () => {
+    const admins = await getAdmins();
+    const admin = admins[0];
+    const adminSignInResult: EventResult<string> = await post(ADMIN_SIGN_IN_URL, {
+      username: admin.username,
+      password: TEST_ADMIN_PASSWORD,
+    });
+
+    expect(adminSignInResult.success).toBe(true);
+
+    const token = adminSignInResult.data;
+
+    const response: EventResult<BookingVM[]> = await get(GET_BOOKINGS_URL, { token });
+
+    expect(response.success).toBe(true);
+    expect(response.data?.length).toBeGreaterThan(0);
+  });
+
+  it('invalid data', async () => {
+    const response: EventResult<BookingVM[]> = await get(GET_BOOKINGS_URL, { token: 123 });
+
+    expect(response.success).toBe(false);
+    expect(response.errors).toContain(stringButNumber('token'));
+  });
+
+  it('data missing', async () => {
+    const response: EventResult<BookingVM[]> = await get(GET_BOOKINGS_URL, {});
+
+    expect(response.success).toBe(false);
+    expect(response.errors).toContain(required('token'));
+  });
+
+  it('invalid token', async () => {
+    const response: EventResult<BookingVM[]> = await get(GET_BOOKINGS_URL, { token: '44444' });
+
+    expect(response.success).toBe(false);
+    expect(response.errors).toContain(invalidToken());
   });
 });
