@@ -6,14 +6,14 @@ import { invalidToken } from './utils/errors';
 import { getErrors, validateTokenEvent } from './utils/validation';
 
 export async function handler(
-  { queryStringParameters }: GetRequest<TokenEvent>,
+  { querystring }: GetRequest<TokenEvent>,
 ): Promise<EventResult<UserData>> {
-  const { token } = queryStringParameters;
+  const { token } = querystring;
   let bookings: BookingVM[] | null = null;
   let userInfo: UserInfo | null = null;
 
   if (token) {
-    const validationResult = validateTokenEvent(queryStringParameters);
+    const validationResult = validateTokenEvent(querystring);
     if (!validationResult.success) {
       return {
         success: false,
@@ -30,7 +30,7 @@ export async function handler(
       };
     }
 
-    bookings = (await getUserBookings(userId)).map(toBooking)
+    bookings = (await getUserBookings(userId)).map(toBooking);
 
     const { firstName, lastName, phone, email } = await getUserById(userId);
     userInfo = {
@@ -38,17 +38,17 @@ export async function handler(
       lastName,
       phone,
       email,
-    }
+    };
   }
 
   const sportObjects: SportObject[] = await getSportObjects();
- 
+
   return {
     success: true,
     data: {
       sportObjects: sportObjects.map(toSportObject),
       bookings,
       userInfo,
-    }
+    },
   };
 }

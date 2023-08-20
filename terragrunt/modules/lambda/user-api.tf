@@ -71,6 +71,10 @@ resource "aws_api_gateway_integration" "get_user_data_get_integration" {
   integration_http_method = "POST"
   type                    = "AWS"
   uri                     = aws_lambda_function.get_user_data_lambda.invoke_arn
+
+  request_templates = {
+    "application/json" = local.get_request_mapping
+  }
 }
 
 resource "aws_lambda_permission" "get_user_data_lambda_permission" {
@@ -128,9 +132,9 @@ resource "aws_api_gateway_integration" "get_user_data_options_integration" {
   type        = "MOCK"
 
   request_templates = {
-    "application/json" = <<EOF
-{"statusCode": 200}
-EOF
+    "application/json" = jsonencode({
+      statusCode = 200
+    })
   }
 }
 
@@ -241,9 +245,9 @@ resource "aws_api_gateway_integration" "auth_send_code_options_integration" {
   type        = "MOCK"
 
   request_templates = {
-    "application/json" = <<EOF
-{"statusCode": 200}
-EOF
+    "application/json" = jsonencode({
+      statusCode = 200
+    })
   }
 }
 
@@ -354,9 +358,9 @@ resource "aws_api_gateway_integration" "auth_verify_code_options_integration" {
   type        = "MOCK"
 
   request_templates = {
-    "application/json" = <<EOF
-{"statusCode": 200}
-EOF
+    "application/json" = jsonencode({
+      statusCode = 200
+    })
   }
 }
 
@@ -467,9 +471,9 @@ resource "aws_api_gateway_integration" "sign_in_options_integration" {
   type        = "MOCK"
 
   request_templates = {
-    "application/json" = <<EOF
-{"statusCode": 200}
-EOF
+    "application/json" = jsonencode({
+      statusCode = 200
+    })
   }
 }
 
@@ -580,9 +584,9 @@ resource "aws_api_gateway_integration" "sign_up_options_integration" {
   type        = "MOCK"
 
   request_templates = {
-    "application/json" = <<EOF
-{"statusCode": 200}
-EOF
+    "application/json" = jsonencode({
+      statusCode = 200
+    })
   }
 }
 
@@ -693,9 +697,9 @@ resource "aws_api_gateway_integration" "create_booking_options_integration" {
   type        = "MOCK"
 
   request_templates = {
-    "application/json" = <<EOF
-{"statusCode": 200}
-EOF
+    "application/json" = jsonencode({
+      statusCode = 200
+    })
   }
 }
 
@@ -806,9 +810,9 @@ resource "aws_api_gateway_integration" "cancel_booking_options_integration" {
   type        = "MOCK"
 
   request_templates = {
-    "application/json" = <<EOF
-{"statusCode": 200}
-EOF
+    "application/json" = jsonencode({
+      statusCode = 200
+    })
   }
 }
 
@@ -925,7 +929,8 @@ resource "aws_api_gateway_deployment" "user_api_deployment" {
       aws_lambda_function.sign_in_lambda.source_code_hash,
       aws_lambda_function.sign_up_lambda.source_code_hash,
       aws_lambda_function.create_booking_lambda.source_code_hash,
-      aws_lambda_function.cancel_booking_lambda.source_code_hash
+      aws_lambda_function.cancel_booking_lambda.source_code_hash,
+      local.get_request_mapping
     ]))
   }
 

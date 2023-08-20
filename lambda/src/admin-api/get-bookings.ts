@@ -4,8 +4,8 @@ import { getAdminId } from '../utils/auth';
 import { invalidToken } from '../utils/errors';
 import { getErrors, validateTokenEvent } from '../utils/validation';
 
-export async function handler({ queryStringParameters }: GetRequest<TokenEvent>): Promise<EventResult<BookingVM[]>> {
-  const validationResult = validateTokenEvent(queryStringParameters);
+export async function handler({ querystring }: GetRequest<TokenEvent>): Promise<EventResult<BookingVM[]>> {
+  const validationResult = validateTokenEvent(querystring);
   if (!validationResult.success) {
     return {
       success: false,
@@ -13,8 +13,8 @@ export async function handler({ queryStringParameters }: GetRequest<TokenEvent>)
     };
   }
 
-  const { token } = queryStringParameters;
-  const adminId = getAdminId(token);
+  const { token } = querystring;
+  const adminId = getAdminId(token) as number;
 
   if (!adminId) {
     return {

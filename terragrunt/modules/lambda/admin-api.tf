@@ -43,6 +43,10 @@ resource "aws_api_gateway_integration" "get_bookings_get_integration" {
   integration_http_method = "POST"
   type                    = "AWS"
   uri                     = aws_lambda_function.get_bookings_lambda.invoke_arn
+
+  request_templates = {
+    "application/json" = local.get_request_mapping
+  }
 }
 
 resource "aws_lambda_permission" "get_bookings_lambda_permission" {
@@ -100,9 +104,9 @@ resource "aws_api_gateway_integration" "get_bookings_options_integration" {
   type        = "MOCK"
 
   request_templates = {
-    "application/json" = <<EOF
-{"statusCode": 200}
-EOF
+    "application/json" = jsonencode({
+      statusCode = 200
+    })
   }
 }
 
@@ -213,9 +217,9 @@ resource "aws_api_gateway_integration" "confirm_visit_options_integration" {
   type        = "MOCK"
 
   request_templates = {
-    "application/json" = <<EOF
-{"statusCode": 200}
-EOF
+    "application/json" = jsonencode({
+      statusCode = 200
+    })
   }
 }
 
@@ -326,9 +330,9 @@ resource "aws_api_gateway_integration" "admin_sign_in_options_integration" {
   type        = "MOCK"
 
   request_templates = {
-    "application/json" = <<EOF
-{"statusCode": 200}
-EOF
+    "application/json" = jsonencode({
+      statusCode = 200
+    })
   }
 }
 
@@ -409,7 +413,8 @@ resource "aws_api_gateway_deployment" "admin_api_deployment" {
       aws_api_gateway_integration.admin_sign_in_options_integration.id,
       aws_lambda_function.get_bookings_lambda.source_code_hash,
       aws_lambda_function.confirm_visit_lambda.source_code_hash,
-      aws_lambda_function.admin_sign_in_lambda.source_code_hash
+      aws_lambda_function.admin_sign_in_lambda.source_code_hash,
+      local.get_request_mapping
     ]))
   }
 

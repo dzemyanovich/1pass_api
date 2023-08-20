@@ -1,5 +1,6 @@
 locals {
   runtime = "nodejs18.x"
+  get_request_mapping = "${file("templates/api_gateway_body_mapping.template")}"
   base_env_vars = {
     NODE_ENV            = var.env
     PREPROD_DB_USERNAME = var.PREPROD_DB_USERNAME
@@ -59,7 +60,7 @@ resource "aws_lambda_function" "get_user_data_lambda" {
   runtime           = local.runtime
 
   environment {
-    variables = local.base_env_vars
+    variables = local.jwt_env_vars
   }
 }
 

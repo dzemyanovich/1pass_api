@@ -10,9 +10,10 @@ type TokenEvent = {
   token: string,
 };
 
-// todo: find type in aws-lambda library
 type GetRequest<T> = {
-  queryStringParameters: T,
+  path: Map<string, string>
+  querystring: T,
+  header: Map<string, string>
 };
 
 // ************** USER API ****************

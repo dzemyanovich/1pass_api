@@ -9,7 +9,6 @@ import {
   getAdmins,
   getBookingById,
   getUserByEmail,
-  getUserById,
   getUserByPhone,
   setVerifed,
 } from '../lambda/src/db/utils/repository';
@@ -62,7 +61,7 @@ describe('get-user-data', () => {
       phone: user.phone,
       email: user.email,
       firstName: user.firstName,
-      lastName: user.firstName,
+      lastName: user.lastName,
     });
   });
 });
@@ -121,7 +120,6 @@ describe('user workflow', () => {
       phone,
       password,
     });
-    const user = await getUserByPhone(phone);
 
     expect(sinInSuccess.success).toBe(true);
     expect(sinInSuccess.data).toBeTruthy();
@@ -610,13 +608,6 @@ describe('get-bookings', () => {
 
     expect(response.success).toBe(true);
     expect(response.data?.length).toBeGreaterThan(0);
-  });
-
-  it('invalid data', async () => {
-    const response: EventResult<BookingVM[]> = await get(GET_BOOKINGS_URL, { token: 123 });
-
-    expect(response.success).toBe(false);
-    expect(response.errors).toContain(stringButNumber('token'));
   });
 
   it('data missing', async () => {

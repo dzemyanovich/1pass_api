@@ -35,13 +35,6 @@ const CREATE_BOOKING_URL = `${API_URL}/create-booking`;
 const CANCEL_BOOKING_URL = `${API_URL}/cancel-booking`;
 
 describe('get-user-data', () => {
-  it('invalid data', async () => {
-    const response: EventResult<UserData> = await get(USER_DATA_URL, { token: 123 });
-
-    expect(response.success).toBe(false);
-    expect(response.errors).toContain(stringButNumber('token'));
-  });
-
   it('invalid token', async () => {
     const response: EventResult<UserData> = await get(USER_DATA_URL, { token: 'asdf' });
 
