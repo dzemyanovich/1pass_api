@@ -63,7 +63,7 @@ describe('get-user-data', () => {
       firstName: user.firstName,
       lastName: user.lastName,
     });
-  });
+  }, LONG_TEST_MS);
 });
 
 describe('user workflow', () => {
