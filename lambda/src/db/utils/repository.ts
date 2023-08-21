@@ -1,4 +1,4 @@
-import { Op } from 'sequelize';
+import { Op, literal } from 'sequelize';
 
 import '../config/sequelize-instance'; // init sequelize
 import { getHash } from '../../utils/auth';
@@ -178,14 +178,19 @@ export async function getTodayBooking(userId: number, sportObjectId: number): Pr
   }));
 }
 
-export async function getBookings(sportObjectId: number): Promise<Booking[]> {
+export async function getBookings(adminId: number): Promise<Booking[]> {
   return runQuery(() => Booking.findAll({
     include: {
       model: User,
       as: 'user',
     },
     where: {
-      sportObjectId,
+      sportObjectId: {
+        [Op.eq]: literal(`(
+            SELECT sportObjectId FROM Admins
+            WHERE Admins.id = ${adminId}
+          )`),
+      },
     },
   }));
 }

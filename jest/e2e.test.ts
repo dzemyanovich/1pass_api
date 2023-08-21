@@ -31,6 +31,7 @@ import { getHash, getUserId } from '../lambda/src/utils/auth';
 import { addDays, isToday } from '../lambda/src/utils/utils';
 import { get, post } from './utils/rest';
 import User from '../lambda/src/db/models/user';
+import { expectSportObject } from './utils/expect';
 
 const { API_URL, ADMIN_API_URL } = process.env;
 const SIGN_IN_URL = `${API_URL}/sign-in`;
@@ -56,7 +57,16 @@ describe('get-user-data', () => {
 
     expect(response.success).toBe(true);
     expect(response.data?.sportObjects.length).toBeGreaterThan(0);
+    response.data?.sportObjects.forEach((sportObject: SportObjectVM) => expectSportObject(sportObject));
     expect(response.data?.bookings?.length).toBeGreaterThan(0);
+    response.data?.bookings?.forEach(({ id, sportObject, bookingTime, visitTime }: UserBooking) => {
+      expectSportObject(sportObject);
+      expect(typeof (id)).toBe('number');
+      expect(Date.parse(bookingTime as unknown as string)).toBeTruthy();
+      if (visitTime) {
+        expect(Date.parse(visitTime as unknown as string)).toBeTruthy();
+      }
+    });
     expect(response.data?.userInfo).toMatchObject({
       phone: user.phone,
       email: user.email,
@@ -604,21 +614,35 @@ describe('get-bookings', () => {
 
     const token = adminSignInResult.data;
 
-    const response: EventResult<BookingVM[]> = await get(GET_BOOKINGS_URL, { token });
+    const response: EventResult<AdminBooking[]> = await get(GET_BOOKINGS_URL, { token });
 
     expect(response.success).toBe(true);
     expect(response.data?.length).toBeGreaterThan(0);
-  });
+    response.data?.forEach(({ id, user, bookingTime, visitTime }: AdminBooking) => {
+      expect(typeof (id)).toBe('number');
+      expect(user).toMatchObject({
+        id: expect.any(Number),
+        phone: expect.any(String),
+        email: expect.any(String),
+        firstName: expect.any(String),
+        lastName: expect.any(String),
+      });
+      expect(Date.parse(bookingTime as unknown as string)).toBeTruthy();
+      if (visitTime) {
+        expect(Date.parse(visitTime as unknown as string)).toBeTruthy();
+      }
+    });
+  }, LONG_TEST_MS);
 
   it('data missing', async () => {
-    const response: EventResult<BookingVM[]> = await get(GET_BOOKINGS_URL, {});
+    const response: EventResult<AdminBooking[]> = await get(GET_BOOKINGS_URL, {});
 
     expect(response.success).toBe(false);
     expect(response.errors).toContain(required('token'));
   });
 
   it('invalid token', async () => {
-    const response: EventResult<BookingVM[]> = await get(GET_BOOKINGS_URL, { token: '44444' });
+    const response: EventResult<AdminBooking[]> = await get(GET_BOOKINGS_URL, { token: '44444' });
 
     expect(response.success).toBe(false);
     expect(response.errors).toContain(invalidToken());

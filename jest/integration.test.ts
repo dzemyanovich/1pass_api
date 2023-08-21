@@ -24,6 +24,7 @@ import { get, post } from './utils/rest';
 import { getToken, getUserId } from '../lambda/src/utils/auth';
 import { getUserByPhone } from '../lambda/src/db/utils/repository';
 import { TEST_USER_PASSWORD } from '../lambda/src/db/utils/utils';
+import { expectSportObject } from './utils/expect';
 
 const { API_URL } = process.env;
 const SIGN_IN_URL = `${API_URL}/sign-in`;
@@ -47,6 +48,7 @@ describe('get-user-data', () => {
 
     expect(response.success).toBe(true);
     expect(response.data?.sportObjects.length).toBeGreaterThan(0);
+    response.data?.sportObjects.forEach((sportObject: SportObjectVM) => expectSportObject(sportObject));
     expect(response.data?.bookings).toBeFalsy();
     expect(response.data?.userInfo).toBeFalsy();
   });

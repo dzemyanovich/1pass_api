@@ -1,4 +1,4 @@
-import { getAdminById, getBookings } from '../db/utils/repository';
+import { getBookings } from '../db/utils/repository';
 import { toAdminBooking } from '../db/utils/view-models';
 import { getAdminId } from '../utils/auth';
 import { invalidToken } from '../utils/errors';
@@ -23,9 +23,7 @@ export async function handler({ querystring }: GetRequest<TokenEvent>): Promise<
     };
   }
 
-  // todo: make only 1 SQL request
-  const { sportObjectId } = await getAdminById(adminId);
-  const bookings = await getBookings(sportObjectId);
+  const bookings = await getBookings(adminId);
 
   return {
     success: true,
