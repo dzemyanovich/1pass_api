@@ -27,7 +27,7 @@ type UserInfo = {
 
 type UserData = {
   sportObjects: SportObjectVM[],
-  bookings: BookingVM[] | null,
+  bookings: UserBooking[] | null,
   userInfo: UserInfo | null,
 };
 
@@ -97,10 +97,24 @@ type SportObjectVM = {
   long: number,
 };
 
-type BookingVM = {
+type UserBooking = {
   id: number,
-  userId: number,
-  sportObjectId: number,
+  sportObject: SportObjectVM,
+  bookingTime: Date,
+  visitTime: Date,
+};
+
+type UserVM = {
+  id: string,
+  phone: string,
+  email: string,
+  firstName: string,
+  lastName: string,
+};
+
+type AdminBooking = {
+  id: number,
+  user: UserVM,
   bookingTime: Date,
   visitTime: Date,
 };

@@ -1,10 +1,10 @@
 import { getAdminById, getBookings } from '../db/utils/repository';
-import { toBooking } from '../db/utils/view-models';
+import { toAdminBooking } from '../db/utils/view-models';
 import { getAdminId } from '../utils/auth';
 import { invalidToken } from '../utils/errors';
 import { getErrors, validateTokenEvent } from '../utils/validation';
 
-export async function handler({ querystring }: GetRequest<TokenEvent>): Promise<EventResult<BookingVM[]>> {
+export async function handler({ querystring }: GetRequest<TokenEvent>): Promise<EventResult<AdminBooking[]>> {
   const validationResult = validateTokenEvent(querystring);
   if (!validationResult.success) {
     return {
@@ -29,6 +29,6 @@ export async function handler({ querystring }: GetRequest<TokenEvent>): Promise<
 
   return {
     success: true,
-    data: bookings.map(toBooking), // todo: update BookingVM to include Sport Object and User models
+    data: bookings.map(toAdminBooking),
   };
 }

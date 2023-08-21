@@ -1,6 +1,6 @@
 import SportObject from './db/models/sport-object';
 import { getSportObjects, getUserBookings, getUserById } from './db/utils/repository';
-import { toBooking, toSportObject } from './db/utils/view-models';
+import { toUserBooking, toSportObject } from './db/utils/view-models';
 import { getUserId } from './utils/auth';
 import { invalidToken } from './utils/errors';
 import { getErrors, validateTokenEvent } from './utils/validation';
@@ -9,7 +9,7 @@ export async function handler(
   { querystring }: GetRequest<TokenEvent>,
 ): Promise<EventResult<UserData>> {
   const { token } = querystring;
-  let bookings: BookingVM[] | null = null;
+  let bookings: UserBooking[] | null = null;
   let userInfo: UserInfo | null = null;
 
   if (token) {
@@ -30,7 +30,7 @@ export async function handler(
       };
     }
 
-    bookings = (await getUserBookings(userId)).map(toBooking);
+    bookings = (await getUserBookings(userId)).map(toUserBooking);
 
     const { firstName, lastName, phone, email } = await getUserById(userId);
     userInfo = {

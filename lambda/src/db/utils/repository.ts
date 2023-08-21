@@ -180,18 +180,28 @@ export async function getTodayBooking(userId: number, sportObjectId: number): Pr
 
 export async function getBookings(sportObjectId: number): Promise<Booking[]> {
   return runQuery(() => Booking.findAll({
+    include: {
+      model: User,
+      as: 'user',
+    },
     where: {
       sportObjectId,
     },
   }));
 }
 
-// todo: order by date desc
 export async function getUserBookings(userId: number): Promise<Booking[]> {
   return runQuery(() => Booking.findAll({
+    include: {
+      model: SportObject,
+      as: 'sportObject',
+    },
     where: {
       userId,
     },
+    order: [
+      ['bookingTime', 'DESC'],
+    ],
   }));
 }
 
