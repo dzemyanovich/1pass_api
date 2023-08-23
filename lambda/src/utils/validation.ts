@@ -23,7 +23,7 @@ export function validateTokenEvent(
   event: TokenEvent,
 ): SafeParseReturnType<TokenEvent, TokenEvent> {
   const schema = z.object({
-    token: z.string(),
+    token: z.string().nonempty(),
   });
 
   return schema.safeParse(event);
@@ -33,7 +33,7 @@ export function validateTokenEvent(
 
 export function validateSendCode(event: SendCodeEvent): SafeParseReturnType<SendCodeEvent, SendCodeEvent> {
   const schema = z.object({
-    phone: z.string().refine(validator.isMobilePhone),
+    phone: z.string().nonempty().refine(validator.isMobilePhone),
   });
 
   return schema.safeParse(event);
@@ -41,8 +41,8 @@ export function validateSendCode(event: SendCodeEvent): SafeParseReturnType<Send
 
 export function validateVerifyCode(event: VerifyCodeEvent): SafeParseReturnType<VerifyCodeEvent, VerifyCodeEvent> {
   const schema = z.object({
-    phone: z.string().refine(validator.isMobilePhone),
-    code: z.string(),
+    phone: z.string().nonempty().refine(validator.isMobilePhone),
+    code: z.string().nonempty(),
   });
 
   return schema.safeParse(event);
@@ -50,13 +50,13 @@ export function validateVerifyCode(event: VerifyCodeEvent): SafeParseReturnType<
 
 export function validateSignUp(event: SignUpEvent): SafeParseReturnType<SignUpEvent, SignUpEvent> {
   const schema = z.object({
-    phone: z.string().refine(validator.isMobilePhone),
-    firstName: z.string(),
-    lastName: z.string(),
-    email: z.string().email(),
-    confirmEmail: z.string().email(),
-    password: z.string().min(6),
-    confirmPassword: z.string().min(6),
+    phone: z.string().nonempty().refine(validator.isMobilePhone),
+    firstName: z.string().nonempty(),
+    lastName: z.string().nonempty(),
+    email: z.string().nonempty().email(),
+    confirmEmail: z.string().nonempty().email(),
+    password: z.string().nonempty().min(6),
+    confirmPassword: z.string().nonempty().min(6),
   }).superRefine(({ email, confirmEmail }, ctx) => {
     if (email !== confirmEmail) {
       ctx.addIssue({
@@ -80,8 +80,8 @@ export function validateSignUp(event: SignUpEvent): SafeParseReturnType<SignUpEv
 
 export function validateSignIn(event: SignInEvent): SafeParseReturnType<SignInEvent, SignInEvent> {
   const schema = z.object({
-    phone: z.string().refine(validator.isMobilePhone),
-    password: z.string(),
+    phone: z.string().nonempty().refine(validator.isMobilePhone),
+    password: z.string().nonempty(),
   });
 
   return schema.safeParse(event);
@@ -91,7 +91,7 @@ export function validateCreateBooking(
   event: CreateBookingEvent,
 ): SafeParseReturnType<CreateBookingEvent, CreateBookingEvent> {
   const schema = z.object({
-    token: z.string(),
+    token: z.string().nonempty(),
     sportObjectId: z.number(),
   });
 
@@ -102,7 +102,7 @@ export function validateCancelBooking(
   event: CancelBookingEvent,
 ): SafeParseReturnType<CancelBookingEvent, CancelBookingEvent> {
   const schema = z.object({
-    token: z.string(),
+    token: z.string().nonempty(),
     bookingId: z.number(),
   });
 
@@ -115,7 +115,7 @@ export function validateConfirmVisit(
   event: ConfirmVisitEvent,
 ): SafeParseReturnType<ConfirmVisitEvent, ConfirmVisitEvent> {
   const schema = z.object({
-    token: z.string(),
+    token: z.string().nonempty(),
     bookingId: z.number(),
   });
 
@@ -124,8 +124,8 @@ export function validateConfirmVisit(
 
 export function validateAdminSignIn(event: AdminSignInEvent): SafeParseReturnType<AdminSignInEvent, AdminSignInEvent> {
   const schema = z.object({
-    username: z.string(),
-    password: z.string(),
+    username: z.string().nonempty(),
+    password: z.string().nonempty(),
   });
 
   return schema.safeParse(event);

@@ -1,5 +1,5 @@
-import { confirmMismatch, invalidInput } from './errors';
-import { getErrors, validateSendCode, validateSignUp, validateVerifyCode } from './validation';
+import { confirmMismatch, invalidInput, nonEmpty } from './errors';
+import { getErrors, validateAdminSignIn, validateSendCode, validateSignUp, validateVerifyCode } from './validation';
 
 describe('validateSendCode', () => {
   it('valid data', async () => {
@@ -93,5 +93,20 @@ describe('validateSignUp', () => {
     expect(errors).toContain(invalidInput('phone'));
     expect(errors).toContain(confirmMismatch('email'));
     expect(errors).toContain(confirmMismatch('password'));
+  });
+});
+
+describe('validateAdminSignIn', () => {
+  it('invalid because emptry strings', async () => {
+    const result = validateAdminSignIn({
+      username: '',
+      password: '',
+    });
+
+    const errors = getErrors(result);
+
+    expect(result.success).toBe(false);
+    expect(errors).toContain(nonEmpty('username'));
+    expect(errors).toContain(nonEmpty('password'));
   });
 });

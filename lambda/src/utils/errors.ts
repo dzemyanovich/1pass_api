@@ -87,3 +87,7 @@ export function pastBooking(): string {
 export function noBookingAccess(): string {
   return 'Not enough permissions to edit this booking';
 }
+
+export function nonEmpty(fieldName: string): string {
+  return `${fieldName}: String must contain at least 1 character(s)`;
+}
