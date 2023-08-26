@@ -41,7 +41,7 @@ const CREATE_BOOKING_URL = `${API_URL}/create-booking`;
 const CANCEL_BOOKING_URL = `${API_URL}/cancel-booking`;
 const ADMIN_SIGN_IN_URL = `${ADMIN_API_URL}/admin-sign-in`;
 const CONFIRM_VISIT_URL = `${ADMIN_API_URL}/confirm-visit`;
-const GET_BOOKINGS_URL = `${ADMIN_API_URL}/get-bookings`;
+const GET_ADMIN_DATA_URL = `${ADMIN_API_URL}/get-admin-data`;
 const LONG_TEST_MS = 20 * 1000;
 
 describe('get-user-data', () => {
@@ -601,7 +601,7 @@ describe('confirm-visit', () => {
   });
 });
 
-describe('get-bookings', () => {
+describe('get-admin-data', () => {
   it('success', async () => {
     const admins = await getAdmins();
     const admin = admins[0];
@@ -614,7 +614,7 @@ describe('get-bookings', () => {
 
     const token = adminSignInResult.data;
 
-    const response: EventResult<AdminData> = await get(GET_BOOKINGS_URL, { token });
+    const response: EventResult<AdminData> = await get(GET_ADMIN_DATA_URL, { token });
 
     expect(response.success).toBe(true);
     expect(response.data?.username).toBe(admin.username);
@@ -637,14 +637,14 @@ describe('get-bookings', () => {
   }, LONG_TEST_MS);
 
   it('data missing', async () => {
-    const response: EventResult<AdminBooking[]> = await get(GET_BOOKINGS_URL, {});
+    const response: EventResult<AdminBooking[]> = await get(GET_ADMIN_DATA_URL, {});
 
     expect(response.success).toBe(false);
     expect(response.errors).toContain(required('token'));
   });
 
   it('invalid token', async () => {
-    const response: EventResult<AdminBooking[]> = await get(GET_BOOKINGS_URL, { token: '44444' });
+    const response: EventResult<AdminBooking[]> = await get(GET_ADMIN_DATA_URL, { token: '44444' });
 
     expect(response.success).toBe(false);
     expect(response.errors).toContain(invalidToken());
