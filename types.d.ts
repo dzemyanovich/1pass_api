@@ -118,3 +118,9 @@ type AdminBooking = {
   bookingTime: Date,
   visitTime: Date,
 };
+
+type AdminData = {
+  username: string,
+  sportObject: SportObjectVM,
+  bookings: AdminBooking[],
+};

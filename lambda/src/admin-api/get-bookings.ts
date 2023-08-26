@@ -1,10 +1,10 @@
-import { getBookings } from '../db/utils/repository';
-import { toAdminBooking } from '../db/utils/view-models';
+import { getBookings, getFullAdmin } from '../db/utils/repository';
+import { toAdminBooking, toSportObject } from '../db/utils/view-models';
 import { getAdminId } from '../utils/auth';
 import { invalidToken } from '../utils/errors';
 import { getErrors, validateTokenEvent } from '../utils/validation';
 
-export async function handler({ querystring }: GetRequest<TokenEvent>): Promise<EventResult<AdminBooking[]>> {
+export async function handler({ querystring }: GetRequest<TokenEvent>): Promise<EventResult<AdminData>> {
   const validationResult = validateTokenEvent(querystring);
   if (!validationResult.success) {
     return {
@@ -23,10 +23,16 @@ export async function handler({ querystring }: GetRequest<TokenEvent>): Promise<
     };
   }
 
+  const admin = await getFullAdmin(adminId);
+
   const bookings = await getBookings(adminId);
 
   return {
     success: true,
-    data: bookings.map(toAdminBooking),
+    data: {
+      username: admin.username,
+      sportObject: toSportObject(admin.sportObject),
+      bookings: bookings.map(toAdminBooking),
+    },
   };
 }

@@ -232,6 +232,18 @@ export async function getAdminById(id: number): Promise<Admin> {
   }) as Promise<Admin>);
 }
 
+export async function getFullAdmin(id: number): Promise<Admin> {
+  return runQuery(() => Admin.findOne({
+    include: {
+      model: SportObject,
+      as: 'sportObject',
+    },
+    where: {
+      id,
+    },
+  }) as Promise<Admin>);
+}
+
 export async function adminSignIn(event: AdminSignInEvent): Promise<Admin> {
   const { username, password } = event;
 

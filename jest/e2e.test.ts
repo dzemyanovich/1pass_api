@@ -614,11 +614,13 @@ describe('get-bookings', () => {
 
     const token = adminSignInResult.data;
 
-    const response: EventResult<AdminBooking[]> = await get(GET_BOOKINGS_URL, { token });
+    const response: EventResult<AdminData> = await get(GET_BOOKINGS_URL, { token });
 
     expect(response.success).toBe(true);
-    expect(response.data?.length).toBeGreaterThan(0);
-    response.data?.forEach(({ id, user, bookingTime, visitTime }: AdminBooking) => {
+    expect(response.data?.username).toBe(admin.username);
+    expectSportObject(response.data?.sportObject as SportObjectVM);
+    expect(response.data?.bookings.length).toBeGreaterThan(0);
+    response.data?.bookings.forEach(({ id, user, bookingTime, visitTime }: AdminBooking) => {
       expect(typeof (id)).toBe('number');
       expect(user).toMatchObject({
         id: expect.any(Number),
