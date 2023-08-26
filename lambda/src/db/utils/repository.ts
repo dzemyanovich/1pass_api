@@ -248,6 +248,10 @@ export async function adminSignIn(event: AdminSignInEvent): Promise<Admin> {
   const { username, password } = event;
 
   return runQuery(() => Admin.findOne({
+    include: {
+      model: SportObject,
+      as: 'sportObject',
+    },
     where: {
       username,
       password: getHash(password),

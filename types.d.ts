@@ -87,6 +87,16 @@ type AdminTokenData = {
   createdAt: number,
 };
 
+type AdminData = {
+  username: string,
+  sportObject: SportObjectVM,
+  bookings: AdminBooking[],
+};
+
+type AdminSignInResult = AdminData & {
+  token: string,
+};
+
 // ************** DB ****************
 
 type SportObjectVM = {
@@ -97,13 +107,6 @@ type SportObjectVM = {
   long: number,
 };
 
-type UserBooking = {
-  id: number,
-  sportObject: SportObjectVM,
-  bookingTime: Date,
-  visitTime: Date,
-};
-
 type UserVM = {
   id: string,
   phone: string,
@@ -112,15 +115,16 @@ type UserVM = {
   lastName: string,
 };
 
+type UserBooking = {
+  id: number,
+  sportObject: SportObjectVM,
+  bookingTime: Date,
+  visitTime: Date,
+};
+
 type AdminBooking = {
   id: number,
   user: UserVM,
   bookingTime: Date,
   visitTime: Date,
-};
-
-type AdminData = {
-  username: string,
-  sportObject: SportObjectVM,
-  bookings: AdminBooking[],
 };

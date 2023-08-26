@@ -27,11 +27,11 @@ import {
 import Booking from '../lambda/src/db/models/booking';
 import { registeredUser } from '../lambda/src/db/utils/test-users';
 import { TEST_ADMIN_PASSWORD, TEST_USER_PASSWORD } from '../lambda/src/db/utils/utils';
-import { getHash, getUserId } from '../lambda/src/utils/auth';
+import { getAdminToken, getHash, getUserId } from '../lambda/src/utils/auth';
 import { addDays, isToday } from '../lambda/src/utils/utils';
 import { get, post } from './utils/rest';
 import User from '../lambda/src/db/models/user';
-import { expectSportObject } from './utils/expect';
+import { expectAdminData, expectSportObject } from './utils/expect';
 
 const { API_URL, ADMIN_API_URL } = process.env;
 const SIGN_IN_URL = `${API_URL}/sign-in`;
@@ -61,7 +61,7 @@ describe('get-user-data', () => {
     expect(response.data?.bookings?.length).toBeGreaterThan(0);
     response.data?.bookings?.forEach(({ id, sportObject, bookingTime, visitTime }: UserBooking) => {
       expectSportObject(sportObject);
-      expect(typeof (id)).toBe('number');
+      expect(typeof id).toBe('number');
       expect(Date.parse(bookingTime as unknown as string)).toBeTruthy();
       if (visitTime) {
         expect(Date.parse(visitTime as unknown as string)).toBeTruthy();
@@ -274,15 +274,12 @@ describe('cancel-booking -> already visited', () => {
     });
 
     const admin = await getAdminBySportObjectId(sportObjectId);
+    const adminToken = getAdminToken(admin.id);
 
-    const adminSignInResult: EventResult<string> = await post(ADMIN_SIGN_IN_URL, {
-      username: admin.username,
-      password: TEST_ADMIN_PASSWORD,
-    });
-    expect(adminSignInResult.success).toBe(true);
+    expect(adminToken).toBeTruthy();
 
     const confirmVisitResult: EventResult<void> = await post(CONFIRM_VISIT_URL, {
-      token: adminSignInResult.data,
+      token: adminToken,
       bookingId,
     });
     const booking = await getBookingById(bookingId) as Booking;
@@ -352,7 +349,7 @@ describe('cancel-booking -> booking date is in the past', () => {
 
 describe('admin-sign-in', () => {
   it('invalid types', async () => {
-    const adminSignInResult: EventResult<string> = await post(ADMIN_SIGN_IN_URL, {
+    const adminSignInResult: EventResult<AdminSignInResult> = await post(ADMIN_SIGN_IN_URL, {
       username: 123,
       password: true,
     });
@@ -363,7 +360,7 @@ describe('admin-sign-in', () => {
   });
 
   it('data missig', async () => {
-    const adminSignInResult: EventResult<string> = await post(ADMIN_SIGN_IN_URL, {});
+    const adminSignInResult: EventResult<AdminSignInResult> = await post(ADMIN_SIGN_IN_URL, {});
 
     expect(adminSignInResult.success).toBe(false);
     expect(adminSignInResult.errors).toContain(required('username'));
@@ -371,7 +368,7 @@ describe('admin-sign-in', () => {
   });
 
   it('user not found (incorrect username and password)', async () => {
-    const adminSignInResult: EventResult<string> = await post(ADMIN_SIGN_IN_URL, {
+    const adminSignInResult: EventResult<AdminSignInResult> = await post(ADMIN_SIGN_IN_URL, {
       username: 'asdf',
       password: 'adf',
     });
@@ -387,7 +384,7 @@ describe('admin-sign-in', () => {
 
     const admin = await getAdminBySportObjectId(sportObjectId);
 
-    const adminSignInResult: EventResult<string> = await post(ADMIN_SIGN_IN_URL, {
+    const adminSignInResult: EventResult<AdminSignInResult> = await post(ADMIN_SIGN_IN_URL, {
       username: admin.username,
       password: `${TEST_ADMIN_PASSWORD}_incorrect_one`,
     });
@@ -403,12 +400,13 @@ describe('admin-sign-in', () => {
 
     const admin = await getAdminBySportObjectId(sportObjectId);
 
-    const adminSignInResult: EventResult<string> = await post(ADMIN_SIGN_IN_URL, {
+    const adminSignInResult: EventResult<AdminSignInResult> = await post(ADMIN_SIGN_IN_URL, {
       username: admin.username,
       password: TEST_ADMIN_PASSWORD,
     });
 
     expect(adminSignInResult.success).toBe(true);
+    expectAdminData(adminSignInResult, admin);
   });
 });
 
@@ -421,13 +419,9 @@ describe('confirm-visit', () => {
     const sportObjectId = sportObjects[0].id;
 
     const admin = await getAdminBySportObjectId(sportObjectId);
+    const adminToken = getAdminToken(admin.id);
 
-    const adminSignInResult: EventResult<string> = await post(ADMIN_SIGN_IN_URL, {
-      username: admin.username,
-      password: TEST_ADMIN_PASSWORD,
-    });
-
-    expect(adminSignInResult.success).toBe(true);
+    expect(adminToken).toBeTruthy();
 
     const user = await getUserByPhone(registeredUser.phone);
     const booking = await createTestBooking(user.id as number, sportObjectId, new Date());
@@ -435,7 +429,7 @@ describe('confirm-visit', () => {
     bookingIds.push(bookingId);
 
     const confirmVisitResult: EventResult<void> = await post(CONFIRM_VISIT_URL, {
-      token: adminSignInResult.data,
+      token: adminToken,
       bookingId,
     });
 
@@ -479,16 +473,12 @@ describe('confirm-visit', () => {
     const sportObjectId = sportObjects[0].id;
 
     const admin = await getAdminBySportObjectId(sportObjectId);
+    const adminToken = getAdminToken(admin.id);
 
-    const adminSignInResult: EventResult<string> = await post(ADMIN_SIGN_IN_URL, {
-      username: admin.username,
-      password: TEST_ADMIN_PASSWORD,
-    });
-
-    expect(adminSignInResult.success).toBe(true);
+    expect(adminToken).toBeTruthy();
 
     const confirmVisitResult: EventResult<void> = await post(CONFIRM_VISIT_URL, {
-      token: adminSignInResult.data,
+      token: adminToken,
       bookingId: -133,
     });
 
@@ -502,13 +492,9 @@ describe('confirm-visit', () => {
     const sportObjectId = sportObjects[0].id;
 
     const admin = await getAdminBySportObjectId(sportObjectId);
+    const adminToken = getAdminToken(admin.id);
 
-    const adminSignInResult: EventResult<string> = await post(ADMIN_SIGN_IN_URL, {
-      username: admin.username,
-      password: TEST_ADMIN_PASSWORD,
-    });
-
-    expect(adminSignInResult.success).toBe(true);
+    expect(adminToken).toBeTruthy();
 
     const user = await getUserByPhone(registeredUser.phone);
     const booking = await createTestBooking(user.id as number, sportObjects[1].id, new Date());
@@ -516,7 +502,7 @@ describe('confirm-visit', () => {
     bookingIds.push(bookingId);
 
     const confirmVisitResult: EventResult<void> = await post(CONFIRM_VISIT_URL, {
-      token: adminSignInResult.data,
+      token: adminToken,
       bookingId,
     });
 
@@ -532,13 +518,9 @@ describe('confirm-visit', () => {
     const sportObjectId = sportObjects[0].id;
 
     const admin = await getAdminBySportObjectId(sportObjectId);
+    const adminToken = getAdminToken(admin.id);
 
-    const adminSignInResult: EventResult<string> = await post(ADMIN_SIGN_IN_URL, {
-      username: admin.username,
-      password: TEST_ADMIN_PASSWORD,
-    });
-
-    expect(adminSignInResult.success).toBe(true);
+    expect(adminToken).toBeTruthy();
 
     const user = await getUserByPhone(registeredUser.phone);
     const yesterday = addDays(new Date(), -1);
@@ -547,7 +529,7 @@ describe('confirm-visit', () => {
     bookingIds.push(bookingId);
 
     const confirmVisitResult: EventResult<void> = await post(CONFIRM_VISIT_URL, {
-      token: adminSignInResult.data,
+      token: adminToken,
       bookingId,
     });
 
@@ -563,13 +545,9 @@ describe('confirm-visit', () => {
     const sportObjectId = sportObjects[0].id;
 
     const admin = await getAdminBySportObjectId(sportObjectId);
+    const adminToken = getAdminToken(admin.id);
 
-    const adminSignInResult: EventResult<string> = await post(ADMIN_SIGN_IN_URL, {
-      username: admin.username,
-      password: TEST_ADMIN_PASSWORD,
-    });
-
-    expect(adminSignInResult.success).toBe(true);
+    expect(adminToken).toBeTruthy();
 
     const user = await getUserByPhone(registeredUser.phone);
     const booking = await createTestBooking(user.id as number, sportObjectId, new Date());
@@ -582,7 +560,7 @@ describe('confirm-visit', () => {
     expect(isToday(visitedBooking?.visitTime as Date)).toBe(true);
 
     const confirmVisitResult: EventResult<void> = await post(CONFIRM_VISIT_URL, {
-      token: adminSignInResult.data,
+      token: adminToken,
       bookingId,
     });
 
@@ -605,35 +583,16 @@ describe('get-admin-data', () => {
   it('success', async () => {
     const admins = await getAdmins();
     const admin = admins[0];
-    const adminSignInResult: EventResult<string> = await post(ADMIN_SIGN_IN_URL, {
-      username: admin.username,
-      password: TEST_ADMIN_PASSWORD,
+    const adminToken = getAdminToken(admin.id);
+
+    expect(adminToken).toBeTruthy();
+
+    const response: EventResult<AdminData> = await get(GET_ADMIN_DATA_URL, {
+      token: adminToken,
     });
-
-    expect(adminSignInResult.success).toBe(true);
-
-    const token = adminSignInResult.data;
-
-    const response: EventResult<AdminData> = await get(GET_ADMIN_DATA_URL, { token });
 
     expect(response.success).toBe(true);
-    expect(response.data?.username).toBe(admin.username);
-    expectSportObject(response.data?.sportObject as SportObjectVM);
-    expect(response.data?.bookings.length).toBeGreaterThan(0);
-    response.data?.bookings.forEach(({ id, user, bookingTime, visitTime }: AdminBooking) => {
-      expect(typeof (id)).toBe('number');
-      expect(user).toMatchObject({
-        id: expect.any(Number),
-        phone: expect.any(String),
-        email: expect.any(String),
-        firstName: expect.any(String),
-        lastName: expect.any(String),
-      });
-      expect(Date.parse(bookingTime as unknown as string)).toBeTruthy();
-      if (visitTime) {
-        expect(Date.parse(visitTime as unknown as string)).toBeTruthy();
-      }
-    });
+    expectAdminData(response, admin);
   }, LONG_TEST_MS);
 
   it('data missing', async () => {
