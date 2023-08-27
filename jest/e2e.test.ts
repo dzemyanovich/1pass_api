@@ -592,7 +592,7 @@ describe('get-admin-data', () => {
     });
 
     expect(response.success).toBe(true);
-    expectAdminData(response, admin);
+    expectAdminData(response.data as AdminData, admin);
   }, LONG_TEST_MS);
 
   it('data missing', async () => {
