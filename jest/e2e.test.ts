@@ -274,7 +274,7 @@ describe('cancel-booking -> already visited', () => {
     });
 
     const admin = await getAdminBySportObjectId(sportObjectId);
-    const adminToken = getAdminToken(admin.id);
+    const adminToken = getAdminToken(admin.id as number);
 
     expect(adminToken).toBeTruthy();
 
@@ -419,7 +419,7 @@ describe('confirm-visit', () => {
     const sportObjectId = sportObjects[0].id;
 
     const admin = await getAdminBySportObjectId(sportObjectId);
-    const adminToken = getAdminToken(admin.id);
+    const adminToken = getAdminToken(admin.id as number);
 
     expect(adminToken).toBeTruthy();
 
@@ -473,7 +473,7 @@ describe('confirm-visit', () => {
     const sportObjectId = sportObjects[0].id;
 
     const admin = await getAdminBySportObjectId(sportObjectId);
-    const adminToken = getAdminToken(admin.id);
+    const adminToken = getAdminToken(admin.id as number);
 
     expect(adminToken).toBeTruthy();
 
@@ -492,7 +492,7 @@ describe('confirm-visit', () => {
     const sportObjectId = sportObjects[0].id;
 
     const admin = await getAdminBySportObjectId(sportObjectId);
-    const adminToken = getAdminToken(admin.id);
+    const adminToken = getAdminToken(admin.id as number);
 
     expect(adminToken).toBeTruthy();
 
@@ -518,7 +518,7 @@ describe('confirm-visit', () => {
     const sportObjectId = sportObjects[0].id;
 
     const admin = await getAdminBySportObjectId(sportObjectId);
-    const adminToken = getAdminToken(admin.id);
+    const adminToken = getAdminToken(admin.id as number);
 
     expect(adminToken).toBeTruthy();
 
@@ -545,7 +545,7 @@ describe('confirm-visit', () => {
     const sportObjectId = sportObjects[0].id;
 
     const admin = await getAdminBySportObjectId(sportObjectId);
-    const adminToken = getAdminToken(admin.id);
+    const adminToken = getAdminToken(admin.id as number);
 
     expect(adminToken).toBeTruthy();
 
@@ -583,7 +583,7 @@ describe('get-admin-data', () => {
   it('success', async () => {
     const admins = await getAdmins();
     const admin = admins[0];
-    const adminToken = getAdminToken(admin.id);
+    const adminToken = getAdminToken(admin.id as number);
 
     expect(adminToken).toBeTruthy();
 

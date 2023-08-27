@@ -19,7 +19,7 @@ export async function handler(event: AdminSignInEvent): Promise<EventResult<Admi
     return {
       success: false,
       errors: [userNotFound()],
-    }
+    };
   }
 
   const adminId = admin.id as number;

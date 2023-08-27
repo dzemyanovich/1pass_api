@@ -1,4 +1,4 @@
-import Admin from "../../lambda/src/db/models/admin";
+import Admin from '../../lambda/src/db/models/admin';
 
 export function expectSportObject(sportObject: SportObjectVM): void {
   expect(sportObject).toMatchObject({
