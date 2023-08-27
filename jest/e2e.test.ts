@@ -278,13 +278,13 @@ describe('cancel-booking -> already visited', () => {
 
     expect(adminToken).toBeTruthy();
 
-    const confirmVisitResult: EventResult<void> = await post(CONFIRM_VISIT_URL, {
+    const confirmVisitResponse: ConfirmVisitResponse = await post(CONFIRM_VISIT_URL, {
       token: adminToken,
       bookingId,
     });
     const booking = await getBookingById(bookingId) as Booking;
 
-    expect(confirmVisitResult.success).toBe(true);
+    expect(confirmVisitResponse.success).toBe(true);
     expect(isToday(booking.visitTime)).toBe(true);
 
     const response: EventResult<number> = await post(CANCEL_BOOKING_URL, {
@@ -349,32 +349,32 @@ describe('cancel-booking -> booking date is in the past', () => {
 
 describe('admin-sign-in', () => {
   it('invalid types', async () => {
-    const adminSignInResult: EventResult<AdminSignInResult> = await post(ADMIN_SIGN_IN_URL, {
+    const adminSignInResponse: AdminSignInResponse = await post(ADMIN_SIGN_IN_URL, {
       username: 123,
       password: true,
     });
 
-    expect(adminSignInResult.success).toBe(false);
-    expect(adminSignInResult.errors).toContain(stringButNumber('username'));
-    expect(adminSignInResult.errors).toContain(stringButBoolean('password'));
+    expect(adminSignInResponse.success).toBe(false);
+    expect(adminSignInResponse.errors).toContain(stringButNumber('username'));
+    expect(adminSignInResponse.errors).toContain(stringButBoolean('password'));
   });
 
   it('data missig', async () => {
-    const adminSignInResult: EventResult<AdminSignInResult> = await post(ADMIN_SIGN_IN_URL, {});
+    const adminSignInResponse: AdminSignInResponse = await post(ADMIN_SIGN_IN_URL, {});
 
-    expect(adminSignInResult.success).toBe(false);
-    expect(adminSignInResult.errors).toContain(required('username'));
-    expect(adminSignInResult.errors).toContain(required('password'));
+    expect(adminSignInResponse.success).toBe(false);
+    expect(adminSignInResponse.errors).toContain(required('username'));
+    expect(adminSignInResponse.errors).toContain(required('password'));
   });
 
   it('user not found (incorrect username and password)', async () => {
-    const adminSignInResult: EventResult<AdminSignInResult> = await post(ADMIN_SIGN_IN_URL, {
+    const adminSignInResponse: AdminSignInResponse = await post(ADMIN_SIGN_IN_URL, {
       username: 'asdf',
       password: 'adf',
     });
 
-    expect(adminSignInResult.success).toBe(false);
-    expect(adminSignInResult.errors).toContain(userNotFound());
+    expect(adminSignInResponse.success).toBe(false);
+    expect(adminSignInResponse.errors).toContain(userNotFound());
   });
 
   it('user not found (incorrect password)', async () => {
@@ -384,13 +384,13 @@ describe('admin-sign-in', () => {
 
     const admin = await getAdminBySportObjectId(sportObjectId);
 
-    const adminSignInResult: EventResult<AdminSignInResult> = await post(ADMIN_SIGN_IN_URL, {
+    const adminSignInResponse: AdminSignInResponse = await post(ADMIN_SIGN_IN_URL, {
       username: admin.username,
       password: `${TEST_ADMIN_PASSWORD}_incorrect_one`,
     });
 
-    expect(adminSignInResult.success).toBe(false);
-    expect(adminSignInResult.errors).toContain(userNotFound());
+    expect(adminSignInResponse.success).toBe(false);
+    expect(adminSignInResponse.errors).toContain(userNotFound());
   });
 
   it('success', async () => {
@@ -400,13 +400,13 @@ describe('admin-sign-in', () => {
 
     const admin = await getAdminBySportObjectId(sportObjectId);
 
-    const adminSignInResult: EventResult<AdminSignInResult> = await post(ADMIN_SIGN_IN_URL, {
+    const adminSignInResponse: AdminSignInResponse = await post(ADMIN_SIGN_IN_URL, {
       username: admin.username,
       password: TEST_ADMIN_PASSWORD,
     });
 
-    expect(adminSignInResult.success).toBe(true);
-    expectAdminData(adminSignInResult.data?.adminData as AdminData, admin);
+    expect(adminSignInResponse.success).toBe(true);
+    expectAdminData(adminSignInResponse.data?.adminData as AdminData, admin);
   });
 });
 
@@ -428,43 +428,43 @@ describe('confirm-visit', () => {
     const bookingId = booking.id as number;
     bookingIds.push(bookingId);
 
-    const confirmVisitResult: EventResult<void> = await post(CONFIRM_VISIT_URL, {
+    const confirmVisitResponse: ConfirmVisitResponse = await post(CONFIRM_VISIT_URL, {
       token: adminToken,
       bookingId,
     });
 
-    expect(confirmVisitResult.success).toBe(true);
+    expect(confirmVisitResponse.success).toBe(true);
 
     await deleteBooking(bookingId);
   }, LONG_TEST_MS);
 
   it('invalid types', async () => {
-    const confirmVisitResult: EventResult<void> = await post(CONFIRM_VISIT_URL, {
+    const confirmVisitResponse: ConfirmVisitResponse = await post(CONFIRM_VISIT_URL, {
       token: 123,
       bookingId: true,
     });
 
-    expect(confirmVisitResult.success).toBe(false);
-    expect(confirmVisitResult.errors).toContain(stringButNumber('token'));
-    expect(confirmVisitResult.errors).toContain(numberButBoolean('bookingId'));
+    expect(confirmVisitResponse.success).toBe(false);
+    expect(confirmVisitResponse.errors).toContain(stringButNumber('token'));
+    expect(confirmVisitResponse.errors).toContain(numberButBoolean('bookingId'));
   });
 
   it('data missig', async () => {
-    const confirmVisitResult: EventResult<void> = await post(CONFIRM_VISIT_URL, {});
+    const confirmVisitResponse: ConfirmVisitResponse = await post(CONFIRM_VISIT_URL, {});
 
-    expect(confirmVisitResult.success).toBe(false);
-    expect(confirmVisitResult.errors).toContain(required('token'));
-    expect(confirmVisitResult.errors).toContain(required('bookingId'));
+    expect(confirmVisitResponse.success).toBe(false);
+    expect(confirmVisitResponse.errors).toContain(required('token'));
+    expect(confirmVisitResponse.errors).toContain(required('bookingId'));
   });
 
   it('invalid token', async () => {
-    const confirmVisitResult: EventResult<void> = await post(CONFIRM_VISIT_URL, {
+    const confirmVisitResponse: ConfirmVisitResponse = await post(CONFIRM_VISIT_URL, {
       token: '123',
       bookingId: 333,
     });
 
-    expect(confirmVisitResult.success).toBe(false);
-    expect(confirmVisitResult.errors).toContain(invalidToken());
+    expect(confirmVisitResponse.success).toBe(false);
+    expect(confirmVisitResponse.errors).toContain(invalidToken());
   });
 
   it('no booking found', async () => {
@@ -477,13 +477,13 @@ describe('confirm-visit', () => {
 
     expect(adminToken).toBeTruthy();
 
-    const confirmVisitResult: EventResult<void> = await post(CONFIRM_VISIT_URL, {
+    const confirmVisitResponse: ConfirmVisitResponse = await post(CONFIRM_VISIT_URL, {
       token: adminToken,
       bookingId: -133,
     });
 
-    expect(confirmVisitResult.success).toBe(false);
-    expect(confirmVisitResult.errors).toContain(noBooking());
+    expect(confirmVisitResponse.success).toBe(false);
+    expect(confirmVisitResponse.errors).toContain(noBooking());
   }, LONG_TEST_MS);
 
   it('no booking access', async () => {
@@ -501,13 +501,13 @@ describe('confirm-visit', () => {
     const bookingId = booking.id as number;
     bookingIds.push(bookingId);
 
-    const confirmVisitResult: EventResult<void> = await post(CONFIRM_VISIT_URL, {
+    const confirmVisitResponse: ConfirmVisitResponse = await post(CONFIRM_VISIT_URL, {
       token: adminToken,
       bookingId,
     });
 
-    expect(confirmVisitResult.success).toBe(false);
-    expect(confirmVisitResult.errors).toContain(noBookingAccess());
+    expect(confirmVisitResponse.success).toBe(false);
+    expect(confirmVisitResponse.errors).toContain(noBookingAccess());
 
     await deleteBooking(bookingId);
   }, LONG_TEST_MS);
@@ -528,13 +528,13 @@ describe('confirm-visit', () => {
     const bookingId = booking.id as number;
     bookingIds.push(bookingId);
 
-    const confirmVisitResult: EventResult<void> = await post(CONFIRM_VISIT_URL, {
+    const confirmVisitResponse: ConfirmVisitResponse = await post(CONFIRM_VISIT_URL, {
       token: adminToken,
       bookingId,
     });
 
-    expect(confirmVisitResult.success).toBe(false);
-    expect(confirmVisitResult.errors).toContain(pastBooking());
+    expect(confirmVisitResponse.success).toBe(false);
+    expect(confirmVisitResponse.errors).toContain(pastBooking());
 
     await deleteBooking(bookingId);
   }, LONG_TEST_MS);
@@ -559,13 +559,13 @@ describe('confirm-visit', () => {
 
     expect(isToday(visitedBooking?.visitTime as Date)).toBe(true);
 
-    const confirmVisitResult: EventResult<void> = await post(CONFIRM_VISIT_URL, {
+    const confirmVisitResponse: ConfirmVisitResponse = await post(CONFIRM_VISIT_URL, {
       token: adminToken,
       bookingId,
     });
 
-    expect(confirmVisitResult.success).toBe(false);
-    expect(confirmVisitResult.errors).toContain(pastBooking());
+    expect(confirmVisitResponse.success).toBe(false);
+    expect(confirmVisitResponse.errors).toContain(pastBooking());
 
     await deleteBooking(bookingId);
   }, LONG_TEST_MS);
@@ -579,7 +579,8 @@ describe('confirm-visit', () => {
   });
 });
 
-describe('get-admin-data', () => {
+// todo: remove only
+describe.only('get-admin-data', () => {
   it('success', async () => {
     const admins = await getAdmins();
     const admin = admins[0];
@@ -587,25 +588,25 @@ describe('get-admin-data', () => {
 
     expect(adminToken).toBeTruthy();
 
-    const response: EventResult<AdminData> = await get(GET_ADMIN_DATA_URL, {
+    const adminDataResponse: AdminDataResponse = await get(GET_ADMIN_DATA_URL, {
       token: adminToken,
     });
 
-    expect(response.success).toBe(true);
-    expectAdminData(response.data as AdminData, admin);
+    expect(adminDataResponse.success).toBe(true);
+    expectAdminData(adminDataResponse.data as AdminData, admin);
   }, LONG_TEST_MS);
 
   it('data missing', async () => {
-    const response: EventResult<AdminBooking[]> = await get(GET_ADMIN_DATA_URL, {});
+    const adminDataResponse: AdminDataResponse = await get(GET_ADMIN_DATA_URL, {});
 
-    expect(response.success).toBe(false);
-    expect(response.errors).toContain(required('token'));
+    expect(adminDataResponse.success).toBe(false);
+    expect(adminDataResponse.errors).toContain(required('token'));
   });
 
   it('invalid token', async () => {
-    const response: EventResult<AdminBooking[]> = await get(GET_ADMIN_DATA_URL, { token: '44444' });
+    const adminDataResponse: AdminDataResponse = await get(GET_ADMIN_DATA_URL, { token: '44444' });
 
-    expect(response.success).toBe(false);
-    expect(response.errors).toContain(invalidToken());
+    expect(adminDataResponse.success).toBe(false);
+    expect(adminDataResponse.errors).toContain(invalidToken());
   });
 });

@@ -4,7 +4,7 @@ import { getAdminId } from '../utils/auth';
 import { invalidToken } from '../utils/errors';
 import { getErrors, validateTokenEvent } from '../utils/validation';
 
-export async function handler({ querystring }: GetRequest<TokenEvent>): Promise<EventResult<AdminData>> {
+export async function handler({ querystring }: GetRequest<TokenEvent>): Promise<AdminDataResponse> {
   const validationResult = validateTokenEvent(querystring);
   if (!validationResult.success) {
     return {
@@ -24,7 +24,6 @@ export async function handler({ querystring }: GetRequest<TokenEvent>): Promise<
   }
 
   const admin = await getFullAdmin(adminId);
-
   const bookings = await getBookings(adminId);
 
   return {

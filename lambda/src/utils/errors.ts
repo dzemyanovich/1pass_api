@@ -91,3 +91,7 @@ export function noBookingAccess(): string {
 export function nonEmpty(fieldName: string): string {
   return `${fieldName}: String must contain at least 1 character(s)`;
 }
+
+export function updateError(): string {
+  return 'Error occurred during update';
+}

@@ -1,10 +1,11 @@
+import Booking from '../db/models/booking';
 import { confirmVisit, getAdminById, getBookingById } from '../db/utils/repository';
 import { getAdminId } from '../utils/auth';
-import { invalidToken, noBooking, noBookingAccess, pastBooking } from '../utils/errors';
+import { invalidToken, noBooking, noBookingAccess, pastBooking, updateError } from '../utils/errors';
 import { isPastBooking } from '../utils/utils';
 import { getErrors, validateConfirmVisit } from '../utils/validation';
 
-export async function handler(event: ConfirmVisitEvent): Promise<EventResult<void>> {
+export async function handler(event: ConfirmVisitEvent): Promise<ConfirmVisitResponse> {
   const validationResult = validateConfirmVisit(event);
   if (!validationResult.success) {
     return {
@@ -45,9 +46,19 @@ export async function handler(event: ConfirmVisitEvent): Promise<EventResult<voi
     };
   }
 
-  await confirmVisit(bookingId);
+  // todo: add e2e / integration tests which check return value (visit time)
+  const affectedRows = await confirmVisit(bookingId);
+  if (affectedRows.length !== 1 || affectedRows[0] !== 1) {
+    return {
+      success: false,
+      errors: [updateError()],
+    };
+  }
+
+  const { visitTime } = await getBookingById(bookingId) as Booking;
 
   return {
     success: true,
+    data: visitTime,
   };
 }

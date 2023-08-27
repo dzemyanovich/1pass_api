@@ -1,5 +1,6 @@
 // ************** LAMBDA ****************
 
+// todo: change everywhere 'Event' to 'Request' for consistency
 type EventResult<T> = {
   success: boolean,
   errors?: string[],
@@ -93,10 +94,16 @@ type AdminData = {
   bookings: AdminBooking[],
 };
 
+type AdminDataResponse = EventResult<AdminData>;
+
 type AdminSignInResult = {
   token: string,
   adminData: AdminData,
 };
+
+type AdminSignInResponse = EventResult<AdminSignInResult>;
+
+type ConfirmVisitResponse = EventResult<Date>;
 
 // ************** DB ****************
 
