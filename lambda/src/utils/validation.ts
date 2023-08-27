@@ -19,9 +19,9 @@ export function getErrors<T>(parseResult: SafeParseReturnType<T, T>): string[] {
   return errors;
 }
 
-export function validateTokenEvent(
-  event: TokenEvent,
-): SafeParseReturnType<TokenEvent, TokenEvent> {
+export function validateTokenRequest(
+  event: TokenRequest,
+): SafeParseReturnType<TokenRequest, TokenRequest> {
   const schema = z.object({
     token: z.string().nonempty(),
   });
@@ -31,7 +31,9 @@ export function validateTokenEvent(
 
 /*********************** USER API ***********************/
 
-export function validateSendCode(event: SendCodeEvent): SafeParseReturnType<SendCodeEvent, SendCodeEvent> {
+export function validateSendCode(
+  event: SendCodeRequest,
+): SafeParseReturnType<SendCodeRequest, SendCodeRequest> {
   const schema = z.object({
     phone: z.string().nonempty().refine(validator.isMobilePhone),
   });
@@ -39,7 +41,9 @@ export function validateSendCode(event: SendCodeEvent): SafeParseReturnType<Send
   return schema.safeParse(event);
 }
 
-export function validateVerifyCode(event: VerifyCodeEvent): SafeParseReturnType<VerifyCodeEvent, VerifyCodeEvent> {
+export function validateVerifyCode(
+  event: VerifyCodeRequest,
+): SafeParseReturnType<VerifyCodeRequest, VerifyCodeRequest> {
   const schema = z.object({
     phone: z.string().nonempty().refine(validator.isMobilePhone),
     code: z.string().nonempty(),
@@ -48,7 +52,9 @@ export function validateVerifyCode(event: VerifyCodeEvent): SafeParseReturnType<
   return schema.safeParse(event);
 }
 
-export function validateSignUp(event: SignUpEvent): SafeParseReturnType<SignUpEvent, SignUpEvent> {
+export function validateSignUp(
+  event: SignUpRequest,
+): SafeParseReturnType<SignUpRequest, SignUpRequest> {
   const schema = z.object({
     phone: z.string().nonempty().refine(validator.isMobilePhone),
     firstName: z.string().nonempty(),
@@ -78,7 +84,9 @@ export function validateSignUp(event: SignUpEvent): SafeParseReturnType<SignUpEv
   return schema.safeParse(event);
 }
 
-export function validateSignIn(event: SignInEvent): SafeParseReturnType<SignInEvent, SignInEvent> {
+export function validateSignIn(
+  event: SignInRequest,
+): SafeParseReturnType<SignInRequest, SignInRequest> {
   const schema = z.object({
     phone: z.string().nonempty().refine(validator.isMobilePhone),
     password: z.string().nonempty(),
@@ -88,8 +96,8 @@ export function validateSignIn(event: SignInEvent): SafeParseReturnType<SignInEv
 }
 
 export function validateCreateBooking(
-  event: CreateBookingEvent,
-): SafeParseReturnType<CreateBookingEvent, CreateBookingEvent> {
+  event: CreateBookingRequest,
+): SafeParseReturnType<CreateBookingRequest, CreateBookingRequest> {
   const schema = z.object({
     token: z.string().nonempty(),
     sportObjectId: z.number(),
@@ -99,8 +107,8 @@ export function validateCreateBooking(
 }
 
 export function validateCancelBooking(
-  event: CancelBookingEvent,
-): SafeParseReturnType<CancelBookingEvent, CancelBookingEvent> {
+  event: CancelBookingRequest,
+): SafeParseReturnType<CancelBookingRequest, CancelBookingRequest> {
   const schema = z.object({
     token: z.string().nonempty(),
     bookingId: z.number(),
@@ -112,8 +120,8 @@ export function validateCancelBooking(
 /*********************** ADMIN API ***********************/
 
 export function validateConfirmVisit(
-  event: ConfirmVisitEvent,
-): SafeParseReturnType<ConfirmVisitEvent, ConfirmVisitEvent> {
+  event: ConfirmVisitRequest,
+): SafeParseReturnType<ConfirmVisitRequest, ConfirmVisitRequest> {
   const schema = z.object({
     token: z.string().nonempty(),
     bookingId: z.number(),
@@ -122,7 +130,9 @@ export function validateConfirmVisit(
   return schema.safeParse(event);
 }
 
-export function validateAdminSignIn(event: AdminSignInEvent): SafeParseReturnType<AdminSignInEvent, AdminSignInEvent> {
+export function validateAdminSignIn(
+  event: AdminSignInRequest,
+): SafeParseReturnType<AdminSignInRequest, AdminSignInRequest> {
   const schema = z.object({
     username: z.string().nonempty(),
     password: z.string().nonempty(),

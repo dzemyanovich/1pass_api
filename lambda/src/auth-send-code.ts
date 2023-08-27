@@ -3,7 +3,7 @@ import { sendCode } from './utils/auth';
 import { sendCodeStatus, userExists } from './utils/errors';
 import { getErrors, validateSendCode } from './utils/validation';
 
-export async function handler(event: SendCodeEvent): Promise<EventResult<void>> {
+export async function handler(event: SendCodeRequest): Promise<SendCodeResponse> {
   const validationResult = validateSendCode(event);
   if (!validationResult.success) {
     return {

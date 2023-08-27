@@ -3,17 +3,15 @@ import { getSportObjects, getUserBookings, getUserById } from './db/utils/reposi
 import { toUserBooking, toSportObject } from './db/utils/view-models';
 import { getUserId } from './utils/auth';
 import { invalidToken } from './utils/errors';
-import { getErrors, validateTokenEvent } from './utils/validation';
+import { getErrors, validateTokenRequest } from './utils/validation';
 
-export async function handler(
-  { querystring }: GetRequest<TokenEvent>,
-): Promise<EventResult<UserData>> {
+export async function handler({ querystring }: GetRequest<TokenRequest>): Promise<UserDataResponse> {
   const { token } = querystring;
   let bookings: UserBooking[] | null = null;
   let userInfo: UserInfo | null = null;
 
   if (token) {
-    const validationResult = validateTokenEvent(querystring);
+    const validationResult = validateTokenRequest(querystring);
     if (!validationResult.success) {
       return {
         success: false,

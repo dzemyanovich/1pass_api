@@ -5,7 +5,7 @@ import { invalidToken, noBooking, noBookingAccess, pastBooking, updateError } fr
 import { isPastBooking } from '../utils/utils';
 import { getErrors, validateConfirmVisit } from '../utils/validation';
 
-export async function handler(event: ConfirmVisitEvent): Promise<ConfirmVisitResponse> {
+export async function handler(event: ConfirmVisitRequest): Promise<ConfirmVisitResponse> {
   const validationResult = validateConfirmVisit(event);
   if (!validationResult.success) {
     return {

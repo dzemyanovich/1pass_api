@@ -37,86 +37,86 @@ const CANCEL_BOOKING_URL = `${API_URL}/cancel-booking`;
 
 describe('get-user-data', () => {
   it('invalid token', async () => {
-    const response: EventResult<UserData> = await get(USER_DATA_URL, { token: 'asdf' });
+    const userDataResponse: UserDataResponse = await get(USER_DATA_URL, { token: 'asdf' });
 
-    expect(response.success).toBe(false);
-    expect(response.errors).toContain(invalidToken());
+    expect(userDataResponse.success).toBe(false);
+    expect(userDataResponse.errors).toContain(invalidToken());
   });
 
   it('gets all sport objects', async () => {
-    const response: EventResult<UserData> = await get(USER_DATA_URL);
+    const userDataResponse: UserDataResponse = await get(USER_DATA_URL);
 
-    expect(response.success).toBe(true);
-    expect(response.data?.sportObjects.length).toBeGreaterThan(0);
-    response.data?.sportObjects.forEach((sportObject: SportObjectVM) => expectSportObject(sportObject));
-    expect(response.data?.bookings).toBeFalsy();
-    expect(response.data?.userInfo).toBeFalsy();
+    expect(userDataResponse.success).toBe(true);
+    expect(userDataResponse.data?.sportObjects.length).toBeGreaterThan(0);
+    userDataResponse.data?.sportObjects.forEach((sportObject: SportObjectVM) => expectSportObject(sportObject));
+    expect(userDataResponse.data?.bookings).toBeFalsy();
+    expect(userDataResponse.data?.userInfo).toBeFalsy();
   });
 });
 
 describe('auth-send-code', () => {
   it('phone is missing', async () => {
-    const response: EventResult<string> = await post(SEND_CODE_URL, {});
+    const sendCodeResponse: SendCodeResponse = await post(SEND_CODE_URL, {});
 
-    expect(response.success).toBe(false);
-    expect(response.errors).toContain(required('phone'));
+    expect(sendCodeResponse.success).toBe(false);
+    expect(sendCodeResponse.errors).toContain(required('phone'));
   });
 
   it('invalid phone (short string)', async () => {
-    const response: EventResult<string> = await post(SEND_CODE_URL, {
+    const sendCodeResponse: SendCodeResponse = await post(SEND_CODE_URL, {
       phone: '543',
     });
 
-    expect(response.success).toBe(false);
-    expect(response.errors).toContain(invalidInput('phone'));
+    expect(sendCodeResponse.success).toBe(false);
+    expect(sendCodeResponse.errors).toContain(invalidInput('phone'));
   });
 
   it('invalid phone (number instead of string)', async () => {
-    const response: EventResult<string> = await post(SEND_CODE_URL, {
+    const sendCodeResponse: SendCodeResponse = await post(SEND_CODE_URL, {
       phone: 142 as unknown as string,
     });
 
-    expect(response.success).toBe(false);
-    expect(response.errors).toContain(stringButNumber('phone'));
+    expect(sendCodeResponse.success).toBe(false);
+    expect(sendCodeResponse.errors).toContain(stringButNumber('phone'));
   });
 });
 
 describe('auth-verify-code', () => {
   it('phone is missing', async () => {
-    const response: EventResult<string> = await post(VERIFY_CODE_URL, {
+    const verifyCodeResponse: VerifyCodeResponse = await post(VERIFY_CODE_URL, {
       code: 'some_code',
     });
 
-    expect(response.success).toBe(false);
-    expect(response.errors).toContain(required('phone'));
+    expect(verifyCodeResponse.success).toBe(false);
+    expect(verifyCodeResponse.errors).toContain(required('phone'));
   });
 
   it('code is missing', async () => {
-    const response: EventResult<string> = await post(VERIFY_CODE_URL, {
+    const verifyCodeResponse: VerifyCodeResponse = await post(VERIFY_CODE_URL, {
       phone: '+375333366883',
     });
 
-    expect(response.success).toBe(false);
-    expect(response.errors).toContain(required('code'));
+    expect(verifyCodeResponse.success).toBe(false);
+    expect(verifyCodeResponse.errors).toContain(required('code'));
   });
 
   it('phone and code are missing', async () => {
-    const response: EventResult<string> = await post(VERIFY_CODE_URL, {});
+    const verifyCodeResponse: VerifyCodeResponse = await post(VERIFY_CODE_URL, {});
 
-    expect(response.success).toBe(false);
-    expect(response.errors).toContain(required('phone'));
-    expect(response.errors).toContain(required('code'));
+    expect(verifyCodeResponse.success).toBe(false);
+    expect(verifyCodeResponse.errors).toContain(required('phone'));
+    expect(verifyCodeResponse.errors).toContain(required('code'));
   });
 
   it('invalid phone and code', async () => {
-    const response: EventResult<string> = await post(VERIFY_CODE_URL, {
+    const verifyCodeResponse: VerifyCodeResponse = await post(VERIFY_CODE_URL, {
       phone: 'string',
       code: null,
     });
 
-    expect(response.success).toBe(false);
-    expect(response.errors).toContain(invalidInput('phone'));
-    expect(response.errors).toContain(stringButNull('code'));
+    expect(verifyCodeResponse.success).toBe(false);
+    expect(verifyCodeResponse.errors).toContain(invalidInput('phone'));
+    expect(verifyCodeResponse.errors).toContain(stringButNull('code'));
   });
 });
 
@@ -125,45 +125,45 @@ describe('sign-in', () => {
 
   it('success', async () => {
     const { phone } = registeredUser;
-    const response: EventResult<string> = await post(SIGN_IN_URL, {
+    const signInResponse: SignInResponse = await post(SIGN_IN_URL, {
       phone,
       password: TEST_USER_PASSWORD,
     });
     const user = await getUserByPhone(phone);
     const token = getToken(user.id as number);
 
-    expect(response.success).toBe(true);
-    expect(response.data).toBeTruthy();
-    expect(getUserId(token)).toEqual(getUserId(response.data as string));
+    expect(signInResponse.success).toBe(true);
+    expect(signInResponse.data).toBeTruthy();
+    expect(getUserId(token)).toEqual(getUserId(signInResponse.data as string));
   }, TEST_TIMEOUT_SEC * 1000);
 
   it('phone and password are missing', async () => {
-    const response: EventResult<string> = await post(SIGN_IN_URL, {});
+    const signInResponse: SignInResponse = await post(SIGN_IN_URL, {});
 
-    expect(response.success).toBe(false);
-    expect(response.errors).toContain(required('phone'));
-    expect(response.errors).toContain(required('password'));
+    expect(signInResponse.success).toBe(false);
+    expect(signInResponse.errors).toContain(required('phone'));
+    expect(signInResponse.errors).toContain(required('password'));
   });
 
   it('invalid data', async () => {
-    const response: EventResult<string> = await post(SIGN_IN_URL, {
+    const signInResponse: SignInResponse = await post(SIGN_IN_URL, {
       phone: '12412',
       password: true,
     });
 
-    expect(response.success).toBe(false);
-    expect(response.errors).toContain(invalidInput('phone'));
-    expect(response.errors).toContain(stringButBoolean('password'));
+    expect(signInResponse.success).toBe(false);
+    expect(signInResponse.errors).toContain(invalidInput('phone'));
+    expect(signInResponse.errors).toContain(stringButBoolean('password'));
   });
 
   it('user not found', async () => {
-    const response: EventResult<string> = await post(SIGN_IN_URL, {
+    const signInResponse: SignInResponse = await post(SIGN_IN_URL, {
       phone: '+12025550181',
       password: 'some_password',
     });
 
-    expect(response.success).toBe(false);
-    expect(response.errors).toContain(userNotFound());
+    expect(signInResponse.success).toBe(false);
+    expect(signInResponse.errors).toContain(userNotFound());
   });
 });
 
@@ -171,7 +171,7 @@ describe('sign-up', () => {
   it('user already exists', async () => {
     const { phone } = registeredUser;
 
-    const response: EventResult<string> = await post(SIGN_UP_URL, {
+    const signUpResponse: SignUpResponse = await post(SIGN_UP_URL, {
       phone,
       firstName: 'John',
       lastName: 'Smith',
@@ -181,14 +181,14 @@ describe('sign-up', () => {
       confirmPassword: 'password',
     });
 
-    expect(response.success).toBe(false);
-    expect(response.errors).toContain(userExists(phone));
+    expect(signUpResponse.success).toBe(false);
+    expect(signUpResponse.errors).toContain(userExists(phone));
   });
 
   it('phone not verified', async () => {
     const { phone } = notVerifiedUser;
 
-    const response: EventResult<string> = await post(SIGN_UP_URL, {
+    const signUpResponse: SignUpResponse = await post(SIGN_UP_URL, {
       phone,
       firstName: 'John',
       lastName: 'Smith',
@@ -198,14 +198,14 @@ describe('sign-up', () => {
       confirmPassword: 'password',
     });
 
-    expect(response.success).toBe(false);
-    expect(response.errors).toContain(phoneNotVerified(phone));
+    expect(signUpResponse.success).toBe(false);
+    expect(signUpResponse.errors).toContain(phoneNotVerified(phone));
   });
 
   it('email already exists', async () => {
     const { email } = registeredUser;
 
-    const response: EventResult<string> = await post(SIGN_UP_URL, {
+    const signUpResponse: SignUpResponse = await post(SIGN_UP_URL, {
       phone: verifiedUser?.phone,
       firstName: 'any',
       lastName: 'any',
@@ -215,25 +215,25 @@ describe('sign-up', () => {
       confirmPassword: 'any_password',
     });
 
-    expect(response.success).toBe(false);
-    expect(response.errors).toContain(emailExists(email));
+    expect(signUpResponse.success).toBe(false);
+    expect(signUpResponse.errors).toContain(emailExists(email));
   });
 
   it('all data is missing', async () => {
-    const response: EventResult<string> = await post(SIGN_UP_URL, {});
+    const signUpResponse: SignUpResponse = await post(SIGN_UP_URL, {});
 
-    expect(response.success).toBe(false);
-    expect(response.errors).toContain(required('phone'));
-    expect(response.errors).toContain(required('firstName'));
-    expect(response.errors).toContain(required('lastName'));
-    expect(response.errors).toContain(required('email'));
-    expect(response.errors).toContain(required('confirmEmail'));
-    expect(response.errors).toContain(required('password'));
-    expect(response.errors).toContain(required('confirmPassword'));
+    expect(signUpResponse.success).toBe(false);
+    expect(signUpResponse.errors).toContain(required('phone'));
+    expect(signUpResponse.errors).toContain(required('firstName'));
+    expect(signUpResponse.errors).toContain(required('lastName'));
+    expect(signUpResponse.errors).toContain(required('email'));
+    expect(signUpResponse.errors).toContain(required('confirmEmail'));
+    expect(signUpResponse.errors).toContain(required('password'));
+    expect(signUpResponse.errors).toContain(required('confirmPassword'));
   });
 
   it('invalid data', async () => {
-    const response: EventResult<string> = await post(SIGN_UP_URL, {
+    const signUpResponse: SignUpResponse = await post(SIGN_UP_URL, {
       phone: '123',
       firstName: 123,
       lastName: true,
@@ -243,18 +243,18 @@ describe('sign-up', () => {
       confirmPassword: 333,
     });
 
-    expect(response.success).toBe(false);
-    expect(response.errors).toContain(invalidInput('phone'));
-    expect(response.errors).toContain(stringButNumber('firstName'));
-    expect(response.errors).toContain(stringButBoolean('lastName'));
-    expect(response.errors).toContain(invalidEmail('email'));
-    expect(response.errors).toContain(invalidEmail('confirmEmail'));
-    expect(response.errors).toContain(stringButNumber('password'));
-    expect(response.errors).toContain(stringButNumber('confirmPassword'));
+    expect(signUpResponse.success).toBe(false);
+    expect(signUpResponse.errors).toContain(invalidInput('phone'));
+    expect(signUpResponse.errors).toContain(stringButNumber('firstName'));
+    expect(signUpResponse.errors).toContain(stringButBoolean('lastName'));
+    expect(signUpResponse.errors).toContain(invalidEmail('email'));
+    expect(signUpResponse.errors).toContain(invalidEmail('confirmEmail'));
+    expect(signUpResponse.errors).toContain(stringButNumber('password'));
+    expect(signUpResponse.errors).toContain(stringButNumber('confirmPassword'));
   });
 
   it('invalid data (email and password do not match)', async () => {
-    const response: EventResult<string> = await post(SIGN_UP_URL, {
+    const signUpResponse: SignUpResponse = await post(SIGN_UP_URL, {
       phone: '+375333366889a',
       firstName: 'John',
       lastName: 'Smith',
@@ -264,14 +264,14 @@ describe('sign-up', () => {
       confirmPassword: 'password_2',
     });
 
-    expect(response.success).toBe(false);
-    expect(response.errors).toContain(invalidInput('phone'));
-    expect(response.errors).toContain(confirmMismatch('email'));
-    expect(response.errors).toContain(confirmMismatch('password'));
+    expect(signUpResponse.success).toBe(false);
+    expect(signUpResponse.errors).toContain(invalidInput('phone'));
+    expect(signUpResponse.errors).toContain(confirmMismatch('email'));
+    expect(signUpResponse.errors).toContain(confirmMismatch('password'));
   });
 
   it('user not found', async () => {
-    const response: EventResult<string> = await post(SIGN_UP_URL, {
+    const signUpResponse: SignUpResponse = await post(SIGN_UP_URL, {
       phone: '+375333366889',
       firstName: 'John',
       lastName: 'Smith',
@@ -281,103 +281,103 @@ describe('sign-up', () => {
       confirmPassword: 'password',
     });
 
-    expect(response.success).toBe(false);
-    expect(response.errors).toContain(userNotFound());
+    expect(signUpResponse.success).toBe(false);
+    expect(signUpResponse.errors).toContain(userNotFound());
   });
 });
 
 describe('create-booking', () => {
   it('invalid types', async () => {
-    const response: EventResult<number> = await post(CREATE_BOOKING_URL, {
+    const createBookingResponse: CreateBookingResponse = await post(CREATE_BOOKING_URL, {
       token: 1,
       sportObjectId: 'asdf',
     });
 
-    expect(response.success).toBe(false);
-    expect(response.errors).toContain(stringButNumber('token'));
-    expect(response.errors).toContain(numberButString('sportObjectId'));
+    expect(createBookingResponse.success).toBe(false);
+    expect(createBookingResponse.errors).toContain(stringButNumber('token'));
+    expect(createBookingResponse.errors).toContain(numberButString('sportObjectId'));
   });
 
   it('data missting', async () => {
-    const response: EventResult<number> = await post(CREATE_BOOKING_URL, {});
+    const createBookingResponse: CreateBookingResponse = await post(CREATE_BOOKING_URL, {});
 
-    expect(response.success).toBe(false);
-    expect(response.errors).toContain(required('token'));
-    expect(response.errors).toContain(required('sportObjectId'));
+    expect(createBookingResponse.success).toBe(false);
+    expect(createBookingResponse.errors).toContain(required('token'));
+    expect(createBookingResponse.errors).toContain(required('sportObjectId'));
   });
 
   it('invalid token', async () => {
-    const response: EventResult<number> = await post(CREATE_BOOKING_URL, {
+    const createBookingResponse: CreateBookingResponse = await post(CREATE_BOOKING_URL, {
       token: 'anything',
       sportObjectId: 1,
     });
 
-    expect(response.success).toBe(false);
-    expect(response.errors).toContain(invalidToken());
+    expect(createBookingResponse.success).toBe(false);
+    expect(createBookingResponse.errors).toContain(invalidToken());
   });
 
   it('no sport object', async () => {
     const { phone } = registeredUser;
-    const signInResponse: EventResult<string> = await post(SIGN_IN_URL, {
+    const signInResponse: SignInResponse = await post(SIGN_IN_URL, {
       phone,
       password: TEST_USER_PASSWORD,
     });
 
-    const response: EventResult<number> = await post(CREATE_BOOKING_URL, {
+    const createBookingResponse: CreateBookingResponse = await post(CREATE_BOOKING_URL, {
       token: signInResponse.data,
       sportObjectId: -124,
     });
 
-    expect(response.success).toBe(false);
-    expect(response.errors).toContain(noSportObject());
+    expect(createBookingResponse.success).toBe(false);
+    expect(createBookingResponse.errors).toContain(noSportObject());
   });
 });
 
 describe('cancel-booking', () => {
   it('invalid types', async () => {
-    const response: EventResult<number> = await post(CANCEL_BOOKING_URL, {
+    const cancelBookingResponse: CancelBookingResponse = await post(CANCEL_BOOKING_URL, {
       token: 1,
       bookingId: 'asdf',
     });
 
-    expect(response.success).toBe(false);
-    expect(response.errors).toContain(stringButNumber('token'));
-    expect(response.errors).toContain(numberButString('bookingId'));
+    expect(cancelBookingResponse.success).toBe(false);
+    expect(cancelBookingResponse.errors).toContain(stringButNumber('token'));
+    expect(cancelBookingResponse.errors).toContain(numberButString('bookingId'));
   });
 
   it('data missting', async () => {
-    const response: EventResult<number> = await post(CANCEL_BOOKING_URL, {});
+    const cancelBookingResponse: CancelBookingResponse = await post(CANCEL_BOOKING_URL, {});
 
-    expect(response.success).toBe(false);
-    expect(response.errors).toContain(required('token'));
-    expect(response.errors).toContain(required('bookingId'));
+    expect(cancelBookingResponse.success).toBe(false);
+    expect(cancelBookingResponse.errors).toContain(required('token'));
+    expect(cancelBookingResponse.errors).toContain(required('bookingId'));
   });
 
   it('invalid token', async () => {
-    const response: EventResult<number> = await post(CANCEL_BOOKING_URL, {
+    const cancelBookingResponse: CancelBookingResponse = await post(CANCEL_BOOKING_URL, {
       token: 'anything',
       bookingId: 344,
     });
 
-    expect(response.success).toBe(false);
-    expect(response.errors).toContain(invalidToken());
+    expect(cancelBookingResponse.success).toBe(false);
+    expect(cancelBookingResponse.errors).toContain(invalidToken());
   });
 
   it('no booking', async () => {
     const { phone } = registeredUser;
-    const signInResponse: EventResult<string> = await post(SIGN_IN_URL, {
+    const signInResponse: SignInResponse = await post(SIGN_IN_URL, {
       phone,
       password: TEST_USER_PASSWORD,
     });
 
     const token = signInResponse.data;
 
-    const response: EventResult<number> = await post(CANCEL_BOOKING_URL, {
+    const cancelBookingResponse: CancelBookingResponse = await post(CANCEL_BOOKING_URL, {
       token,
       bookingId: -343,
     });
 
-    expect(response.success).toBe(false);
-    expect(response.errors).toContain(noBooking());
+    expect(cancelBookingResponse.success).toBe(false);
+    expect(cancelBookingResponse.errors).toContain(noBooking());
   });
 });

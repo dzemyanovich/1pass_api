@@ -4,7 +4,7 @@ import { invalidToken, noBooking, pastBooking } from './utils/errors';
 import { isPastBooking } from './utils/utils';
 import { getErrors, validateCancelBooking } from './utils/validation';
 
-export async function handler(event: CancelBookingEvent): Promise<EventResult<void>> {
+export async function handler(event: CancelBookingRequest): Promise<CancelBookingResponse> {
   const validationResult = validateCancelBooking(event);
   if (!validationResult.success) {
     return {

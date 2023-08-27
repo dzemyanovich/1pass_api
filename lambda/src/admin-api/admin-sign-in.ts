@@ -4,7 +4,7 @@ import { getAdminToken } from '../utils/auth';
 import { userNotFound } from '../utils/errors';
 import { getErrors, validateAdminSignIn } from '../utils/validation';
 
-export async function handler(event: AdminSignInEvent): Promise<AdminSignInResponse> {
+export async function handler(event: AdminSignInRequest): Promise<AdminSignInResponse> {
   const validationResult = validateAdminSignIn(event);
   if (!validationResult.success) {
     return {

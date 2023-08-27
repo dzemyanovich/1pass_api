@@ -2,10 +2,10 @@ import { getBookings, getFullAdmin } from '../db/utils/repository';
 import { toAdminBooking, toSportObject } from '../db/utils/view-models';
 import { getAdminId } from '../utils/auth';
 import { invalidToken } from '../utils/errors';
-import { getErrors, validateTokenEvent } from '../utils/validation';
+import { getErrors, validateTokenRequest } from '../utils/validation';
 
-export async function handler({ querystring }: GetRequest<TokenEvent>): Promise<AdminDataResponse> {
-  const validationResult = validateTokenEvent(querystring);
+export async function handler({ querystring }: GetRequest<TokenRequest>): Promise<AdminDataResponse> {
+  const validationResult = validateTokenRequest(querystring);
   if (!validationResult.success) {
     return {
       success: false,

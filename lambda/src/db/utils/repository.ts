@@ -78,7 +78,7 @@ export async function getUserByEmail(email: string): Promise<User> {
   }) as Promise<User>);
 }
 
-export async function signIn(event: SignInEvent): Promise<User> {
+export async function signIn(event: SignInRequest): Promise<User> {
   const { phone, password } = event;
 
   return runQuery(() => User.findOne({
@@ -97,7 +97,7 @@ export async function setVerifed(phone: string, verified: boolean): Promise<[aff
   }));
 }
 
-export async function signUp(event: SignUpEvent): Promise<[affectedCount: number]> {
+export async function signUp(event: SignUpRequest): Promise<[affectedCount: number]> {
   const { phone, firstName, lastName, email, password } = event;
 
   return runQuery(() => User.update({ firstName, lastName, email, password: getHash(password) }, {
@@ -244,7 +244,7 @@ export async function getFullAdmin(id: number): Promise<Admin> {
   }) as Promise<Admin>);
 }
 
-export async function adminSignIn(event: AdminSignInEvent): Promise<Admin> {
+export async function adminSignIn(event: AdminSignInRequest): Promise<Admin> {
   const { username, password } = event;
 
   return runQuery(() => Admin.findOne({

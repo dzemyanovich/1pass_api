@@ -3,7 +3,7 @@ import { getUserId } from './utils/auth';
 import { alreadyBooked, invalidToken, noSportObject } from './utils/errors';
 import { getErrors, validateCreateBooking } from './utils/validation';
 
-export async function handler(event: CreateBookingEvent): Promise<EventResult<number>> {
+export async function handler(event: CreateBookingRequest): Promise<CreateBookingResponse> {
   const validationResult = validateCreateBooking(event);
   if (!validationResult.success) {
     return {

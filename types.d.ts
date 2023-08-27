@@ -1,13 +1,6 @@
-// ************** LAMBDA ****************
+// ************** SHARED ****************
 
-// todo: change everywhere 'Event' to 'Request' for consistency
-type EventResult<T> = {
-  success: boolean,
-  errors?: string[],
-  data?: T,
-};
-
-type TokenEvent = {
+type TokenRequest = {
   token: string,
 };
 
@@ -15,6 +8,12 @@ type GetRequest<T> = {
   path: Map<string, string>
   querystring: T,
   header: Map<string, string>
+};
+
+type LambdaResponse<T> = {
+  success: boolean,
+  errors?: string[],
+  data?: T,
 };
 
 // ************** USER API ****************
@@ -32,21 +31,29 @@ type UserData = {
   userInfo: UserInfo | null,
 };
 
-type SendCodeEvent = {
+type UserDataResponse = LambdaResponse<UserData>;
+
+type SendCodeRequest = {
   phone: string,
 };
 
-type VerifyCodeEvent = {
+type SendCodeResponse = LambdaResponse<void>;
+
+type VerifyCodeRequest = {
   phone: string,
   code: string,
 };
 
-type SignInEvent = {
+type VerifyCodeResponse = LambdaResponse<void>;
+
+type SignInRequest = {
   phone: string,
   password: string,
 };
 
-type SignUpEvent = {
+type SignInResponse = LambdaResponse<string>;
+
+type SignUpRequest = {
   phone: string,
   firstName: string,
   lastName: string,
@@ -56,15 +63,21 @@ type SignUpEvent = {
   confirmPassword: string,
 };
 
-type CreateBookingEvent = {
+type SignUpResponse = LambdaResponse<string>;
+
+type CreateBookingRequest = {
   token: string,
   sportObjectId: number,
 };
 
-type CancelBookingEvent = {
+type CreateBookingResponse = LambdaResponse<number>;
+
+type CancelBookingRequest = {
   token: string,
   bookingId: number,
 };
+
+type CancelBookingResponse = LambdaResponse<void>;
 
 type TokenData = {
   userId: number,
@@ -73,37 +86,35 @@ type TokenData = {
 
 // ************** ADMIN API ****************
 
-type AdminSignInEvent = {
-  username: string,
-  password: string,
-};
-
-type ConfirmVisitEvent = {
-  token: string,
-  bookingId: number,
-};
-
-type AdminTokenData = {
-  adminId: number,
-  createdAt: number,
-};
-
 type AdminData = {
   username: string,
   sportObject: SportObjectVM,
   bookings: AdminBooking[],
 };
 
-type AdminDataResponse = EventResult<AdminData>;
-
-type AdminSignInResult = {
-  token: string,
-  adminData: AdminData,
+type AdminSignInRequest = {
+  username: string,
+  password: string,
 };
 
-type AdminSignInResponse = EventResult<AdminSignInResult>;
+type AdminSignInResponse = LambdaResponse<{
+  token: string,
+  adminData: AdminData,
+}>;
 
-type ConfirmVisitResponse = EventResult<Date>;
+type ConfirmVisitRequest = {
+  token: string,
+  bookingId: number,
+};
+
+type ConfirmVisitResponse = LambdaResponse<Date>;
+
+type AdminDataResponse = LambdaResponse<AdminData>;
+
+type AdminTokenData = {
+  adminId: number,
+  createdAt: number,
+};
 
 // ************** DB ****************
 

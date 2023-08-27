@@ -47,19 +47,19 @@ const LONG_TEST_MS = 20 * 1000;
 describe('get-user-data', () => {
   it('gets full user data', async () => {
     const { phone } = registeredUser;
-    const signInResponse: EventResult<string> = await post(SIGN_IN_URL, {
+    const signInResponse: SignInResponse = await post(SIGN_IN_URL, {
       phone,
       password: TEST_USER_PASSWORD,
     });
     const token = signInResponse.data as string;
     const user: User = await getUserByPhone(phone);
-    const response: EventResult<UserData> = await get(USER_DATA_URL, { token });
+    const userDataResponse: UserDataResponse = await get(USER_DATA_URL, { token });
 
-    expect(response.success).toBe(true);
-    expect(response.data?.sportObjects.length).toBeGreaterThan(0);
-    response.data?.sportObjects.forEach((sportObject: SportObjectVM) => expectSportObject(sportObject));
-    expect(response.data?.bookings?.length).toBeGreaterThan(0);
-    response.data?.bookings?.forEach(({ id, sportObject, bookingTime, visitTime }: UserBooking) => {
+    expect(userDataResponse.success).toBe(true);
+    expect(userDataResponse.data?.sportObjects.length).toBeGreaterThan(0);
+    userDataResponse.data?.sportObjects.forEach((sportObject: SportObjectVM) => expectSportObject(sportObject));
+    expect(userDataResponse.data?.bookings?.length).toBeGreaterThan(0);
+    userDataResponse.data?.bookings?.forEach(({ id, sportObject, bookingTime, visitTime }: UserBooking) => {
       expectSportObject(sportObject);
       expect(typeof id).toBe('number');
       expect(Date.parse(bookingTime as unknown as string)).toBeTruthy();
@@ -67,7 +67,7 @@ describe('get-user-data', () => {
         expect(Date.parse(visitTime as unknown as string)).toBeTruthy();
       }
     });
-    expect(response.data?.userInfo).toMatchObject({
+    expect(userDataResponse.data?.userInfo).toMatchObject({
       phone: user.phone,
       email: user.email,
       firstName: user.firstName,
@@ -84,13 +84,13 @@ describe('user workflow', () => {
   const password = 'password_1';
 
   it('sign up + sign in + delete', async () => {
-    const sinInFail: EventResult<string> = await post(SIGN_IN_URL, {
+    const signInFail: SignInResponse = await post(SIGN_IN_URL, {
       phone,
       password,
     });
 
-    expect(sinInFail.success).toBe(false);
-    expect(sinInFail.errors).toContain(userNotFound());
+    expect(signInFail.success).toBe(false);
+    expect(signInFail.errors).toContain(userNotFound());
 
     const createdUser = await createUser(phone);
     const notVerifiedUser = await getUserByPhone(phone);
@@ -107,7 +107,7 @@ describe('user workflow', () => {
     expect(verifiedUser.verified).toBe(true);
     expect(verifiedUser.password).toBeFalsy();
 
-    const signUpResult: EventResult<string> = await post(SIGN_UP_URL, {
+    const signUpResponse: SignUpResponse = await post(SIGN_UP_URL, {
       phone,
       firstName,
       lastName,
@@ -117,8 +117,8 @@ describe('user workflow', () => {
       confirmPassword: password,
     });
 
-    expect(signUpResult.success).toBe(true);
-    expect(signUpResult.data).toBeTruthy();
+    expect(signUpResponse.success).toBe(true);
+    expect(signUpResponse.data).toBeTruthy();
 
     const newUser = await getUserByPhone(phone);
     expect(newUser.firstName).toBe(firstName);
@@ -126,14 +126,14 @@ describe('user workflow', () => {
     expect(newUser.email).toBe(email);
     expect(newUser.password).toBe(getHash(password));
 
-    const sinInSuccess: EventResult<string> = await post(SIGN_IN_URL, {
+    const sinInSuccess: SignInResponse = await post(SIGN_IN_URL, {
       phone,
       password,
     });
 
     expect(sinInSuccess.success).toBe(true);
     expect(sinInSuccess.data).toBeTruthy();
-    expect(getUserId(sinInSuccess.data as string)).toEqual(getUserId(signUpResult.data as string));
+    expect(getUserId(sinInSuccess.data as string)).toEqual(getUserId(signUpResponse.data as string));
 
     await deleteUser(newUser.id as number);
 
@@ -154,16 +154,16 @@ describe('booking workflow', () => {
 
   it('create + delete booking', async () => {
     const { phone } = registeredUser;
-    const signInResponse: EventResult<string> = await post(SIGN_IN_URL, {
+    const signInResponse: SignInResponse = await post(SIGN_IN_URL, {
       phone,
       password: TEST_USER_PASSWORD,
     });
 
-    const userDataResponse: EventResult<UserData> = await get(USER_DATA_URL);
+    const userDataResponse: UserDataResponse = await get(USER_DATA_URL);
     const sportObjects = userDataResponse.data?.sportObjects as SportObjectVM[];
     const sportObjectId = sportObjects[0].id;
 
-    const createBookingResponse: EventResult<number> = await post(CREATE_BOOKING_URL, {
+    const createBookingResponse: CreateBookingResponse = await post(CREATE_BOOKING_URL, {
       token: signInResponse.data,
       sportObjectId,
     });
@@ -181,7 +181,7 @@ describe('booking workflow', () => {
       visitTime: null,
     });
 
-    const cancelBookingResponse: EventResult<void> = await post(CANCEL_BOOKING_URL, {
+    const cancelBookingResponse: CancelBookingResponse = await post(CANCEL_BOOKING_URL, {
       token: signInResponse.data,
       bookingId,
     });
@@ -203,38 +203,38 @@ describe('create-booking', () => {
 
   it('already booked', async () => {
     const { phone } = registeredUser;
-    const signInResponse: EventResult<string> = await post(SIGN_IN_URL, {
+    const signInResponse: SignInResponse = await post(SIGN_IN_URL, {
       phone,
       password: TEST_USER_PASSWORD,
     });
-    const userDataResponse: EventResult<UserData> = await get(USER_DATA_URL);
+    const userDataResponse: UserDataResponse = await get(USER_DATA_URL);
     const sportObjects = userDataResponse.data?.sportObjects as SportObjectVM[];
     const sportObjectId = sportObjects[0].id;
     const token = signInResponse.data;
 
-    const successResponse: EventResult<number> = await post(CREATE_BOOKING_URL, {
+    const createBookingSuccess: CreateBookingResponse = await post(CREATE_BOOKING_URL, {
       token,
       sportObjectId,
     });
-    const bookingId = successResponse.data as number;
+    const bookingId = createBookingSuccess.data as number;
     bookingIds.push(bookingId);
 
-    expect(successResponse).toMatchObject({
+    expect(createBookingSuccess).toMatchObject({
       success: true,
       data: expect.any(Number),
     });
 
-    const failResponse: EventResult<number> = await post(CREATE_BOOKING_URL, {
+    const createBookingFail: CreateBookingResponse = await post(CREATE_BOOKING_URL, {
       token,
       sportObjectId,
     });
 
-    if (failResponse.data) {
-      bookingIds.push(failResponse.data);
+    if (createBookingFail.data) {
+      bookingIds.push(createBookingFail.data);
     }
 
-    expect(failResponse.success).toBe(false);
-    expect(failResponse.errors).toContain(alreadyBooked());
+    expect(createBookingFail.success).toBe(false);
+    expect(createBookingFail.errors).toContain(alreadyBooked());
 
     await deleteBooking(bookingId);
   });
@@ -253,22 +253,22 @@ describe('cancel-booking -> already visited', () => {
 
   it('cannot cancel past booking: already visited', async () => {
     const { phone } = registeredUser;
-    const signInResponse: EventResult<string> = await post(SIGN_IN_URL, {
+    const signInResponse: SignInResponse = await post(SIGN_IN_URL, {
       phone,
       password: TEST_USER_PASSWORD,
     });
-    const userDataResponse: EventResult<UserData> = await get(USER_DATA_URL);
+    const userDataResponse: UserDataResponse = await get(USER_DATA_URL);
     const sportObjects = userDataResponse.data?.sportObjects as SportObjectVM[];
     const sportObjectId = sportObjects[0].id;
     const token = signInResponse.data;
 
-    const successResponse: EventResult<number> = await post(CREATE_BOOKING_URL, {
+    const createBookingSuccess: CreateBookingResponse = await post(CREATE_BOOKING_URL, {
       token,
       sportObjectId,
     });
-    bookingId = successResponse.data as number;
+    bookingId = createBookingSuccess.data as number;
 
-    expect(successResponse).toMatchObject({
+    expect(createBookingSuccess).toMatchObject({
       success: true,
       data: expect.any(Number),
     });
@@ -287,13 +287,13 @@ describe('cancel-booking -> already visited', () => {
     expect(confirmVisitResponse.success).toBe(true);
     expect(isToday(booking.visitTime)).toBe(true);
 
-    const response: EventResult<number> = await post(CANCEL_BOOKING_URL, {
+    const cancelBookingResponse: CancelBookingResponse = await post(CANCEL_BOOKING_URL, {
       token,
       bookingId,
     });
 
-    expect(response.success).toBe(false);
-    expect(response.errors).toContain(pastBooking());
+    expect(cancelBookingResponse.success).toBe(false);
+    expect(cancelBookingResponse.errors).toContain(pastBooking());
 
     await deleteBooking(bookingId);
   }, LONG_TEST_MS);
@@ -310,13 +310,13 @@ describe('cancel-booking -> booking date is in the past', () => {
 
   it('cancel-booking -> booking date is in the past', async () => {
     const { phone } = registeredUser;
-    const signInResponse: EventResult<string> = await post(SIGN_IN_URL, {
+    const signInResponse: SignInResponse = await post(SIGN_IN_URL, {
       phone,
       password: TEST_USER_PASSWORD,
     });
     const token = signInResponse.data as string;
     const userId = getUserId(token) as number;
-    const userDataResponse: EventResult<UserData> = await get(USER_DATA_URL);
+    const userDataResponse: UserDataResponse = await get(USER_DATA_URL);
     const sportObjects = userDataResponse.data?.sportObjects as SportObjectVM[];
     const sportObjectId = sportObjects[0].id;
     const yesterday = addDays(new Date(), -1);
@@ -329,13 +329,13 @@ describe('cancel-booking -> booking date is in the past', () => {
     expect(booking.bookingTime).toEqual(yesterday);
     expect(booking.visitTime).toBeFalsy();
 
-    const response: EventResult<number> = await post(CANCEL_BOOKING_URL, {
+    const cancelBookingResponse: CancelBookingResponse = await post(CANCEL_BOOKING_URL, {
       token,
       bookingId,
     });
 
-    expect(response.success).toBe(false);
-    expect(response.errors).toContain(pastBooking());
+    expect(cancelBookingResponse.success).toBe(false);
+    expect(cancelBookingResponse.errors).toContain(pastBooking());
 
     await deleteBooking(bookingId);
   }, LONG_TEST_MS);
@@ -349,7 +349,7 @@ describe('cancel-booking -> booking date is in the past', () => {
 
 describe('admin-sign-in', () => {
   it('success', async () => {
-    const userDataResponse: EventResult<UserData> = await get(USER_DATA_URL);
+    const userDataResponse: UserDataResponse = await get(USER_DATA_URL);
     const sportObjects = userDataResponse.data?.sportObjects as SportObjectVM[];
     const sportObjectId = sportObjects[0].id;
 
@@ -394,7 +394,7 @@ describe('admin-sign-in', () => {
   });
 
   it('user not found (incorrect password)', async () => {
-    const userDataResponse: EventResult<UserData> = await get(USER_DATA_URL);
+    const userDataResponse: UserDataResponse = await get(USER_DATA_URL);
     const sportObjects = userDataResponse.data?.sportObjects as SportObjectVM[];
     const sportObjectId = sportObjects[0].id;
 
@@ -414,7 +414,7 @@ describe('confirm-visit', () => {
   const bookingIds: number[] = [];
 
   it('success', async () => {
-    const userDataResponse: EventResult<UserData> = await get(USER_DATA_URL);
+    const userDataResponse: UserDataResponse = await get(USER_DATA_URL);
     const sportObjects = userDataResponse.data?.sportObjects as SportObjectVM[];
     const sportObjectId = sportObjects[0].id;
 
@@ -468,7 +468,7 @@ describe('confirm-visit', () => {
   });
 
   it('no booking found', async () => {
-    const userDataResponse: EventResult<UserData> = await get(USER_DATA_URL);
+    const userDataResponse: UserDataResponse = await get(USER_DATA_URL);
     const sportObjects = userDataResponse.data?.sportObjects as SportObjectVM[];
     const sportObjectId = sportObjects[0].id;
 
@@ -487,7 +487,7 @@ describe('confirm-visit', () => {
   }, LONG_TEST_MS);
 
   it('no booking access', async () => {
-    const userDataResponse: EventResult<UserData> = await get(USER_DATA_URL);
+    const userDataResponse: UserDataResponse = await get(USER_DATA_URL);
     const sportObjects = userDataResponse.data?.sportObjects as SportObjectVM[];
     const sportObjectId = sportObjects[0].id;
 
@@ -513,7 +513,7 @@ describe('confirm-visit', () => {
   }, LONG_TEST_MS);
 
   it('booking is in the past', async () => {
-    const userDataResponse: EventResult<UserData> = await get(USER_DATA_URL);
+    const userDataResponse: UserDataResponse = await get(USER_DATA_URL);
     const sportObjects = userDataResponse.data?.sportObjects as SportObjectVM[];
     const sportObjectId = sportObjects[0].id;
 
@@ -540,7 +540,7 @@ describe('confirm-visit', () => {
   }, LONG_TEST_MS);
 
   it('booking is already used', async () => {
-    const userDataResponse: EventResult<UserData> = await get(USER_DATA_URL);
+    const userDataResponse: UserDataResponse = await get(USER_DATA_URL);
     const sportObjects = userDataResponse.data?.sportObjects as SportObjectVM[];
     const sportObjectId = sportObjects[0].id;
 

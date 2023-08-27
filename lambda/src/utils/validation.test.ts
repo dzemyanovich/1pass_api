@@ -11,7 +11,7 @@ describe('validateSendCode', () => {
   });
 
   it('phone is missing', async () => {
-    const result = validateSendCode({} as VerifyCodeEvent);
+    const result = validateSendCode({} as VerifyCodeRequest);
 
     expect(result.success).toBe(false);
   });
@@ -46,7 +46,7 @@ describe('validateVerifyCode', () => {
   it('phone is missing', async () => {
     const result = validateVerifyCode({
       code: 'some_code',
-    } as VerifyCodeEvent);
+    } as VerifyCodeRequest);
 
     expect(result.success).toBe(false);
   });
@@ -54,13 +54,13 @@ describe('validateVerifyCode', () => {
   it('code is missing', async () => {
     const result = validateVerifyCode({
       phone: '+375333366883',
-    } as VerifyCodeEvent);
+    } as VerifyCodeRequest);
 
     expect(result.success).toBe(false);
   });
 
   it('phone and code are missing', async () => {
-    const result = validateVerifyCode({} as VerifyCodeEvent);
+    const result = validateVerifyCode({} as VerifyCodeRequest);
 
     expect(result.success).toBe(false);
   });

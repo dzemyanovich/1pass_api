@@ -3,7 +3,7 @@ import { getToken } from './utils/auth';
 import { emailExists, phoneNotVerified, userExists, userNotFound } from './utils/errors';
 import { getErrors, validateSignUp } from './utils/validation';
 
-export async function handler(event: SignUpEvent): Promise<EventResult<string>> {
+export async function handler(event: SignUpRequest): Promise<SignUpResponse> {
   const validationResult = validateSignUp(event);
   if (!validationResult.success) {
     return {

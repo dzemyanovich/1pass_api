@@ -2,7 +2,7 @@ import twilio from 'twilio';
 import jwt from 'jwt-simple';
 import { noEnvVar } from './errors';
 
-export async function sendCode(event: SendCodeEvent): Promise<string> {
+export async function sendCode(event: SendCodeRequest): Promise<string> {
   const { phone } = event;
   const { TWILIO_AUTH_TOKEN, TWILIO_ACCOUNT_SID, TWILIO_VERIFY_SID } = process.env;
   const client = twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
@@ -14,7 +14,7 @@ export async function sendCode(event: SendCodeEvent): Promise<string> {
   return verification.status;
 }
 
-export async function verifyCode(event: VerifyCodeEvent): Promise<string> {
+export async function verifyCode(event: VerifyCodeRequest): Promise<string> {
   const { phone, code } = event;
   const { TWILIO_AUTH_TOKEN, TWILIO_ACCOUNT_SID, TWILIO_VERIFY_SID } = process.env;
   const client = twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
