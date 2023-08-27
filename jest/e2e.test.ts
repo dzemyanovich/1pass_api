@@ -286,6 +286,7 @@ describe('cancel-booking -> already visited', () => {
 
     expect(confirmVisitResponse.success).toBe(true);
     expect(isToday(booking.visitTime)).toBe(true);
+    expect(confirmVisitResponse.data).toBe(booking.visitTime);
 
     const cancelBookingResponse: CancelBookingResponse = await post(CANCEL_BOOKING_URL, {
       token,
@@ -434,6 +435,7 @@ describe('confirm-visit', () => {
     });
 
     expect(confirmVisitResponse.success).toBe(true);
+    expect(isToday(confirmVisitResponse.data as Date)).toBe(true);
 
     await deleteBooking(bookingId);
   }, LONG_TEST_MS);

@@ -46,7 +46,6 @@ export async function handler(event: ConfirmVisitRequest): Promise<ConfirmVisitR
     };
   }
 
-  // todo: add e2e / integration tests which check return value (visit time)
   const affectedRows = await confirmVisit(bookingId);
   if (affectedRows.length !== 1 || affectedRows[0] !== 1) {
     return {
