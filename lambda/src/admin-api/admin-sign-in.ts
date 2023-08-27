@@ -31,9 +31,11 @@ export async function handler(event: AdminSignInEvent): Promise<EventResult<Admi
     success: true,
     data: {
       token,
-      username: admin.username,
-      sportObject: toSportObject(admin.sportObject),
-      bookings: bookings.map(toAdminBooking),
+      adminData: {
+        username: admin.username,
+        sportObject: toSportObject(admin.sportObject),
+        bookings: bookings.map(toAdminBooking),
+      },
     },
   };
 }

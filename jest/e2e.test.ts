@@ -406,7 +406,7 @@ describe('admin-sign-in', () => {
     });
 
     expect(adminSignInResult.success).toBe(true);
-    expectAdminData(adminSignInResult, admin);
+    expectAdminData(adminSignInResult.data?.adminData as AdminData, admin);
   });
 });
 

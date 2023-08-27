@@ -93,8 +93,9 @@ type AdminData = {
   bookings: AdminBooking[],
 };
 
-type AdminSignInResult = AdminData & {
+type AdminSignInResult = {
   token: string,
+  adminData: AdminData,
 };
 
 // ************** DB ****************

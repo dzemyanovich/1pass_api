@@ -10,11 +10,11 @@ export function expectSportObject(sportObject: SportObjectVM): void {
   });
 }
 
-export function expectAdminData(response: EventResult<AdminData>, admin: Admin): void {
-  expect(response.data?.username).toBe(admin.username);
-  expectSportObject(response.data?.sportObject as SportObjectVM);
-  expect(response.data?.bookings.length).toBeGreaterThan(0);
-  response.data?.bookings.forEach(({ id, user, bookingTime, visitTime }: AdminBooking) => {
+export function expectAdminData(adminData: AdminData, admin: Admin): void {
+  expect(adminData.username).toBe(admin.username);
+  expectSportObject(adminData.sportObject);
+  expect(adminData.bookings.length).toBeGreaterThan(0);
+  adminData.bookings.forEach(({ id, user, bookingTime, visitTime }: AdminBooking) => {
     expect(typeof id).toBe('number');
     expect(user).toMatchObject({
       id: expect.any(Number),
