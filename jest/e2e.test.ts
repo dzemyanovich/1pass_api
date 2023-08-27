@@ -348,6 +348,22 @@ describe('cancel-booking -> booking date is in the past', () => {
 });
 
 describe('admin-sign-in', () => {
+  it('success', async () => {
+    const userDataResponse: EventResult<UserData> = await get(USER_DATA_URL);
+    const sportObjects = userDataResponse.data?.sportObjects as SportObjectVM[];
+    const sportObjectId = sportObjects[0].id;
+
+    const admin = await getAdminBySportObjectId(sportObjectId);
+
+    const adminSignInResponse: AdminSignInResponse = await post(ADMIN_SIGN_IN_URL, {
+      username: admin.username,
+      password: TEST_ADMIN_PASSWORD,
+    });
+
+    expect(adminSignInResponse.success).toBe(true);
+    expectAdminData(adminSignInResponse.data?.adminData as AdminData, admin);
+  }, LONG_TEST_MS);
+
   it('invalid types', async () => {
     const adminSignInResponse: AdminSignInResponse = await post(ADMIN_SIGN_IN_URL, {
       username: 123,
@@ -391,22 +407,6 @@ describe('admin-sign-in', () => {
 
     expect(adminSignInResponse.success).toBe(false);
     expect(adminSignInResponse.errors).toContain(userNotFound());
-  });
-
-  it('success', async () => {
-    const userDataResponse: EventResult<UserData> = await get(USER_DATA_URL);
-    const sportObjects = userDataResponse.data?.sportObjects as SportObjectVM[];
-    const sportObjectId = sportObjects[0].id;
-
-    const admin = await getAdminBySportObjectId(sportObjectId);
-
-    const adminSignInResponse: AdminSignInResponse = await post(ADMIN_SIGN_IN_URL, {
-      username: admin.username,
-      password: TEST_ADMIN_PASSWORD,
-    });
-
-    expect(adminSignInResponse.success).toBe(true);
-    expectAdminData(adminSignInResponse.data?.adminData as AdminData, admin);
   });
 });
 
@@ -579,8 +579,7 @@ describe('confirm-visit', () => {
   });
 });
 
-// todo: remove only
-describe.only('get-admin-data', () => {
+describe('get-admin-data', () => {
   it('success', async () => {
     const admins = await getAdmins();
     const admin = admins[0];
