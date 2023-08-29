@@ -1,7 +1,7 @@
-import { createBooking, getSportObjectById, getTodayBooking } from './db/utils/repository';
-import { getUserId } from './utils/auth';
-import { alreadyBooked, invalidToken, noSportObject } from './utils/errors';
-import { getErrors, validateCreateBooking } from './utils/validation';
+import { createBooking, getSportObjectById, getTodayBooking } from '../db/utils/repository';
+import { getUserId } from '../utils/auth';
+import { alreadyBooked, invalidToken, noSportObject } from '../utils/errors';
+import { getErrors, validateCreateBooking } from '../utils/validation';
 
 export async function handler(event: CreateBookingRequest): Promise<CreateBookingResponse> {
   const validationResult = validateCreateBooking(event);

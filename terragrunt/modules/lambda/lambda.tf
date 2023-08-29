@@ -49,13 +49,26 @@ resource "aws_iam_role_policy_attachment" "lambda_basic_access" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
+resource "aws_lambda_function" "create_test_bookings_lambda" {
+  filename          = data.archive_file.lambda_zip.output_path
+  function_name     = "${var.product}-${var.env}-create-test-bookings"
+  role              = aws_iam_role.iam_for_lambda.arn
+  handler           = "dist/create-test-bookings.handler"
+  source_code_hash  = data.archive_file.lambda_zip.output_base64sha256
+  runtime           = local.runtime
+
+  environment {
+    variables = local.base_env_vars
+  }
+}
+
 #################### USER API ####################
 
 resource "aws_lambda_function" "get_user_data_lambda" {
   filename          = data.archive_file.lambda_zip.output_path
   function_name     = "${var.product}-${var.env}-get-user-data"
   role              = aws_iam_role.iam_for_lambda.arn
-  handler           = "dist/get-user-data.handler"
+  handler           = "dist/user-api/get-user-data.handler"
   source_code_hash  = data.archive_file.lambda_zip.output_base64sha256
   runtime           = local.runtime
 
@@ -68,7 +81,7 @@ resource "aws_lambda_function" "auth_send_code_lambda" {
   filename          = data.archive_file.lambda_zip.output_path
   function_name     = "${var.product}-${var.env}-auth-send-code"
   role              = aws_iam_role.iam_for_lambda.arn
-  handler           = "dist/auth-send-code.handler"
+  handler           = "dist/user-api/auth-send-code.handler"
   source_code_hash  = data.archive_file.lambda_zip.output_base64sha256
   runtime           = local.runtime
   timeout           = 10
@@ -82,7 +95,7 @@ resource "aws_lambda_function" "auth_verify_code_lambda" {
   filename          = data.archive_file.lambda_zip.output_path
   function_name     = "${var.product}-${var.env}-auth-verify-code"
   role              = aws_iam_role.iam_for_lambda.arn
-  handler           = "dist/auth-verify-code.handler"
+  handler           = "dist/user-api/auth-verify-code.handler"
   source_code_hash  = data.archive_file.lambda_zip.output_base64sha256
   runtime           = local.runtime
   timeout           = 10
@@ -96,7 +109,7 @@ resource "aws_lambda_function" "sign_in_lambda" {
   filename          = data.archive_file.lambda_zip.output_path
   function_name     = "${var.product}-${var.env}-sign-in"
   role              = aws_iam_role.iam_for_lambda.arn
-  handler           = "dist/sign-in.handler"
+  handler           = "dist/user-api/sign-in.handler"
   source_code_hash  = data.archive_file.lambda_zip.output_base64sha256
   runtime           = local.runtime
 
@@ -109,7 +122,7 @@ resource "aws_lambda_function" "sign_up_lambda" {
   filename          = data.archive_file.lambda_zip.output_path
   function_name     = "${var.product}-${var.env}-sign-up"
   role              = aws_iam_role.iam_for_lambda.arn
-  handler           = "dist/sign-up.handler"
+  handler           = "dist/user-api/sign-up.handler"
   source_code_hash  = data.archive_file.lambda_zip.output_base64sha256
   runtime           = local.runtime
 
@@ -122,7 +135,7 @@ resource "aws_lambda_function" "create_booking_lambda" {
   filename          = data.archive_file.lambda_zip.output_path
   function_name     = "${var.product}-${var.env}-create-booking"
   role              = aws_iam_role.iam_for_lambda.arn
-  handler           = "dist/create-booking.handler"
+  handler           = "dist/user-api/create-booking.handler"
   source_code_hash  = data.archive_file.lambda_zip.output_base64sha256
   runtime           = local.runtime
 
@@ -135,7 +148,7 @@ resource "aws_lambda_function" "cancel_booking_lambda" {
   filename          = data.archive_file.lambda_zip.output_path
   function_name     = "${var.product}-${var.env}-cancel-booking"
   role              = aws_iam_role.iam_for_lambda.arn
-  handler           = "dist/cancel-booking.handler"
+  handler           = "dist/user-api/cancel-booking.handler"
   source_code_hash  = data.archive_file.lambda_zip.output_base64sha256
   runtime           = local.runtime
 

@@ -1,8 +1,8 @@
-import { deleteBooking, getBookingById } from './db/utils/repository';
-import { getUserId } from './utils/auth';
-import { invalidToken, noBooking, pastBooking } from './utils/errors';
-import { isPastBooking } from './utils/utils';
-import { getErrors, validateCancelBooking } from './utils/validation';
+import { deleteBooking, getBookingById } from '../db/utils/repository';
+import { getUserId } from '../utils/auth';
+import { invalidToken, noBooking, pastBooking } from '../utils/errors';
+import { isPastBooking } from '../utils/utils';
+import { getErrors, validateCancelBooking } from '../utils/validation';
 
 export async function handler(event: CancelBookingRequest): Promise<CancelBookingResponse> {
   const validationResult = validateCancelBooking(event);

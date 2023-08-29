@@ -1,7 +1,7 @@
-import { getUserByPhone, setVerifed } from './db/utils/repository';
-import { verifyCode } from './utils/auth';
-import { userExists, userNotFound, verifyCodeStatus } from './utils/errors';
-import { getErrors, validateVerifyCode } from './utils/validation';
+import { getUserByPhone, setVerifed } from '../db/utils/repository';
+import { verifyCode } from '../utils/auth';
+import { userExists, userNotFound, verifyCodeStatus } from '../utils/errors';
+import { getErrors, validateVerifyCode } from '../utils/validation';
 
 export async function handler(event: VerifyCodeRequest): Promise<VerifyCodeResponse> {
   const validationResult = validateVerifyCode(event);

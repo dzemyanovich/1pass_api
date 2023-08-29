@@ -1,7 +1,7 @@
-import { signIn } from './db/utils/repository';
-import { getToken } from './utils/auth';
-import { userNotFound } from './utils/errors';
-import { getErrors, validateSignIn } from './utils/validation';
+import { signIn } from '../db/utils/repository';
+import { getToken } from '../utils/auth';
+import { userNotFound } from '../utils/errors';
+import { getErrors, validateSignIn } from '../utils/validation';
 
 export async function handler(event: SignInRequest): Promise<SignInResponse> {
   const validationResult = validateSignIn(event);

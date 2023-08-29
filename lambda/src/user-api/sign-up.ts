@@ -1,7 +1,7 @@
-import { getUserByPhone, getUserByEmail, signUp } from './db/utils/repository';
-import { getToken } from './utils/auth';
-import { emailExists, phoneNotVerified, userExists, userNotFound } from './utils/errors';
-import { getErrors, validateSignUp } from './utils/validation';
+import { getUserByPhone, getUserByEmail, signUp } from '../db/utils/repository';
+import { getToken } from '../utils/auth';
+import { emailExists, phoneNotVerified, userExists, userNotFound } from '../utils/errors';
+import { getErrors, validateSignUp } from '../utils/validation';
 
 export async function handler(event: SignUpRequest): Promise<SignUpResponse> {
   const validationResult = validateSignUp(event);

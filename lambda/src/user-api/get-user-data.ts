@@ -1,9 +1,9 @@
-import SportObject from './db/models/sport-object';
-import { getSportObjects, getUserBookings, getUserById } from './db/utils/repository';
-import { toUserBooking, toSportObject } from './db/utils/view-models';
-import { getUserId } from './utils/auth';
-import { invalidToken } from './utils/errors';
-import { getErrors, validateTokenRequest } from './utils/validation';
+import SportObject from '../db/models/sport-object';
+import { getSportObjects, getUserBookings, getUserById } from '../db/utils/repository';
+import { toUserBooking, toSportObject } from '../db/utils/view-models';
+import { getUserId } from '../utils/auth';
+import { invalidToken } from '../utils/errors';
+import { getErrors, validateTokenRequest } from '../utils/validation';
 
 export async function handler({ querystring }: GetRequest<TokenRequest>): Promise<UserDataResponse> {
   const { token } = querystring;
