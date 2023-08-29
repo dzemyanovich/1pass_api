@@ -146,6 +146,12 @@ export async function createTestBooking(
   }));
 }
 
+// used for testing
+export async function createTestBookings(bookings: Booking[]): Promise<Booking[]> {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
+  return runQuery(() => Booking.bulkCreate(bookings as any));
+}
+
 export async function confirmVisit(bookingId: number): Promise<[affectedCount: number]> {
   return runQuery(() => Booking.update({ visitTime: new Date() }, {
     where: {
