@@ -4,20 +4,25 @@ import User from '../models/user';
 export const TEST_ADMIN_NAME_PREFIX = 'test_admin_';
 export const TEST_ADMIN_PASSWORD = 'admin_password';
 export const TEST_USER_EMAIL_PREFIX = 'test_email_';
+export const E2E_USER_EMAIL_PREFIX = 'e2e_test_email_';
 export const TEST_USER_PASSWORD = 'user_password';
 
 export function getTestAdminName(index: number): string {
   return `${TEST_ADMIN_NAME_PREFIX}${index}`;
 }
 
-export const e2eUser: User = {
-  phone: '+375333333330',
+const e2eUsers: User[] = [
+  '+375333333330',
+].map((phone: string, index: number) => ({
+  phone,
   firstName: 'e2e_test_user_first_name',
   lastName: 'e2e_test_user_last_name',
-  email: 'e2e_test_user@mail.ru',
+  email: `${E2E_USER_EMAIL_PREFIX}${index}@mail.ru`,
   password: getHash(TEST_USER_PASSWORD),
   verified: true,
-} as User;
+} as User));
+
+export const e2eUser: User = e2eUsers[0];
 
 const registeredUsers: User[] = [
   '+375333333331',
@@ -46,4 +51,4 @@ export const verifiedUser: User = {
   verified: true,
 } as User;
 
-export const testUsers: User[] = [e2eUser, notVerifiedUser, verifiedUser].concat(registeredUsers);
+export const testUsers: User[] = [notVerifiedUser, verifiedUser].concat(e2eUsers).concat(registeredUsers);

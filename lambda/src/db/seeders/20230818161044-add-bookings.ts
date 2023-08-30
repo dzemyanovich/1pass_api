@@ -1,6 +1,6 @@
 import { QueryInterface, Op } from 'sequelize';
 
-import { getTestUsers, getSportObjects } from '../utils/repository';
+import { getSportObjects, getAllTestUsers } from '../utils/repository';
 import Booking from '../models/booking';
 import User from '../models/user';
 import SportObject from '../models/sport-object';
@@ -9,7 +9,7 @@ import { addDays, getRandomValue } from '../../utils/utils';
 export default {
   async up(queryInterface: QueryInterface): Promise<object | number> {
     const sportObjects = await getSportObjects();
-    const users = await getTestUsers();
+    const users = await getAllTestUsers();
     const bookings: Booking[] = [];
     const today = new Date();
     const bookingTimes: Date[] = [
@@ -40,7 +40,7 @@ export default {
   },
 
   async down(queryInterface: QueryInterface): Promise<object> {
-    const users = await getTestUsers();
+    const users = await getAllTestUsers();
     const userIds = users.map((user: User) => user.id as number);
 
     return queryInterface.bulkDelete(
