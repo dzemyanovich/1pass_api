@@ -17,13 +17,13 @@ import {
 } from '../lambda/src/utils/errors';
 import {
   verifiedUser,
-  registeredUser,
+  e2eUser,
   notVerifiedUser,
+  TEST_USER_PASSWORD,
 } from '../lambda/src/db/utils/test-users';
 import { get, post } from './utils/rest';
 import { getToken, getUserId } from '../lambda/src/utils/auth';
 import { getUserByPhone } from '../lambda/src/db/utils/repository';
-import { TEST_USER_PASSWORD } from '../lambda/src/db/utils/utils';
 import { expectSportObject } from './utils/expect';
 
 const { API_URL } = process.env;
@@ -124,7 +124,7 @@ describe('sign-in', () => {
   const TEST_TIMEOUT_SEC = 10;
 
   it('success', async () => {
-    const { phone } = registeredUser;
+    const { phone } = e2eUser;
     const signInResponse: SignInResponse = await post(SIGN_IN_URL, {
       phone,
       password: TEST_USER_PASSWORD,
@@ -169,7 +169,7 @@ describe('sign-in', () => {
 
 describe('sign-up', () => {
   it('user already exists', async () => {
-    const { phone } = registeredUser;
+    const { phone } = e2eUser;
 
     const signUpResponse: SignUpResponse = await post(SIGN_UP_URL, {
       phone,
@@ -203,7 +203,7 @@ describe('sign-up', () => {
   });
 
   it('email already exists', async () => {
-    const { email } = registeredUser;
+    const { email } = e2eUser;
 
     const signUpResponse: SignUpResponse = await post(SIGN_UP_URL, {
       phone: verifiedUser?.phone,
@@ -317,7 +317,7 @@ describe('create-booking', () => {
   });
 
   it('no sport object', async () => {
-    const { phone } = registeredUser;
+    const { phone } = e2eUser;
     const signInResponse: SignInResponse = await post(SIGN_IN_URL, {
       phone,
       password: TEST_USER_PASSWORD,
@@ -364,7 +364,7 @@ describe('cancel-booking', () => {
   });
 
   it('no booking', async () => {
-    const { phone } = registeredUser;
+    const { phone } = e2eUser;
     const signInResponse: SignInResponse = await post(SIGN_IN_URL, {
       phone,
       password: TEST_USER_PASSWORD,

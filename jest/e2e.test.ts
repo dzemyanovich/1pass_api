@@ -25,8 +25,7 @@ import {
   userNotFound,
 } from '../lambda/src/utils/errors';
 import Booking from '../lambda/src/db/models/booking';
-import { registeredUser } from '../lambda/src/db/utils/test-users';
-import { TEST_ADMIN_PASSWORD, TEST_USER_PASSWORD } from '../lambda/src/db/utils/utils';
+import { e2eUser, TEST_ADMIN_PASSWORD, TEST_USER_PASSWORD } from '../lambda/src/db/utils/test-users';
 import { getAdminToken, getHash, getUserId } from '../lambda/src/utils/auth';
 import { addDays, isToday } from '../lambda/src/utils/utils';
 import { get, post } from './utils/rest';
@@ -46,7 +45,7 @@ const LONG_TEST_MS = 20 * 1000;
 
 describe('get-user-data', () => {
   it('gets full user data', async () => {
-    const { phone } = registeredUser;
+    const { phone } = e2eUser;
     const signInResponse: SignInResponse = await post(SIGN_IN_URL, {
       phone,
       password: TEST_USER_PASSWORD,
@@ -153,7 +152,7 @@ describe('booking workflow', () => {
   let bookingId: number;
 
   it('create + delete booking', async () => {
-    const { phone } = registeredUser;
+    const { phone } = e2eUser;
     const signInResponse: SignInResponse = await post(SIGN_IN_URL, {
       phone,
       password: TEST_USER_PASSWORD,
@@ -202,7 +201,7 @@ describe('create-booking', () => {
   const bookingIds: number[] = [];
 
   it('already booked', async () => {
-    const { phone } = registeredUser;
+    const { phone } = e2eUser;
     const signInResponse: SignInResponse = await post(SIGN_IN_URL, {
       phone,
       password: TEST_USER_PASSWORD,
@@ -252,7 +251,7 @@ describe('cancel-booking -> already visited', () => {
   let bookingId: number;
 
   it('cannot cancel past booking: already visited', async () => {
-    const { phone } = registeredUser;
+    const { phone } = e2eUser;
     const signInResponse: SignInResponse = await post(SIGN_IN_URL, {
       phone,
       password: TEST_USER_PASSWORD,
@@ -310,7 +309,7 @@ describe('cancel-booking -> booking date is in the past', () => {
   let bookingId: number;
 
   it('cancel-booking -> booking date is in the past', async () => {
-    const { phone } = registeredUser;
+    const { phone } = e2eUser;
     const signInResponse: SignInResponse = await post(SIGN_IN_URL, {
       phone,
       password: TEST_USER_PASSWORD,
@@ -424,7 +423,7 @@ describe('confirm-visit', () => {
 
     expect(adminToken).toBeTruthy();
 
-    const user = await getUserByPhone(registeredUser.phone);
+    const user = await getUserByPhone(e2eUser.phone);
     const booking = await createTestBooking(user.id as number, sportObjectId, new Date());
     const bookingId = booking.id as number;
     bookingIds.push(bookingId);
@@ -498,7 +497,7 @@ describe('confirm-visit', () => {
 
     expect(adminToken).toBeTruthy();
 
-    const user = await getUserByPhone(registeredUser.phone);
+    const user = await getUserByPhone(e2eUser.phone);
     const booking = await createTestBooking(user.id as number, sportObjects[1].id, new Date());
     const bookingId = booking.id as number;
     bookingIds.push(bookingId);
@@ -524,7 +523,7 @@ describe('confirm-visit', () => {
 
     expect(adminToken).toBeTruthy();
 
-    const user = await getUserByPhone(registeredUser.phone);
+    const user = await getUserByPhone(e2eUser.phone);
     const yesterday = addDays(new Date(), -1);
     const booking = await createTestBooking(user.id as number, sportObjectId, yesterday);
     const bookingId = booking.id as number;
@@ -551,7 +550,7 @@ describe('confirm-visit', () => {
 
     expect(adminToken).toBeTruthy();
 
-    const user = await getUserByPhone(registeredUser.phone);
+    const user = await getUserByPhone(e2eUser.phone);
     const booking = await createTestBooking(user.id as number, sportObjectId, new Date());
     const bookingId = booking.id as number;
     bookingIds.push(bookingId);

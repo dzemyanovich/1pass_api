@@ -4,7 +4,7 @@ import { getSportObjects } from '../utils/repository';
 import SportObject from '../models/sport-object';
 import Admin from '../models/admin';
 import { getHash } from '../../utils/auth';
-import { getTestAdminName, TEST_ADMIN_PASSWORD, TEST_ADMIN_PREFIX } from '../utils/utils';
+import { TEST_ADMIN_PASSWORD, TEST_ADMIN_NAME_PREFIX, getTestAdminName } from '../utils/test-users';
 
 export default {
   async up(queryInterface: QueryInterface): Promise<object | number> {
@@ -23,7 +23,7 @@ export default {
       'Admins',
       {
         username: {
-          [Op.like]: `${TEST_ADMIN_PREFIX}%`,
+          [Op.like]: `${TEST_ADMIN_NAME_PREFIX}%`,
         },
       },
     );

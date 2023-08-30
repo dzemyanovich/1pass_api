@@ -1,6 +1,23 @@
 import { getHash } from '../../utils/auth';
 import User from '../models/user';
-import { TEST_USER_PASSWORD, TEST_USER_PREFIX } from './utils';
+
+export const TEST_ADMIN_NAME_PREFIX = 'test_admin_';
+export const TEST_ADMIN_PASSWORD = 'admin_password';
+export const TEST_USER_EMAIL_PREFIX = 'test_email_';
+export const TEST_USER_PASSWORD = 'user_password';
+
+export function getTestAdminName(index: number): string {
+  return `${TEST_ADMIN_NAME_PREFIX}${index}`;
+}
+
+export const e2eUser: User = {
+  phone: '+375333333330',
+  firstName: 'e2e_test_user_first_name',
+  lastName: 'e2e_test_user_last_name',
+  email: 'e2e_test_user@mail.ru',
+  password: getHash(TEST_USER_PASSWORD),
+  verified: true,
+} as User;
 
 const registeredUsers: User[] = [
   '+375333333331',
@@ -14,22 +31,19 @@ const registeredUsers: User[] = [
   phone,
   firstName: `test_name_${index}`,
   lastName: `test_last_name_${index}`,
-  email: `${TEST_USER_PREFIX}${index}@mail.ru`,
+  email: `${TEST_USER_EMAIL_PREFIX}${index}@mail.ru`,
   password: getHash(TEST_USER_PASSWORD),
   verified: true,
 }) as User);
 
-export const testUsers: User[] = registeredUsers.concat([
-  {
-    phone: '+375333333338',
-    verified: false,
-  } as User,
-  {
-    phone: '+375333333339',
-    verified: true,
-  } as User,
-]);
+export const notVerifiedUser: User = {
+  phone: '+375333333338',
+  verified: false,
+} as User;
 
-export const verifiedUser = testUsers.find((user: User) => !user.password && user.verified) as User;
-export const notVerifiedUser = testUsers.find((user: User) => !user.password && !user.verified) as User;
-export const registeredUser = registeredUsers[0];
+export const verifiedUser: User = {
+  phone: '+375333333339',
+  verified: true,
+} as User;
+
+export const testUsers: User[] = [e2eUser, notVerifiedUser, verifiedUser].concat(registeredUsers);

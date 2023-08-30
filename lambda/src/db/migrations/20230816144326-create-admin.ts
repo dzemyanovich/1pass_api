@@ -37,6 +37,6 @@ export default {
   },
 
   async down(queryInterface: QueryInterface): Promise<void> {
-    await queryInterface.dropTable('Users');
+    await queryInterface.dropTable('Admins');
   },
 };

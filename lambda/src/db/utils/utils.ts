@@ -23,12 +23,3 @@ export function runSql(sql: string): void {
 
   connection.end();
 }
-
-export const TEST_ADMIN_PREFIX = 'test_admin_';
-export const TEST_ADMIN_PASSWORD = 'admin_password';
-export const TEST_USER_PREFIX = 'test_email_';
-export const TEST_USER_PASSWORD = 'user_password';
-
-export function getTestAdminName(index: number): string {
-  return `${TEST_ADMIN_PREFIX}${index}`;
-}

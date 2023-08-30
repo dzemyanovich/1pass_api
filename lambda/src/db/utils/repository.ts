@@ -6,7 +6,7 @@ import User from '../models/user';
 import SportObject from '../models/sport-object';
 import Booking from '../models/booking';
 import Admin from '../models/admin';
-import { TEST_USER_PREFIX } from './utils';
+import { TEST_USER_EMAIL_PREFIX } from './test-users';
 
 async function runQuery<T>(query: () => Promise<T>): Promise<T> {
   let result: T;
@@ -43,12 +43,13 @@ export async function createUser(phone: string): Promise<User> {
   }));
 }
 
+// todo: take all registered test users except e2e one
 export async function getTestUsers(): Promise<User[]> {
   return runQuery(() => User.findAll({
     where: {
       verified: true,
       email: {
-        [Op.like]: `${TEST_USER_PREFIX}%`,
+        [Op.like]: `${TEST_USER_EMAIL_PREFIX}%`,
       },
     },
   }));
