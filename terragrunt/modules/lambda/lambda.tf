@@ -49,11 +49,11 @@ resource "aws_iam_role_policy_attachment" "lambda_basic_access" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
-resource "aws_lambda_function" "create_test_bookings_lambda" {
+resource "aws_lambda_function" "add_today_bookings_lambda" {
   filename          = data.archive_file.lambda_zip.output_path
-  function_name     = "${var.product}-${var.env}-create-test-bookings"
+  function_name     = "${var.product}-${var.env}-add-today-bookings"
   role              = aws_iam_role.iam_for_lambda.arn
-  handler           = "dist/create-test-bookings.handler"
+  handler           = "dist/add-today-bookings.handler"
   source_code_hash  = data.archive_file.lambda_zip.output_base64sha256
   runtime           = local.runtime
 
