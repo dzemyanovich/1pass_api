@@ -70,7 +70,7 @@ export async function getAllTestUsers(): Promise<User[]> {
           email: {
             [Op.like]: `${E2E_USER_EMAIL_PREFIX}%`,
           },
-        }
+        },
       ],
     },
   }));
