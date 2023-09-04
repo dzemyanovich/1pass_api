@@ -43,7 +43,7 @@ export async function createUser(phone: string): Promise<User> {
   }));
 }
 
-// gets all registered test users except e2e ones
+// gets all registered test users (excluding e2e and ui test users)
 export async function getTestUsers(): Promise<User[]> {
   return runQuery(() => User.findAll({
     where: {
@@ -55,7 +55,7 @@ export async function getTestUsers(): Promise<User[]> {
   }));
 }
 
-// gets all registered test users including e2e ones
+// gets all registered test users + e2e ones (excluding ui test users)
 export async function getAllTestUsers(): Promise<User[]> {
   return runQuery(() => User.findAll({
     where: {
