@@ -31,7 +31,7 @@ Via **rebase**, e.g. merging to `master` branch (commands should be executed one
 
 # Tech stack
 
-AWS Lambda, AWS API Gateway, Node.js, Terraform, Terragrunt, GitLab CI
+AWS Lambda, AWS API Gateway, AWS RDS (MySQL), AWS EventBridge, Node.js, TypeScript, Eslint, Jest, Sequelize (ORM), MySQL, Terraform, Terragrunt, GitLab CI/CD
 
 # Scripts description
 
