@@ -24,7 +24,8 @@ import {
 import { get, post } from './utils/rest';
 import { getToken, getUserId } from '../lambda/src/utils/auth';
 import { getUserByPhone } from '../lambda/src/db/utils/repository';
-import { expectSportObject } from './utils/expect';
+import { expectSportObjects } from './utils/expect';
+import { LONG_TEST_MS } from './utils/constants';
 
 const { API_URL } = process.env;
 const SIGN_IN_URL = `${API_URL}/sign-in`;
@@ -36,21 +37,16 @@ const CREATE_BOOKING_URL = `${API_URL}/create-booking`;
 const CANCEL_BOOKING_URL = `${API_URL}/cancel-booking`;
 
 describe('get-user-data', () => {
-  it('invalid token', async () => {
-    const userDataResponse: UserDataResponse = await get(USER_DATA_URL, { token: 'asdf' });
-
-    expect(userDataResponse.success).toBe(false);
-    expect(userDataResponse.errors).toContain(invalidToken());
-  });
-
-  it('gets all sport objects', async () => {
+  it('gets all sport objects (token not passed)', async () => {
     const userDataResponse: UserDataResponse = await get(USER_DATA_URL);
 
-    expect(userDataResponse.success).toBe(true);
-    expect(userDataResponse.data?.sportObjects.length).toBeGreaterThan(0);
-    userDataResponse.data?.sportObjects.forEach((sportObject: SportObjectVM) => expectSportObject(sportObject));
-    expect(userDataResponse.data?.bookings).toBeFalsy();
-    expect(userDataResponse.data?.userInfo).toBeFalsy();
+    expectSportObjects(userDataResponse);
+  });
+
+  it('gets all sport objects (invalid token passed)', async () => {
+    const userDataResponse: UserDataResponse = await get(USER_DATA_URL, { token: 'asdf' });
+
+    expectSportObjects(userDataResponse);
   });
 });
 
@@ -121,8 +117,6 @@ describe('auth-verify-code', () => {
 });
 
 describe('sign-in', () => {
-  const TEST_TIMEOUT_SEC = 10;
-
   it('success', async () => {
     const { phone } = e2eUser;
     const signInResponse: SignInResponse = await post(SIGN_IN_URL, {
@@ -135,7 +129,7 @@ describe('sign-in', () => {
     expect(signInResponse.success).toBe(true);
     expect(signInResponse.data).toBeTruthy();
     expect(getUserId(token)).toEqual(getUserId(signInResponse.data as string));
-  }, TEST_TIMEOUT_SEC * 1000);
+  }, LONG_TEST_MS);
 
   it('phone and password are missing', async () => {
     const signInResponse: SignInResponse = await post(SIGN_IN_URL, {});

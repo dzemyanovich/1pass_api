@@ -31,6 +31,7 @@ import { addDays, isToday } from '../lambda/src/utils/utils';
 import { get, post } from './utils/rest';
 import User from '../lambda/src/db/models/user';
 import { expectAdminData, expectSportObject } from './utils/expect';
+import { LONG_TEST_MS } from './utils/constants';
 
 const { API_URL, ADMIN_API_URL } = process.env;
 const SIGN_IN_URL = `${API_URL}/sign-in`;
@@ -41,7 +42,6 @@ const CANCEL_BOOKING_URL = `${API_URL}/cancel-booking`;
 const ADMIN_SIGN_IN_URL = `${ADMIN_API_URL}/admin-sign-in`;
 const CONFIRM_VISIT_URL = `${ADMIN_API_URL}/confirm-visit`;
 const GET_ADMIN_DATA_URL = `${ADMIN_API_URL}/get-admin-data`;
-const LONG_TEST_MS = 20 * 1000;
 
 describe('get-user-data', () => {
   it('gets full user data', async () => {

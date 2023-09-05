@@ -29,3 +29,11 @@ export function expectAdminData(adminData: AdminData, admin: Admin): void {
     }
   });
 }
+
+export function expectSportObjects(userDataResponse: UserDataResponse): void {
+  expect(userDataResponse.success).toBe(true);
+  expect(userDataResponse.data?.sportObjects.length).toBeGreaterThan(0);
+  userDataResponse.data?.sportObjects.forEach((sportObject: SportObjectVM) => expectSportObject(sportObject));
+  expect(userDataResponse.data?.bookings).toBeFalsy();
+  expect(userDataResponse.data?.userInfo).toBeFalsy();
+}
