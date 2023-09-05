@@ -1,3 +1,8 @@
+variable "is_dev_env" {
+  type    = bool
+  default = false
+}
+
 variable "product" {
   type    = string
   default = "1pass"

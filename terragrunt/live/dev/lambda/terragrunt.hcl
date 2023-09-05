@@ -12,6 +12,7 @@ locals {
 }
 
 inputs = {
-  env      = local.global_vars.env
-  root_dir = local.root_dir
+  env        = local.global_vars.env
+  root_dir   = local.root_dir
+  is_dev_env = true
 }
