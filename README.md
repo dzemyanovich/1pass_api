@@ -1,10 +1,16 @@
 # Envs
 
-| Env      | UI URL  | API URL                                                            |
-| -------- | ------- | ------------------------------------------------------------------ |
-| dev      | TBA     | https://uu3xj2zdx6.execute-api.eu-central-1.amazonaws.com/dev1     |
-| preprod  | TBA     | https://60qhz6s8f9.execute-api.eu-central-1.amazonaws.com/preprod1 |
-| prod     | TBA     | https://6nb2sgfcrl.execute-api.eu-central-1.amazonaws.com/prod1    |
+| Env      | API URL (User API + Admin API)                                               |
+| -------- | -----------------------------------------------------------------------------|
+| dev      | https://uu3xj2zdx6.execute-api.eu-central-1.amazonaws.com/dev1               |
+| preprod  | https://60qhz6s8f9.execute-api.eu-central-1.amazonaws.com/preprod1           |
+| prod     | https://6nb2sgfcrl.execute-api.eu-central-1.amazonaws.com/prod1              |
+
+| Env      | Admin Portal UI URL                                                          |
+| -------- | ---------------------------------------------------------------------------- |
+| dev      | http://admin.multipass.app.dev1.s3-website.eu-central-1.amazonaws.com/       |
+| preprod  | http://admin.multipass.app.preprod1.s3-website.eu-central-1.amazonaws.com/   |
+| prod     | http://admin.multipass.app.prod1.s3-website.eu-central-1.amazonaws.com/      |
 
 # Deployment
 

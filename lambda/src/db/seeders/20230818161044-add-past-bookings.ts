@@ -11,16 +11,15 @@ export default {
     const sportObjects = await getSportObjects();
     const users = await getAllTestUsers();
     const bookings: Booking[] = [];
-    const today = new Date();
     const bookingTimes: Date[] = [
-      addDays(today, -1),
-      addDays(today, -5),
-      addDays(today, -10),
-      addDays(today, -15),
-      addDays(today, -20),
-      addDays(today, -30),
-      addDays(today, -100),
-      addDays(today, -356),
+      addDays(new Date(), -1),
+      addDays(new Date(), -5),
+      addDays(new Date(), -10),
+      addDays(new Date(), -15),
+      addDays(new Date(), -20),
+      addDays(new Date(), -30),
+      addDays(new Date(), -100),
+      addDays(new Date(), -356),
     ];
 
     users.forEach((user: User) => {
