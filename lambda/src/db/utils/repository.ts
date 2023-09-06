@@ -6,7 +6,7 @@ import User from '../models/user';
 import SportObject from '../models/sport-object';
 import Booking from '../models/booking';
 import Admin from '../models/admin';
-import { E2E_USER_EMAIL_PREFIX, TEST_USER_EMAIL_PREFIX } from './test-users';
+import { E2E_USER_EMAIL_PREFIX, TEST_USER_EMAIL_PREFIX, UI_USER_EMAIL_PREFIX } from './test-users';
 
 async function runQuery<T>(query: () => Promise<T>): Promise<T> {
   let result: T;
@@ -55,7 +55,7 @@ export async function getTestUsers(): Promise<User[]> {
   }));
 }
 
-// gets all registered test users + e2e ones (excluding ui test users)
+// gets all registered test users + e2e test users + ui test users
 export async function getAllTestUsers(): Promise<User[]> {
   return runQuery(() => User.findAll({
     where: {
@@ -69,6 +69,11 @@ export async function getAllTestUsers(): Promise<User[]> {
         {
           email: {
             [Op.like]: `${E2E_USER_EMAIL_PREFIX}%`,
+          },
+        },
+        {
+          email: {
+            [Op.like]: `${UI_USER_EMAIL_PREFIX}%`,
           },
         },
       ],

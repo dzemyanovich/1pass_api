@@ -14,6 +14,7 @@ export async function handler(event: SignInRequest): Promise<SignInResponse> {
 
   const user = await signIn(event);
 
+  // todo: return UserData if token is correct
   return user
     ? {
       success: true,
