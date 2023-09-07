@@ -30,7 +30,7 @@ import { getAdminToken, getHash, getUserId } from '../lambda/src/utils/auth';
 import { addDays, isToday } from '../lambda/src/utils/utils';
 import { get, post } from './utils/rest';
 import User from '../lambda/src/db/models/user';
-import { expectAdminData, expectSportObject } from './utils/expect';
+import { expectAdminData, expectSportObject, expectBooking, expectSignInSuccess } from './utils/expect';
 import { LONG_TEST_MS } from './utils/constants';
 
 const { API_URL, ADMIN_API_URL } = process.env;
@@ -50,22 +50,16 @@ describe('get-user-data', () => {
       phone,
       password: TEST_USER_PASSWORD,
     });
-    const token = signInResponse.data as string;
+    const token = signInResponse.data?.token as string;
     const user: User = await getUserByPhone(phone);
     const userDataResponse: UserDataResponse = await get(USER_DATA_URL, { token });
 
+    expectSignInSuccess(signInResponse);
     expect(userDataResponse.success).toBe(true);
     expect(userDataResponse.data?.sportObjects.length).toBeGreaterThan(0);
     userDataResponse.data?.sportObjects.forEach((sportObject: SportObjectVM) => expectSportObject(sportObject));
     expect(userDataResponse.data?.bookings?.length).toBeGreaterThan(0);
-    userDataResponse.data?.bookings?.forEach(({ id, sportObject, bookingTime, visitTime }: UserBooking) => {
-      expectSportObject(sportObject);
-      expect(typeof id).toBe('number');
-      expect(Date.parse(bookingTime as unknown as string)).toBeTruthy();
-      if (visitTime) {
-        expect(Date.parse(visitTime as unknown as string)).toBeTruthy();
-      }
-    });
+    userDataResponse.data?.bookings?.forEach(expectBooking);
     expect(userDataResponse.data?.userInfo).toMatchObject({
       phone: user.phone,
       email: user.email,
@@ -130,9 +124,8 @@ describe('user workflow', () => {
       password,
     });
 
-    expect(sinInSuccess.success).toBe(true);
-    expect(sinInSuccess.data).toBeTruthy();
-    expect(getUserId(sinInSuccess.data as string)).toEqual(getUserId(signUpResponse.data as string));
+    expectSignInSuccess(sinInSuccess);
+    expect(getUserId(sinInSuccess.data?.token as string)).toEqual(getUserId(signUpResponse.data as string));
 
     await deleteUser(newUser.id as number);
 
@@ -166,10 +159,11 @@ describe('booking workflow', () => {
       token: signInResponse.data,
       sportObjectId,
     });
-    bookingId = createBookingResponse.data as number;
+    bookingId = createBookingResponse.data?.id as number;
     const newBooking = (await getBookingById(bookingId)) as Booking;
 
     expect(createBookingResponse.success).toBe(true);
+    expectBooking(createBookingResponse.data as UserBooking);
     expect(typeof bookingId).toBe('number');
     expect(newBooking.id).toEqual(bookingId);
     expect(newBooking).toMatchObject({
@@ -215,13 +209,11 @@ describe('create-booking', () => {
       token,
       sportObjectId,
     });
-    const bookingId = createBookingSuccess.data as number;
+    const bookingId = createBookingSuccess.data?.id as number;
     bookingIds.push(bookingId);
 
-    expect(createBookingSuccess).toMatchObject({
-      success: true,
-      data: expect.any(Number),
-    });
+    expect(createBookingSuccess.success).toBe(true);
+    expectBooking(createBookingSuccess.data as UserBooking);
 
     const createBookingFail: CreateBookingResponse = await post(CREATE_BOOKING_URL, {
       token,
@@ -229,7 +221,7 @@ describe('create-booking', () => {
     });
 
     if (createBookingFail.data) {
-      bookingIds.push(createBookingFail.data);
+      bookingIds.push(createBookingFail.data.id);
     }
 
     expect(createBookingFail.success).toBe(false);
@@ -265,12 +257,10 @@ describe('cancel-booking -> already visited', () => {
       token,
       sportObjectId,
     });
-    bookingId = createBookingSuccess.data as number;
+    bookingId = createBookingSuccess.data?.id as number;
 
-    expect(createBookingSuccess).toMatchObject({
-      success: true,
-      data: expect.any(Number),
-    });
+    expect(createBookingSuccess.success).toBe(true);
+    expectBooking(createBookingSuccess.data as UserBooking);
 
     const admin = await getAdminBySportObjectId(sportObjectId);
     const adminToken = getAdminToken(admin.id as number);
@@ -314,7 +304,7 @@ describe('cancel-booking -> booking date is in the past', () => {
       phone,
       password: TEST_USER_PASSWORD,
     });
-    const token = signInResponse.data as string;
+    const token = signInResponse.data?.token as string;
     const userId = getUserId(token) as number;
     const userDataResponse: UserDataResponse = await get(USER_DATA_URL);
     const sportObjects = userDataResponse.data?.sportObjects as SportObjectVM[];
@@ -323,6 +313,7 @@ describe('cancel-booking -> booking date is in the past', () => {
     const booking = await createTestBooking(userId, sportObjectId, yesterday);
     bookingId = booking.id as number;
 
+    expectSignInSuccess(signInResponse);
     expect(bookingId).toEqual(expect.any(Number));
     expect(booking.userId).toEqual(userId);
     expect(booking.sportObjectId).toEqual(sportObjectId);

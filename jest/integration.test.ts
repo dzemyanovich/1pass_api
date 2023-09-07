@@ -1,6 +1,7 @@
 import {
   confirmMismatch,
   emailExists,
+  invalidCredentials,
   invalidEmail,
   invalidInput,
   invalidToken,
@@ -24,7 +25,7 @@ import {
 import { get, post } from './utils/rest';
 import { getToken, getUserId } from '../lambda/src/utils/auth';
 import { getUserByPhone } from '../lambda/src/db/utils/repository';
-import { expectSportObjects } from './utils/expect';
+import { expectSignInSuccess, expectSportObjects } from './utils/expect';
 import { LONG_TEST_MS } from './utils/constants';
 
 const { API_URL } = process.env;
@@ -126,9 +127,8 @@ describe('sign-in', () => {
     const user = await getUserByPhone(phone);
     const token = getToken(user.id as number);
 
-    expect(signInResponse.success).toBe(true);
-    expect(signInResponse.data).toBeTruthy();
-    expect(getUserId(token)).toEqual(getUserId(signInResponse.data as string));
+    expectSignInSuccess(signInResponse);
+    expect(getUserId(token)).toEqual(getUserId(signInResponse.data?.token as string));
   }, LONG_TEST_MS);
 
   it('phone and password are missing', async () => {
@@ -150,14 +150,14 @@ describe('sign-in', () => {
     expect(signInResponse.errors).toContain(stringButBoolean('password'));
   });
 
-  it('user not found', async () => {
+  it('invalid credentials', async () => {
     const signInResponse: SignInResponse = await post(SIGN_IN_URL, {
       phone: '+12025550181',
       password: 'some_password',
     });
 
     expect(signInResponse.success).toBe(false);
-    expect(signInResponse.errors).toContain(userNotFound());
+    expect(signInResponse.errors).toContain(invalidCredentials());
   });
 });
 

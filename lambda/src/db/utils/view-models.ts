@@ -47,3 +47,14 @@ export function toUserVM(user: User): UserVM {
     lastName,
   };
 }
+
+export function toUserInfo(user: User): UserInfo {
+  const { firstName, lastName, phone, email } = user;
+
+  return {
+    firstName,
+    lastName,
+    phone,
+    email,
+  };
+}

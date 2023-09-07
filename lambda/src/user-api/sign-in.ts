@@ -1,6 +1,7 @@
-import { signIn } from '../db/utils/repository';
+import { getUserBookings, signIn } from '../db/utils/repository';
+import { toUserBooking, toUserInfo } from '../db/utils/view-models';
 import { getToken } from '../utils/auth';
-import { userNotFound } from '../utils/errors';
+import { invalidCredentials } from '../utils/errors';
 import { getErrors, validateSignIn } from '../utils/validation';
 
 export async function handler(event: SignInRequest): Promise<SignInResponse> {
@@ -14,14 +15,22 @@ export async function handler(event: SignInRequest): Promise<SignInResponse> {
 
   const user = await signIn(event);
 
-  // todo: return UserData if token is correct
-  return user
-    ? {
-      success: true,
-      data: getToken(user.id as number),
-    }
-    : {
+  if (!user) {
+    return {
       success: false,
-      errors: [userNotFound()],
+      errors: [invalidCredentials()],
     };
+  }
+
+  const userInfo: UserInfo = toUserInfo(user);
+  const bookings: UserBooking[] = (await getUserBookings(user.id as number)).map(toUserBooking);
+
+  return {
+    success: true,
+    data: {
+      token: getToken(user.id as number),
+      userInfo,
+      bookings,
+    },
+  };
 }

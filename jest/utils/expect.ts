@@ -37,3 +37,30 @@ export function expectSportObjects(userDataResponse: UserDataResponse): void {
   expect(userDataResponse.data?.bookings).toBeFalsy();
   expect(userDataResponse.data?.userInfo).toBeFalsy();
 }
+
+export function expectBooking({ id, sportObject, bookingTime, visitTime }: UserBooking): void {
+  expectSportObject(sportObject);
+  expect(typeof id).toBe('number');
+  expect(Date.parse(bookingTime as unknown as string)).toBeTruthy();
+  if (visitTime) {
+    expect(Date.parse(visitTime as unknown as string)).toBeTruthy();
+  }
+}
+
+export function expectSignInSuccess(signInResponse: SignInResponse): void {
+  expect(signInResponse).toMatchObject({
+    success: true,
+    data: {
+      token: expect.any(String),
+      userInfo: {
+        phone: expect.any(String),
+        email: expect.any(String),
+        firstName: expect.any(String),
+        lastName: expect.any(String),
+      },
+      bookings: expect.any(Array),
+    },
+  });
+  expect(signInResponse.data?.bookings?.length).toBeGreaterThan(0);
+  signInResponse.data?.bookings?.forEach(expectBooking);
+}

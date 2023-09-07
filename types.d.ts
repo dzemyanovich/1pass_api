@@ -51,7 +51,11 @@ type SignInRequest = {
   password: string,
 };
 
-type SignInResponse = LambdaResponse<string>;
+type SignInResponse = LambdaResponse<{
+  token: string,
+  bookings: UserBooking[],
+  userInfo: UserInfo,
+}>;
 
 type SignUpRequest = {
   phone: string,
@@ -70,7 +74,7 @@ type CreateBookingRequest = {
   sportObjectId: number,
 };
 
-type CreateBookingResponse = LambdaResponse<number>;
+type CreateBookingResponse = LambdaResponse<UserBooking>;
 
 type CancelBookingRequest = {
   token: string,

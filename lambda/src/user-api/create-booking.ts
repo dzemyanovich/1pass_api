@@ -1,4 +1,5 @@
 import { createBooking, getSportObjectById, getTodayBooking } from '../db/utils/repository';
+import { toUserBooking } from '../db/utils/view-models';
 import { getUserId } from '../utils/auth';
 import { alreadyBooked, invalidToken, noSportObject } from '../utils/errors';
 import { getErrors, validateCreateBooking } from '../utils/validation';
@@ -42,6 +43,6 @@ export async function handler(event: CreateBookingRequest): Promise<CreateBookin
 
   return {
     success: true,
-    data: booking.id,
+    data: toUserBooking(booking),
   };
 }

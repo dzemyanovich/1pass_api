@@ -36,6 +36,10 @@ export function userNotFound(): string {
   return 'user not found';
 }
 
+export function invalidCredentials(): string {
+  return 'Invalid credentials';
+}
+
 export function invalidEmail(fieldName: string): string {
   return `${fieldName}: Invalid email`;
 }
