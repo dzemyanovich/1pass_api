@@ -1,4 +1,5 @@
-import { createBooking, getSportObjectById, getTodayBooking } from '../db/utils/repository';
+import Booking from '../db/models/booking';
+import { createBooking, getFullBooking, getSportObjectById, getTodayBooking } from '../db/utils/repository';
 import { toUserBooking } from '../db/utils/view-models';
 import { getUserId } from '../utils/auth';
 import { alreadyBooked, invalidToken, noSportObject } from '../utils/errors';
@@ -39,10 +40,12 @@ export async function handler(event: CreateBookingRequest): Promise<CreateBookin
     };
   }
 
+  // create request does not return nested objects
   const booking = await createBooking(userId, sportObjectId);
+  const fullBooking = await getFullBooking(booking.id as number);
 
   return {
     success: true,
-    data: toUserBooking(booking),
+    data: toUserBooking(fullBooking as Booking),
   };
 }

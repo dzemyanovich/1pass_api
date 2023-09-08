@@ -195,6 +195,18 @@ export async function getBookingById(bookingId: number): Promise<Booking | null>
   }));
 }
 
+export async function getFullBooking(bookingId: number): Promise<Booking | null> {
+  return runQuery(() => Booking.findOne({
+    include: {
+      model: SportObject,
+      as: 'sportObject',
+    },
+    where: {
+      id: bookingId,
+    },
+  }));
+}
+
 export async function getTodayBooking(userId: number, sportObjectId: number): Promise<Booking | null> {
   const todayStart = new Date().setHours(0, 0, 0, 0);
   const now = new Date();

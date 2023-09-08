@@ -14,6 +14,7 @@ import {
 } from '../lambda/src/db/utils/repository';
 import {
   alreadyBooked,
+  invalidCredentials,
   invalidToken,
   noBooking,
   noBookingAccess,
@@ -83,7 +84,7 @@ describe('user workflow', () => {
     });
 
     expect(signInFail.success).toBe(false);
-    expect(signInFail.errors).toContain(userNotFound());
+    expect(signInFail.errors).toContain(invalidCredentials());
 
     const createdUser = await createUser(phone);
     const notVerifiedUser = await getUserByPhone(phone);
@@ -124,7 +125,7 @@ describe('user workflow', () => {
       password,
     });
 
-    expectSignInSuccess(sinInSuccess);
+    expectSignInSuccess(sinInSuccess, false);
     expect(getUserId(sinInSuccess.data?.token as string)).toEqual(getUserId(signUpResponse.data as string));
 
     await deleteUser(newUser.id as number);
@@ -154,9 +155,10 @@ describe('booking workflow', () => {
     const userDataResponse: UserDataResponse = await get(USER_DATA_URL);
     const sportObjects = userDataResponse.data?.sportObjects as SportObjectVM[];
     const sportObjectId = sportObjects[0].id;
+    const token = signInResponse.data?.token as string;
 
     const createBookingResponse: CreateBookingResponse = await post(CREATE_BOOKING_URL, {
-      token: signInResponse.data,
+      token,
       sportObjectId,
     });
     bookingId = createBookingResponse.data?.id as number;
@@ -175,7 +177,7 @@ describe('booking workflow', () => {
     });
 
     const cancelBookingResponse: CancelBookingResponse = await post(CANCEL_BOOKING_URL, {
-      token: signInResponse.data,
+      token,
       bookingId,
     });
     const deletedBooking = await getBookingById(bookingId);
@@ -203,7 +205,7 @@ describe('create-booking', () => {
     const userDataResponse: UserDataResponse = await get(USER_DATA_URL);
     const sportObjects = userDataResponse.data?.sportObjects as SportObjectVM[];
     const sportObjectId = sportObjects[0].id;
-    const token = signInResponse.data;
+    const token = signInResponse.data?.token as string;
 
     const createBookingSuccess: CreateBookingResponse = await post(CREATE_BOOKING_URL, {
       token,
@@ -228,7 +230,7 @@ describe('create-booking', () => {
     expect(createBookingFail.errors).toContain(alreadyBooked());
 
     await deleteBooking(bookingId);
-  });
+  }, LONG_TEST_MS);
 
   afterAll(async () => {
     for (const bookingId of bookingIds) {
@@ -251,7 +253,7 @@ describe('cancel-booking -> already visited', () => {
     const userDataResponse: UserDataResponse = await get(USER_DATA_URL);
     const sportObjects = userDataResponse.data?.sportObjects as SportObjectVM[];
     const sportObjectId = sportObjects[0].id;
-    const token = signInResponse.data;
+    const token = signInResponse.data?.token as string;
 
     const createBookingSuccess: CreateBookingResponse = await post(CREATE_BOOKING_URL, {
       token,

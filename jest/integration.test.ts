@@ -316,9 +316,10 @@ describe('create-booking', () => {
       phone,
       password: TEST_USER_PASSWORD,
     });
+    const token = signInResponse.data?.token as string;
 
     const createBookingResponse: CreateBookingResponse = await post(CREATE_BOOKING_URL, {
-      token: signInResponse.data,
+      token,
       sportObjectId: -124,
     });
 
@@ -363,9 +364,7 @@ describe('cancel-booking', () => {
       phone,
       password: TEST_USER_PASSWORD,
     });
-
-    const token = signInResponse.data;
-
+    const token = signInResponse.data?.token as string;
     const cancelBookingResponse: CancelBookingResponse = await post(CANCEL_BOOKING_URL, {
       token,
       bookingId: -343,

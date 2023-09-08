@@ -47,7 +47,7 @@ export function expectBooking({ id, sportObject, bookingTime, visitTime }: UserB
   }
 }
 
-export function expectSignInSuccess(signInResponse: SignInResponse): void {
+export function expectSignInSuccess(signInResponse: SignInResponse, hasBookings = true): void {
   expect(signInResponse).toMatchObject({
     success: true,
     data: {
@@ -61,6 +61,11 @@ export function expectSignInSuccess(signInResponse: SignInResponse): void {
       bookings: expect.any(Array),
     },
   });
-  expect(signInResponse.data?.bookings?.length).toBeGreaterThan(0);
-  signInResponse.data?.bookings?.forEach(expectBooking);
+
+  if (hasBookings) {
+    expect(signInResponse.data?.bookings?.length).toBeGreaterThan(0);
+    signInResponse.data?.bookings?.forEach(expectBooking);
+  } else {
+    expect(signInResponse.data?.bookings?.length).toBe(0);
+  }
 }
