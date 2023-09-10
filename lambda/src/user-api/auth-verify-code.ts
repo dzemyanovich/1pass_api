@@ -1,6 +1,6 @@
 import { getUserByPhone, setVerifed } from '../db/utils/repository';
 import { verifyCode } from '../utils/auth';
-import { userExists, userNotFound, verifyCodeStatus } from '../utils/errors';
+import { userExists, userNotFound, incorrectVerifyCode, verifyCodeError } from '../utils/errors';
 import { getErrors, validateVerifyCode } from '../utils/validation';
 
 export async function handler(event: VerifyCodeRequest): Promise<VerifyCodeResponse> {
@@ -29,12 +29,26 @@ export async function handler(event: VerifyCodeRequest): Promise<VerifyCodeRespo
     };
   }
 
-  const status = await verifyCode(event);
+  let status = null;
+  try {
+    status = await verifyCode(event);
+  } catch (error) { // error occurs e.g. if you try to make verification w/o sending code before
+    // eslint-disable-next-line no-console
+    console.error(error);
 
-  if (status !== 'approved') {
     return {
       success: false,
-      errors: [verifyCodeStatus(status)],
+      errors: [verifyCodeError()],
+    };
+  }
+
+  if (status !== 'approved') {
+    // eslint-disable-next-line no-console
+    console.error(`verify code status should be "approved" however it is "${status}"`);
+
+    return {
+      success: false,
+      errors: [incorrectVerifyCode()],
     };
   }
 

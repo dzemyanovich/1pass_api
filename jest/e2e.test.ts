@@ -112,7 +112,15 @@ describe('user workflow', () => {
     });
 
     expect(signUpResponse.success).toBe(true);
-    expect(signUpResponse.data).toBeTruthy();
+    expect(signUpResponse.data).toMatchObject({
+      token: expect.any(String),
+      userInfo: {
+        firstName,
+        lastName,
+        phone,
+        email,
+      },
+    });
 
     const newUser = await getUserByPhone(phone);
     expect(newUser.firstName).toBe(firstName);
@@ -124,9 +132,11 @@ describe('user workflow', () => {
       phone,
       password,
     });
+    const signInToken = sinInSuccess.data?.token as string;
+    const signUpToken = signUpResponse.data?.token as string;
 
     expectSignInSuccess(sinInSuccess, false);
-    expect(getUserId(sinInSuccess.data?.token as string)).toEqual(getUserId(signUpResponse.data as string));
+    expect(getUserId(signInToken)).toEqual(getUserId(signUpToken));
 
     await deleteUser(newUser.id as number);
 

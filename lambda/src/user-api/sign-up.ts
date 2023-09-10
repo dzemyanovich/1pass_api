@@ -46,9 +46,19 @@ export async function handler(event: SignUpRequest): Promise<SignUpResponse> {
   }
 
   await signUp(event);
+  const token = getToken(userByPhone.id as number);
+  const { firstName, lastName } = event;
 
   return {
     success: true,
-    data: getToken(userByPhone.id as number),
+    data: {
+      token,
+      userInfo: {
+        phone,
+        email,
+        firstName,
+        lastName,
+      },
+    },
   };
 }

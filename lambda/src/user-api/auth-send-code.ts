@@ -1,6 +1,6 @@
 import { createUser, getUserByPhone, setVerifed } from '../db/utils/repository';
 import { sendCode } from '../utils/auth';
-import { sendCodeStatus, userExists } from '../utils/errors';
+import { sendCodeError, userExists } from '../utils/errors';
 import { getErrors, validateSendCode } from '../utils/validation';
 
 export async function handler(event: SendCodeRequest): Promise<SendCodeResponse> {
@@ -29,13 +29,18 @@ export async function handler(event: SendCodeRequest): Promise<SendCodeResponse>
   const status = await sendCode(event);
 
   if (status !== 'pending') {
+    // eslint-disable-next-line no-console
+    console.error(`send code status should be "pending" however it is "${status}"`);
+
     return {
       success: false,
-      errors: [sendCodeStatus(status)],
+      errors: [sendCodeError()],
     };
   }
 
-  await createUser(phone);
+  if (!user) {
+    await createUser(phone);
+  }
 
   return {
     success: true,

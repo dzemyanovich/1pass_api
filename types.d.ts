@@ -67,7 +67,10 @@ type SignUpRequest = {
   confirmPassword: string,
 };
 
-type SignUpResponse = LambdaResponse<string>;
+type SignUpResponse = LambdaResponse<{
+  token: string,
+  userInfo: UserInfo,
+}>;
 
 type CreateBookingRequest = {
   token: string,

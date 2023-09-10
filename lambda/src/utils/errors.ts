@@ -52,12 +52,16 @@ export function emailExists(email: string): string {
   return `user with email = ${email} already exists`;
 }
 
-export function sendCodeStatus(status: string): string {
-  return `send code status is ${status}`;
+export function sendCodeError(): string {
+  return 'error while sending code';
 }
 
-export function verifyCodeStatus(status: string): string {
-  return `verify code status is ${status}`;
+export function incorrectVerifyCode(): string {
+  return 'verify code is incorrect';
+}
+
+export function verifyCodeError(): string {
+  return 'error while verifying code';
 }
 
 export function phoneNotVerified(phone: string): string {
