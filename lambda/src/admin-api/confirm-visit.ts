@@ -2,6 +2,7 @@ import Booking from '../db/models/booking';
 import { confirmVisit, getAdminById, getBookingById } from '../db/utils/repository';
 import { getAdminId } from '../utils/auth';
 import { invalidToken, noBooking, noBookingAccess, pastBooking, updateError } from '../utils/errors';
+import { sendNotification } from '../utils/firebase';
 import { isPastBooking } from '../utils/utils';
 import { getErrors, validateConfirmVisit } from '../utils/validation';
 
@@ -53,6 +54,8 @@ export async function handler(event: ConfirmVisitRequest): Promise<ConfirmVisitR
       errors: [updateError()],
     };
   }
+
+  await sendNotification(booking.userId, 'Success', 'Visit confirmed');
 
   const { visitTime } = await getBookingById(bookingId) as Booking;
 

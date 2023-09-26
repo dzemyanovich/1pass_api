@@ -85,3 +85,58 @@ variable "JWT_EXPIRE_DAYS" {
   type    = number
   default = 30
 }
+
+variable "FIREBASE_TYPE" {
+  type    = string
+  default = ""
+}
+
+variable "FIREBASE_PROJECT_ID" {
+  type    = string
+  default = ""
+}
+
+variable "FIREBASE_PRIVATE_KEY_ID" {
+  type    = string
+  default = ""
+}
+
+variable "FIREBASE_PRIVATE_KEY" {
+  type    = string
+  default = ""
+}
+
+variable "FIREBASE_CLIENT_EMAIL" {
+  type    = string
+  default = ""
+}
+
+variable "FIREBASE_CLIENT_ID" {
+  type    = string
+  default = ""
+}
+
+variable "FIREBASE_AUTH_URI" {
+  type    = string
+  default = ""
+}
+
+variable "FIREBASE_TOKEN_URI" {
+  type    = string
+  default = ""
+}
+
+variable "FIREBASE_AUTH_PROVIDER_X509_CERT_URL" {
+  type    = string
+  default = ""
+}
+
+variable "FIREBASE_TOKEN_URI" {
+  type    = string
+  default = ""
+}
+
+variable "FIREBASE_UNIVERSE_DOMAIN" {
+  type    = string
+  default = ""
+}

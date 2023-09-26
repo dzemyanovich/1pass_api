@@ -22,6 +22,19 @@ locals {
     ADMIN_JWT_SECRET = var.ADMIN_JWT_SECRET
     JWT_EXPIRE_DAYS  = var.JWT_EXPIRE_DAYS
   })
+  firebase_env_vars = merge(local.jwt_env_vars, {
+    FIREBASE_TYPE                        = var.FIREBASE_TYPE
+    FIREBASE_PROJECT_ID                  = var.FIREBASE_PROJECT_ID
+    FIREBASE_PRIVATE_KEY_ID              = var.FIREBASE_PRIVATE_KEY_ID
+    FIREBASE_PRIVATE_KEY                 = var.FIREBASE_PRIVATE_KEY
+    FIREBASE_CLIENT_EMAIL                = var.FIREBASE_CLIENT_EMAIL
+    FIREBASE_CLIENT_ID                   = var.FIREBASE_CLIENT_ID
+    FIREBASE_AUTH_URI                    = var.FIREBASE_AUTH_URI
+    FIREBASE_TOKEN_URI                   = var.FIREBASE_TOKEN_URI
+    FIREBASE_AUTH_PROVIDER_X509_CERT_URL = var.FIREBASE_AUTH_PROVIDER_X509_CERT_URL
+    FIREBASE_LIENT_X509_CERT_URL         = var.FIREBASE_LIENT_X509_CERT_URL
+    FIREBASE_UNIVERSE_DOMAIN             = var.FIREBASE_UNIVERSE_DOMAIN
+  })
 }
 
 resource "aws_iam_role" "iam_for_lambda" {
@@ -56,6 +69,20 @@ resource "aws_lambda_function" "add_today_bookings_lambda" {
   handler           = "dist/add-today-bookings.handler"
   source_code_hash  = data.archive_file.lambda_zip.output_base64sha256
   runtime           = local.runtime
+
+  environment {
+    variables = local.base_env_vars
+  }
+}
+
+resource "aws_lambda_function" "delete_expired_tokens_lambda" {
+  filename          = data.archive_file.lambda_zip.output_path
+  function_name     = "${var.product}-${var.env}-delete-expired-tokens"
+  role              = aws_iam_role.iam_for_lambda.arn
+  handler           = "dist/delete-expired-tokens.handler"
+  source_code_hash  = data.archive_file.lambda_zip.output_base64sha256
+  runtime           = local.runtime
+  timeout           = 100
 
   environment {
     variables = local.base_env_vars
@@ -157,6 +184,32 @@ resource "aws_lambda_function" "cancel_booking_lambda" {
   }
 }
 
+resource "aws_lambda_function" "register_firebase_token_lambda" {
+  filename          = data.archive_file.lambda_zip.output_path
+  function_name     = "${var.product}-${var.env}-register-firebase-token"
+  role              = aws_iam_role.iam_for_lambda.arn
+  handler           = "dist/user-api/register-firebase-token.handler"
+  source_code_hash  = data.archive_file.lambda_zip.output_base64sha256
+  runtime           = local.runtime
+
+  environment {
+    variables = local.firebase_env_vars
+  }
+}
+
+resource "aws_lambda_function" "delete_firebase_token_lambda" {
+  filename          = data.archive_file.lambda_zip.output_path
+  function_name     = "${var.product}-${var.env}-delete-firebase-token"
+  role              = aws_iam_role.iam_for_lambda.arn
+  handler           = "dist/user-api/delete-firebase-token.handler"
+  source_code_hash  = data.archive_file.lambda_zip.output_base64sha256
+  runtime           = local.runtime
+
+  environment {
+    variables = local.firebase_env_vars
+  }
+}
+
 #################### ADMIN API ####################
 
 resource "aws_lambda_function" "get_admin_data_lambda" {
@@ -181,7 +234,7 @@ resource "aws_lambda_function" "confirm_visit_lambda" {
   runtime           = local.runtime
 
   environment {
-    variables = local.jwt_env_vars
+    variables = local.firebase_env_vars
   }
 }
 

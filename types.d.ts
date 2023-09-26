@@ -91,6 +91,22 @@ type TokenData = {
   createdAt: number,
 };
 
+type FirebaseRequest = {
+  firebaseToken: string,
+  userToken: string,
+};
+
+type FirebaseResponse = LambdaResponse<void>;
+
+type FirebaseTokenValue = {
+  token: string,
+  createdAt: number,
+};
+
+type FirebaseTokenData = {
+  data: FirebaseTokenValue[],
+};
+
 // ************** ADMIN API ****************
 
 type AdminData = {
@@ -153,4 +169,10 @@ type AdminBooking = {
   user: UserVM,
   bookingTime: Date,
   visitTime: Date,
+};
+
+// ************** Other ****************
+
+type AppSettings = {
+  firebaseCollectionName: string,
 };

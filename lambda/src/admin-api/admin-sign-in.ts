@@ -23,7 +23,6 @@ export async function handler(event: AdminSignInRequest): Promise<AdminSignInRes
   }
 
   const adminId = admin.id as number;
-
   const token = getAdminToken(adminId);
   const bookings = await getBookings(adminId);
 

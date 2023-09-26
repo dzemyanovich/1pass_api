@@ -117,6 +117,17 @@ export function validateCancelBooking(
   return schema.safeParse(event);
 }
 
+export function validateFirebaseRequest(
+  event: FirebaseRequest,
+): SafeParseReturnType<FirebaseRequest, FirebaseRequest> {
+  const schema = z.object({
+    firebaseToken: z.string().nonempty(),
+    userToken: z.string().nonempty(),
+  });
+
+  return schema.safeParse(event);
+}
+
 /*********************** ADMIN API ***********************/
 
 export function validateConfirmVisit(

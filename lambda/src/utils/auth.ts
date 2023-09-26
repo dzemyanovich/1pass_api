@@ -71,6 +71,14 @@ export function getAdminToken(adminId: number): string {
 }
 
 export function getUserId(token: string): number | null {
+  const tokenData: TokenData | null = getTokenData(token);
+
+  return tokenData
+    ? tokenData.userId
+    : null;
+}
+
+export function getTokenData(token: string): TokenData | null {
   const { JWT_SECRET } = process.env;
   if (!JWT_SECRET) {
     throw new Error(noEnvVar('JWT_SECRET'));
@@ -87,7 +95,7 @@ export function getUserId(token: string): number | null {
 
   return isTokenExpired(payload.createdAt)
     ? null
-    : payload.userId;
+    : payload;
 }
 
 export function getAdminId(token: string): number | null {
@@ -110,7 +118,7 @@ export function getAdminId(token: string): number | null {
     : payload.adminId;
 }
 
-function isTokenExpired(createdAt: number): boolean {
+export function isTokenExpired(createdAt: number): boolean {
   const { JWT_EXPIRE_DAYS } = process.env;
   if (!JWT_EXPIRE_DAYS) {
     throw new Error(noEnvVar('JWT_EXPIRE_DAYS'));
