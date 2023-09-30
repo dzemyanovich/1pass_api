@@ -98,7 +98,7 @@ Before running pipeline set the following env vars (variables should be **not pr
 | FIREBASE_AUTH_URI                             | "some_value"                            | Required for Firebase (used in tests)                       |
 | FIREBASE_TOKEN_URI                            | "some_value"                            | Required for Firebase (used in tests)                       |
 | FIREBASE_AUTH_PROVIDER_X509_CERT_URL          | "some_value"                            | Required for Firebase (used in tests)                       |
-| FIREBASE_LIENT_X509_CERT_URL                  | "some_value"                            | Required for Firebase (used in tests)                       |
+| FIREBASE_CLIENT_X509_CERT_URL                  | "some_value"                            | Required for Firebase (used in tests)                       |
 | FIREBASE_UNIVERSE_DOMAIN                      | "some_value"                            | Required for Firebase (used in tests)                       |
 | TF_VAR_FIREBASE_TYPE                          | $FIREBASE_TYPE                          | Required for Firebase (used in lambdas)                     |
 | TF_VAR_FIREBASE_PROJECT_ID                    | $FIREBASE_PROJECT_ID                    | Required for Firebase (used in lambdas)                     |
@@ -109,7 +109,7 @@ Before running pipeline set the following env vars (variables should be **not pr
 | TF_VAR_FIREBASE_AUTH_URI                      | $FIREBASE_AUTH_URI                      | Required for Firebase (used in lambdas)                     |
 | TF_VAR_FIREBASE_TOKEN_URI                     | $FIREBASE_TOKEN_URI                     | Required for Firebase (used in lambdas)                     |
 | TF_VAR_FIREBASE_AUTH_PROVIDER_X509_CERT_URL   | $FIREBASE_AUTH_PROVIDER_X509_CERT_URL   | Required for Firebase (used in lambdas)                     |
-| TF_VAR_FIREBASE_LIENT_X509_CERT_URL           | $FIREBASE_LIENT_X509_CERT_URL           | Required for Firebase (used in lambdas)                     |
+| TF_VAR_FIREBASE_CLIENT_X509_CERT_URL           | $FIREBASE_CLIENT_X509_CERT_URL           | Required for Firebase (used in lambdas)                     |
 | TF_VAR_FIREBASE_UNIVERSE_DOMAIN               | $FIREBASE_UNIVERSE_DOMAIN               | Required for Firebase (used in lambdas)                     |
 
 > `TF_VAR_db_username` and `TF_VAR_db_password` are the same for all envs
@@ -138,7 +138,7 @@ FIREBASE_CLIENT_ID                   = "some_value"
 FIREBASE_AUTH_URI                    = "some_value"
 FIREBASE_TOKEN_URI                   = "some_value"
 FIREBASE_AUTH_PROVIDER_X509_CERT_URL = "some_value"
-FIREBASE_LIENT_X509_CERT_URL         = "some_value"
+FIREBASE_CLIENT_X509_CERT_URL         = "some_value"
 FIREBASE_UNIVERSE_DOMAIN             = "some_value"
 ```
 
@@ -168,7 +168,7 @@ process.env.FIREBASE_CLIENT_ID = 'some_value';
 process.env.FIREBASE_AUTH_URI = 'some_value';
 process.env.FIREBASE_TOKEN_URI = 'some_value';
 process.env.FIREBASE_AUTH_PROVIDER_X509_CERT_URL = 'some_value';
-process.env.FIREBASE_LIENT_X509_CERT_URL = 'some_value';
+process.env.FIREBASE_CLIENT_X509_CERT_URL = 'some_value';
 process.env.FIREBASE_UNIVERSE_DOMAIN ='some_value';
 ```
 

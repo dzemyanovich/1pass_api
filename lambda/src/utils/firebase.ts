@@ -4,10 +4,9 @@ import type { ServiceAccount } from 'firebase-admin';
 
 import { isTokenExpired } from './auth';
 import { firebaseTokenNotFound } from './errors';
-import appSettings from '../../../app.json';
+import '../../../app';
 
-const { firebaseCollectionName }: AppSettings = appSettings;
-
+const { FIREBASE_COLLECTION_NAME } = process.env as ProcessEnv;
 const serviceAccount = {
   type: process.env.FIREBASE_TYPE,
   project_id: process.env.FIREBASE_PROJECT_ID,
@@ -18,7 +17,7 @@ const serviceAccount = {
   auth_uri: process.env.FIREBASE_AUTH_URI,
   token_uri: process.env.FIREBASE_TOKEN_URI,
   auth_provider_x509_cert_url: process.env.FIREBASE_AUTH_PROVIDER_X509_CERT_URL,
-  client_x509_cert_url: process.env.FIREBASE_LIENT_X509_CERT_URL,
+  client_x509_cert_url: process.env.FIREBASE_CLIENT_X509_CERT_URL,
   universe_domain: process.env.FIREBASE_UNIVERSE_DOMAIN,
 } as ServiceAccount;
 
@@ -28,7 +27,7 @@ admin.initializeApp({
 
 export async function sendNotification(userId: number, title: string, body: string): Promise<void> {
   const db = getFirestore();
-  const docRef = db.collection(firebaseCollectionName).doc(userId.toString());
+  const docRef = db.collection(FIREBASE_COLLECTION_NAME).doc(userId.toString());
   const currentValue = (await docRef.get()).data() as FirebaseTokenData;
   const tokens: string[] = currentValue.data.map((tokenValue: FirebaseTokenValue) => tokenValue.token);
 
@@ -44,7 +43,7 @@ export async function sendNotification(userId: number, title: string, body: stri
 export async function storeToken(userTokenData: TokenData, firebaseToken: string): Promise<void> {
   const { userId, createdAt } = userTokenData;
   const db = getFirestore();
-  const docRef = db.collection(firebaseCollectionName).doc(userId.toString());
+  const docRef = db.collection(FIREBASE_COLLECTION_NAME).doc(userId.toString());
   const currentValue = (await docRef.get()).data() as FirebaseTokenData;
 
   const newValue: FirebaseTokenData = {
@@ -70,7 +69,7 @@ export async function storeToken(userTokenData: TokenData, firebaseToken: string
 
 export async function deleteFirebaseToken(userId: number, firebaseToken: string): Promise<void> {
   const db = getFirestore();
-  const docRef = db.collection(firebaseCollectionName).doc(userId.toString());
+  const docRef = db.collection(FIREBASE_COLLECTION_NAME).doc(userId.toString());
   const currentValue = (await docRef.get()).data() as FirebaseTokenData;
 
   const newValue: FirebaseTokenData = {
@@ -92,7 +91,7 @@ export async function deleteFirebaseToken(userId: number, firebaseToken: string)
 
 export async function deleteExpiredTokens() {
   const db = getFirestore();
-  const collection = await db.collection(firebaseCollectionName).get();
+  const collection = await db.collection(FIREBASE_COLLECTION_NAME).get();
 
   for (const doc of collection.docs) {
     const currentValue = doc.data() as FirebaseTokenData;
@@ -107,7 +106,7 @@ export async function deleteExpiredTokens() {
     });
 
     if (newValue.data.length !== currentValue.data.length) {
-      const docRef = db.collection(firebaseCollectionName).doc(doc.id.toString());
+      const docRef = db.collection(FIREBASE_COLLECTION_NAME).doc(doc.id.toString());
       await docRef.set(newValue);
     }
   }

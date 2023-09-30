@@ -173,6 +173,28 @@ type AdminBooking = {
 
 // ************** Other ****************
 
-type AppSettings = {
-  firebaseCollectionName: string,
+type ProcessEnv = {
+  DEV_DB_USERNAME: string,
+  DEV_DB_PASSWORD: string,
+  DEV_DB_HOST: string,
+  DEV_DB_NAME: string,
+
+  TWILIO_AUTH_TOKEN: string,
+  TWILIO_ACCOUNT_SID: string,
+  TWILIO_VERIFY_SID: string,
+  JWT_SECRET: string,
+  ADMIN_JWT_SECRET: string,
+
+  FIREBASE_COLLECTION_NAME: string,
+  FIREBASE_TYPE: string,
+  FIREBASE_PROJECT_ID: string,
+  FIREBASE_PRIVATE_KEY_ID: string,
+  FIREBASE_PRIVATE_KEY: string,
+  FIREBASE_CLIENT_EMAIL: string,
+  FIREBASE_CLIENT_ID: string,
+  FIREBASE_AUTH_URI: string,
+  FIREBASE_TOKEN_URI: string,
+  FIREBASE_AUTH_PROVIDER_X509_CERT_URL: string,
+  FIREBASE_CLIENT_X509_CERT_URL: string,
+  FIREBASE_UNIVERSE_DOMAIN: string,
 };

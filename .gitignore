@@ -4,7 +4,7 @@ lambda/dist/
 
 .terraform.lock.hcl
 terraform.tfvars
-env-vars.js
+env-vars.ts
 jest/setup/setup.local.ts
 .DS_Store
 lambda.zip

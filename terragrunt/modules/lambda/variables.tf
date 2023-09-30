@@ -131,7 +131,7 @@ variable "FIREBASE_AUTH_PROVIDER_X509_CERT_URL" {
   default = ""
 }
 
-variable "FIREBASE_TOKEN_URI" {
+variable "FIREBASE_CLIENT_X509_CERT_URL" {
   type    = string
   default = ""
 }
