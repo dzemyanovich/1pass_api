@@ -4,9 +4,8 @@ import type { ServiceAccount } from 'firebase-admin';
 
 import { isTokenExpired } from './auth';
 import { firebaseTokenNotFound } from './errors';
-import '../../../app';
+import { FIREBASE_COLLECTION_NAME } from './constants';
 
-const { FIREBASE_COLLECTION_NAME } = process.env as ProcessEnv;
 const serviceAccount = {
   type: process.env.FIREBASE_TYPE,
   project_id: process.env.FIREBASE_PROJECT_ID,
@@ -40,7 +39,7 @@ export async function sendNotification(userId: number, title: string, body: stri
   });
 }
 
-export async function storeToken(userTokenData: TokenData, firebaseToken: string): Promise<void> {
+export async function storeFirebaseToken(userTokenData: TokenData, firebaseToken: string): Promise<void> {
   const { userId, createdAt } = userTokenData;
   const db = getFirestore();
   const docRef = db.collection(FIREBASE_COLLECTION_NAME).doc(userId.toString());
@@ -65,6 +64,14 @@ export async function storeToken(userTokenData: TokenData, firebaseToken: string
   }
 
   await docRef.set(newValue);
+}
+
+export async function getFirebaseTokens(userId: number): Promise<string[]> {
+  const db = getFirestore();
+  const docRef = db.collection(FIREBASE_COLLECTION_NAME).doc(userId.toString());
+  const currentValue = (await docRef.get()).data() as FirebaseTokenData;
+
+  return currentValue.data.map((tokenValue: FirebaseTokenValue) => tokenValue.token);
 }
 
 export async function deleteFirebaseToken(userId: number, firebaseToken: string): Promise<void> {

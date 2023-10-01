@@ -1,6 +1,6 @@
 import { getTokenData } from '../utils/auth';
 import { invalidToken } from '../utils/errors';
-import { storeToken } from '../utils/firebase';
+import { storeFirebaseToken } from '../utils/firebase';
 import { getErrors, validateFirebaseRequest } from '../utils/validation';
 
 export async function handler(event: FirebaseRequest): Promise<FirebaseResponse> {
@@ -22,7 +22,7 @@ export async function handler(event: FirebaseRequest): Promise<FirebaseResponse>
     };
   }
 
-  await storeToken(tokenData, firebaseToken);
+  await storeFirebaseToken(tokenData, firebaseToken);
 
   return {
     success: true,

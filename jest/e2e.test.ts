@@ -26,20 +26,23 @@ import {
   userNotFound,
 } from '../lambda/src/utils/errors';
 import Booking from '../lambda/src/db/models/booking';
+import User from '../lambda/src/db/models/user';
 import { e2eUser, TEST_ADMIN_PASSWORD, TEST_USER_PASSWORD } from '../lambda/src/db/utils/test-users';
 import { getAdminToken, getHash, getUserId } from '../lambda/src/utils/auth';
 import { addDays, isToday } from '../lambda/src/utils/utils';
 import { get, post } from './utils/rest';
-import User from '../lambda/src/db/models/user';
 import { expectAdminData, expectSportObject, expectBooking, expectSignInSuccess } from './utils/expect';
 import { LONG_TEST_MS } from './utils/constants';
+import { getFirebaseTokens } from '../lambda/src/utils/firebase';
 
-const { API_URL, ADMIN_API_URL } = process.env;
-const SIGN_IN_URL = `${API_URL}/sign-in`;
-const SIGN_UP_URL = `${API_URL}/sign-up`;
-const USER_DATA_URL = `${API_URL}/get-user-data`;
-const CREATE_BOOKING_URL = `${API_URL}/create-booking`;
-const CANCEL_BOOKING_URL = `${API_URL}/cancel-booking`;
+const { USER_API_URL, ADMIN_API_URL } = process.env;
+const SIGN_IN_URL = `${USER_API_URL}/sign-in`;
+const SIGN_UP_URL = `${USER_API_URL}/sign-up`;
+const USER_DATA_URL = `${USER_API_URL}/get-user-data`;
+const REGISTER_FIREBASE_TOKEN_URL = `${USER_API_URL}/register-firebase-token`;
+const DELETE_FIREBASE_TOKEN_URL = `${USER_API_URL}/delete-firebase-token`;
+const CREATE_BOOKING_URL = `${USER_API_URL}/create-booking`;
+const CANCEL_BOOKING_URL = `${USER_API_URL}/cancel-booking`;
 const ADMIN_SIGN_IN_URL = `${ADMIN_API_URL}/admin-sign-in`;
 const CONFIRM_VISIT_URL = `${ADMIN_API_URL}/confirm-visit`;
 const GET_ADMIN_DATA_URL = `${ADMIN_API_URL}/get-admin-data`;
@@ -612,4 +615,51 @@ describe('get-admin-data', () => {
     expect(adminDataResponse.success).toBe(false);
     expect(adminDataResponse.errors).toContain(invalidToken());
   });
+});
+
+describe('firebase', () => {
+  it('firebase workflow', async () => {
+    const { phone } = e2eUser;
+    const signInResponse: SignInResponse = await post(SIGN_IN_URL, {
+      phone,
+      password: TEST_USER_PASSWORD,
+    });
+
+    const userToken = signInResponse.data?.token as string;
+    const firebaseToken = 'any_string_1';
+
+    const firebaseRequest: FirebaseRequest = {
+      firebaseToken,
+      userToken,
+    };
+
+    const registerTokenResponse: FirebaseResponse = await post(REGISTER_FIREBASE_TOKEN_URL, firebaseRequest);
+    const userId = getUserId(userToken) as number;
+    const firebaseTokens = await getFirebaseTokens(userId);
+
+    expect(registerTokenResponse).toMatchObject({
+      success: true,
+    });
+    expect(firebaseTokens.length).toBe(1);
+    expect(firebaseTokens[0]).toBe(firebaseToken);
+
+    const registerTokenResponse_2: FirebaseResponse = await post(REGISTER_FIREBASE_TOKEN_URL, firebaseRequest);
+    const firebaseTokens_2 = await getFirebaseTokens(userId);
+
+    expect(registerTokenResponse_2).toMatchObject({
+      success: true,
+    });
+    expect(firebaseTokens_2.length).toBe(1);
+    expect(firebaseTokens_2[0]).toBe(firebaseToken);
+
+    const deleteTokenResponse: FirebaseResponse = await post(DELETE_FIREBASE_TOKEN_URL, firebaseRequest);
+    const emptyFirebaseTokens = await getFirebaseTokens(userId);
+
+    expect(deleteTokenResponse).toMatchObject({
+      success: true,
+    });
+    expect(emptyFirebaseTokens.length).toBe(0);
+
+    // todo: delete collection
+  }, LONG_TEST_MS);
 });

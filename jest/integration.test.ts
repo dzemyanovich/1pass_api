@@ -28,14 +28,14 @@ import { getUserByPhone } from '../lambda/src/db/utils/repository';
 import { expectSignInSuccess, expectSportObjects } from './utils/expect';
 import { LONG_TEST_MS } from './utils/constants';
 
-const { API_URL } = process.env;
-const SIGN_IN_URL = `${API_URL}/sign-in`;
-const SIGN_UP_URL = `${API_URL}/sign-up`;
-const USER_DATA_URL = `${API_URL}/get-user-data`;
-const SEND_CODE_URL = `${API_URL}/auth-send-code`;
-const VERIFY_CODE_URL = `${API_URL}/auth-verify-code`;
-const CREATE_BOOKING_URL = `${API_URL}/create-booking`;
-const CANCEL_BOOKING_URL = `${API_URL}/cancel-booking`;
+const { USER_API_URL } = process.env;
+const SIGN_IN_URL = `${USER_API_URL}/sign-in`;
+const SIGN_UP_URL = `${USER_API_URL}/sign-up`;
+const USER_DATA_URL = `${USER_API_URL}/get-user-data`;
+const SEND_CODE_URL = `${USER_API_URL}/auth-send-code`;
+const VERIFY_CODE_URL = `${USER_API_URL}/auth-verify-code`;
+const CREATE_BOOKING_URL = `${USER_API_URL}/create-booking`;
+const CANCEL_BOOKING_URL = `${USER_API_URL}/cancel-booking`;
 
 describe('get-user-data', () => {
   it('gets all sport objects (token not passed)', async () => {

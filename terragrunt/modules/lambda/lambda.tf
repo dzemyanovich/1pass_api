@@ -1,6 +1,9 @@
 locals {
-  runtime = "nodejs18.x"
+  runtime             = "nodejs18.x"
   get_request_mapping = "${file("templates/api_gateway_body_mapping.template")}"
+  long_timeout        = 10
+  very_long_timeout   = 100
+
   base_env_vars = {
     NODE_ENV            = var.env
     PREPROD_DB_USERNAME = var.PREPROD_DB_USERNAME
@@ -12,16 +15,19 @@ locals {
     PROD_DB_NAME        = var.PROD_DB_NAME
     PROD_DB_HOST        = var.PROD_DB_HOST
   }
+
   auth_env_vars = merge(local.base_env_vars, {
     TWILIO_AUTH_TOKEN   = var.TWILIO_AUTH_TOKEN
     TWILIO_ACCOUNT_SID  = var.TWILIO_ACCOUNT_SID
     TWILIO_VERIFY_SID   = var.TWILIO_VERIFY_SID
   })
+
   jwt_env_vars = merge(local.base_env_vars, {
     JWT_SECRET       = var.JWT_SECRET
     ADMIN_JWT_SECRET = var.ADMIN_JWT_SECRET
     JWT_EXPIRE_DAYS  = var.JWT_EXPIRE_DAYS
   })
+
   firebase_env_vars = merge(local.jwt_env_vars, {
     FIREBASE_TYPE                        = var.FIREBASE_TYPE
     FIREBASE_PROJECT_ID                  = var.FIREBASE_PROJECT_ID
@@ -82,7 +88,7 @@ resource "aws_lambda_function" "delete_expired_tokens_lambda" {
   handler           = "dist/delete-expired-tokens.handler"
   source_code_hash  = data.archive_file.lambda_zip.output_base64sha256
   runtime           = local.runtime
-  timeout           = 100
+  timeout           = local.very_long_timeout
 
   environment {
     variables = local.base_env_vars
@@ -111,7 +117,7 @@ resource "aws_lambda_function" "auth_send_code_lambda" {
   handler           = "dist/user-api/auth-send-code.handler"
   source_code_hash  = data.archive_file.lambda_zip.output_base64sha256
   runtime           = local.runtime
-  timeout           = 10
+  timeout           = local.long_timeout
 
   environment {
     variables = local.auth_env_vars
@@ -125,7 +131,7 @@ resource "aws_lambda_function" "auth_verify_code_lambda" {
   handler           = "dist/user-api/auth-verify-code.handler"
   source_code_hash  = data.archive_file.lambda_zip.output_base64sha256
   runtime           = local.runtime
-  timeout           = 10
+  timeout           = local.long_timeout
 
   environment {
     variables = local.auth_env_vars
@@ -191,6 +197,7 @@ resource "aws_lambda_function" "register_firebase_token_lambda" {
   handler           = "dist/user-api/register-firebase-token.handler"
   source_code_hash  = data.archive_file.lambda_zip.output_base64sha256
   runtime           = local.runtime
+  timeout           = local.long_timeout
 
   environment {
     variables = local.firebase_env_vars
@@ -204,6 +211,7 @@ resource "aws_lambda_function" "delete_firebase_token_lambda" {
   handler           = "dist/user-api/delete-firebase-token.handler"
   source_code_hash  = data.archive_file.lambda_zip.output_base64sha256
   runtime           = local.runtime
+  timeout           = local.long_timeout
 
   environment {
     variables = local.firebase_env_vars
