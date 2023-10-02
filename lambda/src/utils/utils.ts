@@ -18,3 +18,7 @@ export function isPastBooking(booking: Booking) {
 export function getRandomValue<T>(array: T[]): T {
   return array[Math.floor(Math.random() * array.length)];
 }
+
+export function daysToMilliseconds(days: number): number {
+  return days * 1000 * 60 * 60 * 24;
+}

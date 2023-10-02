@@ -1,6 +1,15 @@
 import twilio from 'twilio';
 import jwt from 'jwt-simple';
+
 import { noEnvVar } from './errors';
+import { daysToMilliseconds } from './utils';
+
+const { JWT_EXPIRE_DAYS } = process.env;
+if (!JWT_EXPIRE_DAYS) {
+  throw new Error(noEnvVar('JWT_EXPIRE_DAYS'));
+}
+
+export const jwtExpireMilliseconds = daysToMilliseconds(Number(JWT_EXPIRE_DAYS));
 
 export async function sendCode(event: SendCodeRequest): Promise<string> {
   const { phone } = event;
@@ -119,13 +128,7 @@ export function getAdminId(token: string): number | null {
 }
 
 export function isTokenExpired(createdAt: number): boolean {
-  const { JWT_EXPIRE_DAYS } = process.env;
-  if (!JWT_EXPIRE_DAYS) {
-    throw new Error(noEnvVar('JWT_EXPIRE_DAYS'));
-  }
-
   const millisecondsPassed = Date.now() - createdAt;
-  const jwtExpireMilliseconds = Number(JWT_EXPIRE_DAYS) * 1000 * 60 * 60 * 24;
 
   return millisecondsPassed >= jwtExpireMilliseconds;
 }
