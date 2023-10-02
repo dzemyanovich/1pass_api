@@ -30,13 +30,15 @@ export async function sendNotification(userId: number, title: string, body: stri
   const currentValue = (await docRef.get()).data() as FirebaseTokenData;
   const tokens: string[] = currentValue.data.map((tokenValue: FirebaseTokenValue) => tokenValue.token);
 
-  await admin.messaging().sendEachForMulticast({
-    tokens,
-    notification: {
-      title,
-      body,
-    },
-  });
+  if (tokens.length) {
+    await admin.messaging().sendEachForMulticast({
+      tokens,
+      notification: {
+        title,
+        body,
+      },
+    });
+  }
 }
 
 export async function storeFirebaseToken(userTokenData: TokenData, firebaseToken: string): Promise<void> {
