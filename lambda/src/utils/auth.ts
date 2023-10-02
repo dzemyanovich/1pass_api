@@ -4,12 +4,22 @@ import jwt from 'jwt-simple';
 import { noEnvVar } from './errors';
 import { daysToMilliseconds } from './utils';
 
-const { JWT_EXPIRE_DAYS } = process.env;
-if (!JWT_EXPIRE_DAYS) {
-  throw new Error(noEnvVar('JWT_EXPIRE_DAYS'));
-}
+let jwtExpireMilliseconds: number | null = null;
 
-export const jwtExpireMilliseconds = daysToMilliseconds(Number(JWT_EXPIRE_DAYS));
+export function getJwtExpireMilliseconds(): number {
+  if (jwtExpireMilliseconds) {
+    return jwtExpireMilliseconds;
+  }
+
+  const { JWT_EXPIRE_DAYS } = process.env;
+  if (!JWT_EXPIRE_DAYS) {
+    throw new Error(noEnvVar('JWT_EXPIRE_DAYS'));
+  }
+
+  jwtExpireMilliseconds = daysToMilliseconds(Number(JWT_EXPIRE_DAYS));
+
+  return jwtExpireMilliseconds;
+}
 
 export async function sendCode(event: SendCodeRequest): Promise<string> {
   const { phone } = event;
@@ -130,5 +140,5 @@ export function getAdminId(token: string): number | null {
 export function isTokenExpired(createdAt: number): boolean {
   const millisecondsPassed = Date.now() - createdAt;
 
-  return millisecondsPassed >= jwtExpireMilliseconds;
+  return millisecondsPassed >= getJwtExpireMilliseconds();
 }

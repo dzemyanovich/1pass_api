@@ -28,7 +28,7 @@ import {
 import Booking from '../lambda/src/db/models/booking';
 import User from '../lambda/src/db/models/user';
 import { e2eUser, TEST_ADMIN_PASSWORD, TEST_USER_PASSWORD } from '../lambda/src/db/utils/test-users';
-import { getAdminToken, getHash, getUserId, jwtExpireMilliseconds } from '../lambda/src/utils/auth';
+import { getAdminToken, getHash, getUserId, getJwtExpireMilliseconds } from '../lambda/src/utils/auth';
 import { addDays, daysToMilliseconds, isToday } from '../lambda/src/utils/utils';
 import { get, post } from './utils/rest';
 import { expectAdminData, expectSportObject, expectBooking, expectSignInSuccess } from './utils/expect';
@@ -691,6 +691,7 @@ describe('firebase', () => {
     });
     const userToken = signInResponse.data?.token as string;
     const userId = getUserId(userToken) as number;
+    const jwtExpireMilliseconds = getJwtExpireMilliseconds();
 
     const firebaseToken1 = 'any_string_1';
     const firebaseToken2 = 'any_string_2';
