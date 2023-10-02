@@ -6,6 +6,8 @@ import { isTokenExpired } from './auth';
 import { firebaseTokenNotFound } from './errors';
 import { FIREBASE_COLLECTION_NAME } from './constants';
 
+// eslint-disable-next-line no-console
+console.log('process.env.FIREBASE_TYPE', process.env.FIREBASE_TYPE);
 const serviceAccount = {
   type: process.env.FIREBASE_TYPE,
   project_id: process.env.FIREBASE_PROJECT_ID,
