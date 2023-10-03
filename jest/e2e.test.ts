@@ -619,29 +619,43 @@ describe('get-admin-data', () => {
 });
 
 describe('firebase', () => {
-  it('register-firebase-token & delete-firebase-token', async () => {
+  const firebaseToken1 = 'any_string_1';
+  const firebaseToken2 = 'any_string_2';
+  const firebaseToken3 = 'any_string_3';
+
+  let userId: number;
+  let firebaseRequest1: FirebaseRequest;
+  let firebaseRequest2: FirebaseRequest;
+  let firebaseRequest3: FirebaseRequest;
+
+  beforeAll(async () => {
     const { phone } = e2eUser;
     const signInResponse: SignInResponse = await post(SIGN_IN_URL, {
       phone,
       password: TEST_USER_PASSWORD,
     });
     const userToken = signInResponse.data?.token as string;
-    const userId = getUserId(userToken) as number;
-    const firebaseToken1 = 'any_string_1';
-    const firebaseToken2 = 'any_string_2';
+
+    userId = getUserId(userToken) as number;
+    firebaseRequest1 = {
+      firebaseToken: firebaseToken1,
+      userToken,
+    };
+    firebaseRequest2 = {
+      firebaseToken: firebaseToken2,
+      userToken,
+    };
+    firebaseRequest3 = {
+      firebaseToken: firebaseToken3,
+      userToken,
+    };
+  }, LONG_TEST_MS);
+
+  it('register-firebase-token & delete-firebase-token', async () => {
     const firebaseTokens0 = await getFirebaseTokens(userId);
 
     expect(firebaseTokens0).not.toContain(firebaseToken1);
     expect(firebaseTokens0).not.toContain(firebaseToken2);
-
-    const firebaseRequest1: FirebaseRequest = {
-      firebaseToken: firebaseToken1,
-      userToken,
-    };
-    const firebaseRequest2: FirebaseRequest = {
-      firebaseToken: firebaseToken2,
-      userToken,
-    };
 
     const registerTokenResponse1: FirebaseResponse = await post(REGISTER_FIREBASE_TOKEN_URL, firebaseRequest1);
     const firebaseTokens1 = await getFirebaseTokens(userId);
@@ -684,18 +698,8 @@ describe('firebase', () => {
   }, VERY_LONG_TEST_MS);
 
   it('delete-expired-tokens', async () => {
-    const { phone } = e2eUser;
-    const signInResponse: SignInResponse = await post(SIGN_IN_URL, {
-      phone,
-      password: TEST_USER_PASSWORD,
-    });
-    const userToken = signInResponse.data?.token as string;
-    const userId = getUserId(userToken) as number;
     const jwtExpireMilliseconds = getJwtExpireMilliseconds();
 
-    const firebaseToken1 = 'any_string_1';
-    const firebaseToken2 = 'any_string_2';
-    const firebaseToken3 = 'any_string_3';
     // token is NOT expired
     const userTokenData1 = {
       userId,
@@ -735,10 +739,6 @@ describe('firebase', () => {
     expect(firebaseTokens2).not.toContain(firebaseToken2);
     expect(firebaseTokens2).not.toContain(firebaseToken3);
 
-    const firebaseRequest1: FirebaseRequest = {
-      firebaseToken: firebaseToken1,
-      userToken,
-    };
     const deleteTokenResponse: FirebaseResponse = await post(DELETE_FIREBASE_TOKEN_URL, firebaseRequest1);
 
     expect(deleteTokenResponse).toMatchObject({
@@ -749,4 +749,10 @@ describe('firebase', () => {
 
     expect(firebaseTokens3).not.toContain(firebaseToken1);
   }, VERY_LONG_TEST_MS);
+
+  afterEach(async () => {
+    await post(DELETE_FIREBASE_TOKEN_URL, firebaseRequest1);
+    await post(DELETE_FIREBASE_TOKEN_URL, firebaseRequest2);
+    await post(DELETE_FIREBASE_TOKEN_URL, firebaseRequest3);
+  }, LONG_TEST_MS);
 });
