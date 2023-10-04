@@ -29,7 +29,13 @@ import {
   stringButNumber,
   userNotFound,
 } from '../lambda/src/utils/errors';
-import { getFirebaseTokens, storeFirebaseToken } from '../lambda/src/utils/firebase';
+import {
+  deleteFirebaseCollection,
+  deleteFirebaseToken,
+  getFirebaseTokens,
+  sendNotification,
+  storeFirebaseToken,
+} from '../lambda/src/utils/firebase';
 import { getAdminToken, getHash, getUserId, getJwtExpireMilliseconds } from '../lambda/src/utils/auth';
 import { addDays, daysToMilliseconds, isToday } from '../lambda/src/utils/utils';
 import { get, post } from './utils/rest';
@@ -618,7 +624,7 @@ describe('get-admin-data', () => {
   });
 });
 
-describe('firebase', () => {
+describe('firebase API methods', () => {
   const firebaseToken1 = 'any_string_1';
   const firebaseToken2 = 'any_string_2';
   const firebaseToken3 = 'any_string_3';
@@ -755,4 +761,54 @@ describe('firebase', () => {
     await post(DELETE_FIREBASE_TOKEN_URL, firebaseRequest2);
     await post(DELETE_FIREBASE_TOKEN_URL, firebaseRequest3);
   }, LONG_TEST_MS);
+});
+
+describe('firebase js methods', () => {
+  const nonExistingUserId = -999;
+  const firebaseToken1 = 'any-token-1';
+  const firebaseToken2 = 'any-token-2';
+
+  it('sendNotification', async () => {
+    const userTokenData: TokenData = {
+      userId: nonExistingUserId,
+      createdAt: Date.now(),
+    };
+
+    await storeFirebaseToken(userTokenData, firebaseToken1);
+    await storeFirebaseToken(userTokenData, firebaseToken2);
+    await sendNotification(nonExistingUserId, 'any-title', 'any-body');
+
+    const tokens = await getFirebaseTokens(nonExistingUserId);
+
+    expect(tokens.length).toBe(2);
+    expect(tokens).toContain(firebaseToken1);
+    expect(tokens).toContain(firebaseToken2);
+  });
+
+  it('deleteFirebaseToken', async () => {
+    const userTokenData: TokenData = {
+      userId: nonExistingUserId,
+      createdAt: Date.now(),
+    };
+
+    // checks deletion of token which is not stored in Firebase
+    await deleteFirebaseToken(nonExistingUserId, firebaseToken1);
+    await storeFirebaseToken(userTokenData, firebaseToken1);
+
+    const tokens = await getFirebaseTokens(nonExistingUserId);
+
+    expect(tokens.length).toBe(1);
+    expect(tokens).toContain(firebaseToken1);
+
+    await deleteFirebaseToken(nonExistingUserId, 'i-do-not-exist');
+    await deleteFirebaseToken(nonExistingUserId, firebaseToken1);
+
+    const emptyTokens = await getFirebaseTokens(nonExistingUserId);
+
+    expect(emptyTokens.length).toBe(0);
+  });
+
+  afterEach(async () => {
+    await deleteFirebaseCollection(nonExistingUserId);
+  });
 });

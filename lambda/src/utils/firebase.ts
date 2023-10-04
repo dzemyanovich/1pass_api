@@ -3,7 +3,6 @@ import { getFirestore } from 'firebase-admin/firestore';
 import type { ServiceAccount } from 'firebase-admin';
 
 import { isTokenExpired } from './auth';
-import { firebaseTokenNotFound } from './errors';
 import { FIREBASE_COLLECTION_NAME } from './constants';
 
 const serviceAccount = {
@@ -29,8 +28,8 @@ admin.initializeApp({
 export async function sendNotification(userId: number, title: string, body: string): Promise<void> {
   const db = getFirestore();
   const docRef = db.collection(FIREBASE_COLLECTION_NAME).doc(userId.toString());
-  const currentValue = (await docRef.get()).data() as FirebaseTokenData;
-  const tokens: string[] = currentValue.data.map((tokenValue: FirebaseTokenValue) => tokenValue.token);
+  const currentValue = (await docRef.get()).data() as FirebaseTokenData | undefined;
+  const tokens: string[] = currentValue?.data.map((tokenValue: FirebaseTokenValue) => tokenValue.token) || [];
 
   if (tokens.length) {
     await admin.messaging().sendEachForMulticast({
@@ -47,7 +46,7 @@ export async function storeFirebaseToken(userTokenData: TokenData, firebaseToken
   const { userId, createdAt } = userTokenData;
   const db = getFirestore();
   const docRef = db.collection(FIREBASE_COLLECTION_NAME).doc(userId.toString());
-  const currentValue = (await docRef.get()).data() as FirebaseTokenData;
+  const currentValue = (await docRef.get()).data() as FirebaseTokenData | undefined;
 
   const newValue: FirebaseTokenData = {
     data: [],
@@ -73,17 +72,21 @@ export async function storeFirebaseToken(userTokenData: TokenData, firebaseToken
 export async function getFirebaseTokens(userId: number): Promise<string[]> {
   const db = getFirestore();
   const docRef = db.collection(FIREBASE_COLLECTION_NAME).doc(userId.toString());
-  const currentValue = (await docRef.get()).data() as FirebaseTokenData;
+  const currentValue = (await docRef.get()).data() as FirebaseTokenData | undefined;
 
-  return currentValue
-    ? currentValue.data.map((tokenValue: FirebaseTokenValue) => tokenValue.token)
-    : [];
+  return currentValue?.data.map((tokenValue: FirebaseTokenValue) => tokenValue.token) || [];
 }
 
 export async function deleteFirebaseToken(userId: number, firebaseToken: string): Promise<void> {
   const db = getFirestore();
   const docRef = db.collection(FIREBASE_COLLECTION_NAME).doc(userId.toString());
-  const currentValue = (await docRef.get()).data() as FirebaseTokenData;
+  const currentValue = (await docRef.get()).data() as FirebaseTokenData | undefined;
+
+  if (!currentValue) {
+    // eslint-disable-next-line no-console
+    console.log(`Firebase document with id = ${userId} cannot be found`);
+    return;
+  }
 
   const newValue: FirebaseTokenData = {
     data: [],
@@ -95,11 +98,12 @@ export async function deleteFirebaseToken(userId: number, firebaseToken: string)
     }
   });
 
-  if (newValue.data.length >= currentValue.data.length) {
-    throw new Error(firebaseTokenNotFound());
+  if (newValue.data.length !== currentValue.data.length) {
+    await docRef.set(newValue);
+  } else {
+    // eslint-disable-next-line no-console
+    console.log(`firebase token ${firebaseToken} not found for used id = ${userId}`);
   }
-
-  await docRef.set(newValue);
 }
 
 export async function deleteExpiredTokens() {
@@ -107,20 +111,27 @@ export async function deleteExpiredTokens() {
   const collection = await db.collection(FIREBASE_COLLECTION_NAME).get();
 
   for (const doc of collection.docs) {
-    const currentValue = doc.data() as FirebaseTokenData;
+    const currentValue = doc.data() as FirebaseTokenData | undefined;
     const newValue: FirebaseTokenData = {
       data: [],
     };
 
-    currentValue.data.forEach((tokenValue: FirebaseTokenValue) => {
+    currentValue?.data.forEach((tokenValue: FirebaseTokenValue) => {
       if (!isTokenExpired(tokenValue.createdAt)) {
         newValue.data.push(tokenValue);
       }
     });
 
-    if (newValue.data.length !== currentValue.data.length) {
+    if (currentValue && newValue.data.length !== currentValue.data.length) {
       const docRef = db.collection(FIREBASE_COLLECTION_NAME).doc(doc.id.toString());
       await docRef.set(newValue);
     }
   }
+}
+
+// for testing purposes only
+export async function deleteFirebaseCollection(userId: number): Promise<void> {
+  const db = getFirestore();
+  const docRef = db.collection(FIREBASE_COLLECTION_NAME).doc(userId.toString());
+  await docRef.delete();
 }

@@ -103,7 +103,3 @@ export function nonEmpty(fieldName: string): string {
 export function updateError(): string {
   return 'Error occurred during update';
 }
-
-export function firebaseTokenNotFound(): string {
-  return 'Firebase token was not found';
-}

@@ -1,4 +1,4 @@
-import { getFirebaseTokens } from '../lambda/src/utils/firebase';
+import { sendNotification, getFirebaseTokens, deleteFirebaseToken } from '../lambda/src/utils/firebase';
 import { getToken, getUserId } from '../lambda/src/utils/auth';
 import { getUserByPhone } from '../lambda/src/db/utils/repository';
 import {
@@ -377,10 +377,19 @@ describe('cancel-booking', () => {
 });
 
 describe('firebase', () => {
-  it('get tokens when user id does not exist', async () => {
-    const nonExistingUserId = -123;
+  const nonExistingUserId = -123;
+
+  it('[sendNotification] send notification when user id does not exist', async () => {
+    await sendNotification(nonExistingUserId, 'any title', 'any body');
+  });
+
+  it('[getFirebaseTokens] get tokens when user id does not exist', async () => {
     const firebaseTokens = await getFirebaseTokens(nonExistingUserId);
 
     expect(firebaseTokens.length).toBe(0);
+  });
+
+  it('[deleteFirebaseToken] delete tokens when user id does not exist', async () => {
+    await deleteFirebaseToken(nonExistingUserId, 'any-token');
   });
 });
