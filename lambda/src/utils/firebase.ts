@@ -75,7 +75,9 @@ export async function getFirebaseTokens(userId: number): Promise<string[]> {
   const docRef = db.collection(FIREBASE_COLLECTION_NAME).doc(userId.toString());
   const currentValue = (await docRef.get()).data() as FirebaseTokenData;
 
-  return currentValue.data.map((tokenValue: FirebaseTokenValue) => tokenValue.token);
+  return currentValue
+    ? currentValue.data.map((tokenValue: FirebaseTokenValue) => tokenValue.token)
+    : [];
 }
 
 export async function deleteFirebaseToken(userId: number, firebaseToken: string): Promise<void> {

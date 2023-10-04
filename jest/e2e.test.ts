@@ -1,3 +1,7 @@
+import { handler as deleteExpiredTokens } from '../lambda/src/delete-expired-tokens';
+import Booking from '../lambda/src/db/models/booking';
+import User from '../lambda/src/db/models/user';
+import { e2eUser, TEST_ADMIN_PASSWORD, TEST_USER_PASSWORD } from '../lambda/src/db/utils/test-users';
 import {
   confirmVisit,
   createTestBooking,
@@ -25,16 +29,12 @@ import {
   stringButNumber,
   userNotFound,
 } from '../lambda/src/utils/errors';
-import Booking from '../lambda/src/db/models/booking';
-import User from '../lambda/src/db/models/user';
-import { e2eUser, TEST_ADMIN_PASSWORD, TEST_USER_PASSWORD } from '../lambda/src/db/utils/test-users';
+import { getFirebaseTokens, storeFirebaseToken } from '../lambda/src/utils/firebase';
 import { getAdminToken, getHash, getUserId, getJwtExpireMilliseconds } from '../lambda/src/utils/auth';
 import { addDays, daysToMilliseconds, isToday } from '../lambda/src/utils/utils';
 import { get, post } from './utils/rest';
 import { expectAdminData, expectSportObject, expectBooking, expectSignInSuccess } from './utils/expect';
 import { LONG_TEST_MS, VERY_LONG_TEST_MS } from './utils/constants';
-import { getFirebaseTokens, storeFirebaseToken } from '../lambda/src/utils/firebase';
-import { handler as deleteExpiredTokens } from '../lambda/src/delete-expired-tokens';
 
 const { USER_API_URL, ADMIN_API_URL } = process.env;
 const SIGN_IN_URL = `${USER_API_URL}/sign-in`;

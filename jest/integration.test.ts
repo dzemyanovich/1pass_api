@@ -1,3 +1,6 @@
+import { getFirebaseTokens } from '../lambda/src/utils/firebase';
+import { getToken, getUserId } from '../lambda/src/utils/auth';
+import { getUserByPhone } from '../lambda/src/db/utils/repository';
 import {
   confirmMismatch,
   emailExists,
@@ -23,8 +26,6 @@ import {
   TEST_USER_PASSWORD,
 } from '../lambda/src/db/utils/test-users';
 import { get, post } from './utils/rest';
-import { getToken, getUserId } from '../lambda/src/utils/auth';
-import { getUserByPhone } from '../lambda/src/db/utils/repository';
 import { expectSignInSuccess, expectSportObjects } from './utils/expect';
 import { LONG_TEST_MS } from './utils/constants';
 
@@ -372,5 +373,14 @@ describe('cancel-booking', () => {
 
     expect(cancelBookingResponse.success).toBe(false);
     expect(cancelBookingResponse.errors).toContain(noBooking());
+  });
+});
+
+describe('firebase', () => {
+  it('get tokens when user id does not exist', async () => {
+    const nonExistingUserId = -123;
+    const firebaseTokens = await getFirebaseTokens(nonExistingUserId);
+
+    expect(firebaseTokens.length).toBe(0);
   });
 });
