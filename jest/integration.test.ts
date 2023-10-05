@@ -404,8 +404,8 @@ describe('test-data', () => {
 
     expect(sportObjects.length).toBe(testSportObjects.length);
     expect(sportObjects.find(({ name, address }: SportObject) => name === firstSportObject.name
-      && address === firstSportObject.address)).toBe(true);
+      && address === firstSportObject.address)).toBeTruthy();
     expect(sportObjects.find(({ name, address }: SportObject) => name === lastSportObject.name
-      && address === lastSportObject.address)).toBe(true);
+      && address === lastSportObject.address)).toBeTruthy();
   });
 });
