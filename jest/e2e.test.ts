@@ -1,7 +1,7 @@
 import { handler as deleteExpiredTokens } from '../lambda/src/delete-expired-tokens';
 import Booking from '../lambda/src/db/models/booking';
 import User from '../lambda/src/db/models/user';
-import { e2eUser, TEST_ADMIN_PASSWORD, TEST_USER_PASSWORD } from '../lambda/src/db/utils/test-users';
+import { e2eUser, TEST_ADMIN_PASSWORD, TEST_USER_PASSWORD } from '../lambda/src/db/utils/test-data/test-users';
 import {
   confirmVisit,
   createTestBooking,

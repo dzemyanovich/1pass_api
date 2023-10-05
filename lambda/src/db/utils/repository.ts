@@ -6,7 +6,8 @@ import User from '../models/user';
 import SportObject from '../models/sport-object';
 import Booking from '../models/booking';
 import Admin from '../models/admin';
-import { E2E_USER_EMAIL_PREFIX, TEST_USER_EMAIL_PREFIX, UI_USER_EMAIL_PREFIX } from './test-users';
+import { E2E_USER_EMAIL_PREFIX, TEST_USER_EMAIL_PREFIX, UI_USER_EMAIL_PREFIX } from './test-data/test-users';
+import testSportObjects from './test-data/test-sport-objects';
 
 async function runQuery<T>(query: () => Promise<T>): Promise<T> {
   let result: T;
@@ -32,6 +33,13 @@ export async function getSportObjectById(id: number): Promise<SportObject> {
 
 export async function getSportObjects(): Promise<SportObject[]> {
   return runQuery(() => SportObject.findAll());
+}
+
+export async function getTestSportObjects(): Promise<SportObject[]> {
+  const selector: { name: string, address: string }[] = [];
+  testSportObjects.forEach(({ name, address }) => selector.push({ name, address }));
+
+  return runQuery(() => SportObject.findAll({ where: { [Op.or]: selector } }));
 }
 
 /************************* USER *************************/

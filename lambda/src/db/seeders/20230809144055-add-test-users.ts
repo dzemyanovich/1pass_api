@@ -1,6 +1,6 @@
 import { QueryInterface, Op } from 'sequelize';
 
-import { testUsers } from '../utils/test-users';
+import { testUsers } from '../utils/test-data/test-users';
 
 export default {
   async up(queryInterface: QueryInterface): Promise<object | number> {

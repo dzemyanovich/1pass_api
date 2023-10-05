@@ -1,5 +1,5 @@
-import { getHash } from '../../utils/auth';
-import User from '../models/user';
+import { getHash } from '../../../utils/auth';
+import User from '../../models/user';
 
 export const TEST_ADMIN_NAME_PREFIX = 'test_admin_';
 export const TEST_ADMIN_PASSWORD = 'admin_password';

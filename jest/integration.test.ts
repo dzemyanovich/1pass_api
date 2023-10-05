@@ -1,6 +1,6 @@
 import { sendNotification, getFirebaseTokens, deleteFirebaseToken } from '../lambda/src/utils/firebase';
 import { getToken, getUserId } from '../lambda/src/utils/auth';
-import { getUserByPhone } from '../lambda/src/db/utils/repository';
+import { getTestSportObjects, getUserByPhone } from '../lambda/src/db/utils/repository';
 import {
   confirmMismatch,
   emailExists,
@@ -24,10 +24,12 @@ import {
   e2eUser,
   notVerifiedUser,
   TEST_USER_PASSWORD,
-} from '../lambda/src/db/utils/test-users';
+} from '../lambda/src/db/utils/test-data/test-users';
+import testSportObjects from '../lambda/src/db/utils/test-data/test-sport-objects';
 import { get, post } from './utils/rest';
 import { expectSignInSuccess, expectSportObjects } from './utils/expect';
 import { LONG_TEST_MS } from './utils/constants';
+import SportObject from '../lambda/src/db/models/sport-object';
 
 const { USER_API_URL } = process.env;
 const SIGN_IN_URL = `${USER_API_URL}/sign-in`;
@@ -391,5 +393,19 @@ describe('firebase', () => {
 
   it('[deleteFirebaseToken] delete tokens when user id does not exist', async () => {
     await deleteFirebaseToken(nonExistingUserId, 'any-token');
+  });
+});
+
+describe('test-data', () => {
+  it('getTestSportObjects', async () => {
+    const sportObjects = await getTestSportObjects();
+    const firstSportObject = testSportObjects[0];
+    const lastSportObject = testSportObjects[testSportObjects.length - 1];
+
+    expect(sportObjects.length).toBe(testSportObjects.length);
+    expect(sportObjects.find(({ name, address }: SportObject) => name === firstSportObject.name
+      && address === firstSportObject.address)).toBe(true);
+    expect(sportObjects.find(({ name, address }: SportObject) => name === lastSportObject.name
+      && address === lastSportObject.address)).toBe(true);
   });
 });

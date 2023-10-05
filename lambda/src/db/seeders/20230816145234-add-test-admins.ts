@@ -4,7 +4,7 @@ import { getSportObjects } from '../utils/repository';
 import SportObject from '../models/sport-object';
 import Admin from '../models/admin';
 import { getHash } from '../../utils/auth';
-import { TEST_ADMIN_PASSWORD, TEST_ADMIN_NAME_PREFIX, getTestAdminName } from '../utils/test-users';
+import { TEST_ADMIN_PASSWORD, TEST_ADMIN_NAME_PREFIX, getTestAdminName } from '../utils/test-data/test-users';
 
 export default {
   async up(queryInterface: QueryInterface): Promise<object | number> {
