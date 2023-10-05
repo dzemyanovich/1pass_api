@@ -1,5 +1,5 @@
 import Booking from '../db/models/booking';
-import { confirmVisit, getAdminById, getBookingById } from '../db/utils/repository';
+import { confirmVisit, getAdminById, getBookingById, getFullBooking } from '../db/utils/repository';
 import { getAdminId } from '../utils/auth';
 import { invalidToken, noBooking, noBookingAccess, pastBooking, updateError } from '../utils/errors';
 import { sendNotification } from '../utils/firebase';
@@ -24,7 +24,7 @@ export async function handler(event: ConfirmVisitRequest): Promise<ConfirmVisitR
     };
   }
 
-  const booking = await getBookingById(bookingId);
+  const booking = await getFullBooking(bookingId);
   if (!booking) {
     return {
       success: false,

@@ -1,18 +1,17 @@
 import Booking from '../db/models/booking';
+import { MINSK_TIME_ZONE } from './constants';
 
 const locale = 'en-US';
 
 // function is used only for testing
-export function compareTwoDates(date1: string, date2: string, timeZone = 'Europe/Minsk'): boolean {
+export function compareTwoDates(date1: string, date2: string, timeZone: string = MINSK_TIME_ZONE): boolean {
   const dateString1 = new Date(date1).toLocaleDateString(locale, { timeZone });
   const dateString2 = new Date(date2).toLocaleDateString(locale, { timeZone });
 
   return dateString1 === dateString2;
 }
 
-export function isToday(date: Date): boolean {
-  // todo: get timeZone from sportObject instance
-  const timeZone = 'Europe/Minsk';
+export function isToday(date: Date, timeZone: string = MINSK_TIME_ZONE): boolean {
   const today = new Date();
   const todayDate = today.toLocaleDateString(locale, { timeZone });
   const compareDate = date.toLocaleDateString(locale, { timeZone });
@@ -26,7 +25,7 @@ export function addDays(date: Date, days: number): Date {
 }
 
 export function isPastBooking(booking: Booking) {
-  return !isToday(booking.bookingTime) || booking.visitTime;
+  return !isToday(booking.bookingTime, booking.sportObject.timeZone) || booking.visitTime;
 }
 
 export function getRandomValue<T>(array: T[]): T {

@@ -22,6 +22,9 @@ export default class SportObject extends Model {
   @Column
   long: number;
 
+  @Column
+  timeZone: string;
+
   @CreatedAt
   createdAt: Date;
 

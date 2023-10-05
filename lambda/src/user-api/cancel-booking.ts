@@ -1,4 +1,4 @@
-import { deleteBooking, getBookingById } from '../db/utils/repository';
+import { deleteBooking, getFullBooking } from '../db/utils/repository';
 import { getUserId } from '../utils/auth';
 import { invalidToken, noBooking, pastBooking } from '../utils/errors';
 import { isPastBooking } from '../utils/utils';
@@ -23,7 +23,7 @@ export async function handler(event: CancelBookingRequest): Promise<CancelBookin
     };
   }
 
-  const booking = await getBookingById(bookingId);
+  const booking = await getFullBooking(bookingId);
   if (!booking) {
     return {
       success: false,
