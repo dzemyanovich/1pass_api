@@ -1,6 +1,6 @@
 import { sendNotification, getFirebaseTokens, deleteFirebaseToken } from '../lambda/src/utils/firebase';
 import { getToken, getUserId } from '../lambda/src/utils/auth';
-import { getTestSportObjects, getUserByPhone } from '../lambda/src/db/utils/repository';
+import { getAllTestUsers, getTestSportObjects, getTestUsers, getUserByPhone } from '../lambda/src/db/utils/repository';
 import {
   confirmMismatch,
   emailExists,
@@ -24,12 +24,16 @@ import {
   e2eUser,
   notVerifiedUser,
   TEST_USER_PASSWORD,
+  TEST_USER_EMAIL_PREFIX,
+  E2E_USER_EMAIL_PREFIX,
+  UI_USER_EMAIL_PREFIX,
 } from '../lambda/src/db/utils/test-data/test-users';
 import testSportObjects from '../lambda/src/db/utils/test-data/test-sport-objects';
 import { get, post } from './utils/rest';
 import { expectSignInSuccess, expectSportObjects } from './utils/expect';
 import { LONG_TEST_MS } from './utils/constants';
 import SportObject from '../lambda/src/db/models/sport-object';
+import User from '../lambda/src/db/models/user';
 
 const { USER_API_URL } = process.env;
 const SIGN_IN_URL = `${USER_API_URL}/sign-in`;
@@ -407,5 +411,23 @@ describe('test-data', () => {
       && address === firstSportObject.address)).toBeTruthy();
     expect(sportObjects.find(({ name, address }: SportObject) => name === lastSportObject.name
       && address === lastSportObject.address)).toBeTruthy();
+  });
+
+  it('getTestUsers', async () => {
+    const testUsers = await getTestUsers();
+    testUsers.forEach((user: User) => {
+      expect(user.verified).toBe(true);
+      expect(user.email.startsWith(TEST_USER_EMAIL_PREFIX));
+    });
+  });
+
+  it('getAllTestUsers', async () => {
+    const testUsers = await getAllTestUsers();
+    testUsers.forEach((user: User) => {
+      expect(user.verified).toBe(true);
+      expect(user.email.startsWith(TEST_USER_EMAIL_PREFIX)
+        || user.email.startsWith(E2E_USER_EMAIL_PREFIX)
+        || user.email.startsWith(UI_USER_EMAIL_PREFIX)).toBe(true);
+    });
   });
 });
