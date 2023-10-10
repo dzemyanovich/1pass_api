@@ -25,7 +25,12 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
 
-export async function sendNotification(userId: number, title: string, body: string): Promise<void> {
+export async function sendNotification(
+  userId: number,
+  sportObjectId: number,
+  title: string,
+  body: string,
+): Promise<void> {
   const db = getFirestore();
   const docRef = db.collection(FIREBASE_COLLECTION_NAME).doc(userId.toString());
   const currentValue = (await docRef.get()).data() as FirebaseTokenData | undefined;
@@ -37,6 +42,10 @@ export async function sendNotification(userId: number, title: string, body: stri
       notification: {
         title,
         body,
+      },
+      data: {
+        userId: userId.toString(),
+        sportObjectId: sportObjectId.toString(),
       },
     });
   }

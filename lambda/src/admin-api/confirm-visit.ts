@@ -55,7 +55,7 @@ export async function handler(event: ConfirmVisitRequest): Promise<ConfirmVisitR
     };
   }
 
-  await sendNotification(booking.userId, 'Success', 'Visit confirmed');
+  await sendNotification(booking.userId, booking.sportObjectId, 'Success', 'Visit confirmed');
 
   const { visitTime } = await getBookingById(bookingId) as Booking;
 
