@@ -21,10 +21,12 @@ export async function handler({ querystring }: GetRequest<TokenRequest>): Promis
     const userId = getUserId(token);
 
     if (userId) {
-      bookings = (await getUserBookings(userId)).map(toUserBooking);
-
       const user = await getUserById(userId);
-      userInfo = toUserInfo(user);
+
+      if (user) {
+        userInfo = toUserInfo(user);
+        bookings = (await getUserBookings(userId)).map(toUserBooking);
+      }
     }
   }
 
