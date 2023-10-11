@@ -27,7 +27,8 @@ admin.initializeApp({
 
 export async function sendNotification(
   userId: number,
-  sportObjectId: number,
+  bookingId: number,
+  visitTime: Date,
   title: string,
   body: string,
 ): Promise<void> {
@@ -44,8 +45,8 @@ export async function sendNotification(
         body,
       },
       data: {
-        userId: userId.toString(),
-        sportObjectId: sportObjectId.toString(),
+        bookingId: bookingId.toString(),
+        visitTime: visitTime.toString(),
       },
     });
   }
