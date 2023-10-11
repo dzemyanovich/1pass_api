@@ -384,10 +384,11 @@ describe('cancel-booking', () => {
 
 describe('firebase', () => {
   const nonExistingUserId = -123;
-  const sportObjectId = -999;
+  const bookingId = -999;
+  const visitTime = new Date();
 
   it('[sendNotification] send notification when user id does not exist', async () => {
-    await sendNotification(nonExistingUserId, sportObjectId, 'any title', 'any body');
+    await sendNotification(nonExistingUserId, bookingId, visitTime, 'any title', 'any body');
   });
 
   it('[getFirebaseTokens] get tokens when user id does not exist', async () => {
