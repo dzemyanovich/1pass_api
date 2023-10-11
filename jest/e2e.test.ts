@@ -765,7 +765,8 @@ describe('firebase API methods', () => {
 
 describe('firebase js methods', () => {
   const nonExistingUserId = -999;
-  const sportObjectId = -123;
+  const bookingId = -123;
+  const visitTime = new Date();
   const firebaseToken1 = 'any-token-1';
   const firebaseToken2 = 'any-token-2';
 
@@ -777,7 +778,7 @@ describe('firebase js methods', () => {
 
     await storeFirebaseToken(userTokenData, firebaseToken1);
     await storeFirebaseToken(userTokenData, firebaseToken2);
-    await sendNotification(nonExistingUserId, sportObjectId, 'any-title', 'any-body');
+    await sendNotification(nonExistingUserId, bookingId, visitTime, 'any-title', 'any-body');
 
     const tokens = await getFirebaseTokens(nonExistingUserId);
 
