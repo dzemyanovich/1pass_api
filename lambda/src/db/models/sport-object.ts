@@ -3,12 +3,16 @@ import { Table, Column, Model, CreatedAt, UpdatedAt } from 'sequelize-typescript
 import Booking from './booking';
 // eslint-disable-next-line import/no-cycle
 import Admin from './admin';
+// eslint-disable-next-line import/no-cycle
+import SportObjectImage from './sport-object-image';
 
 @Table
 export default class SportObject extends Model {
   bookings: Booking[];
 
   admins: Admin[];
+
+  images: SportObjectImage[];
 
   @Column
   name: string;

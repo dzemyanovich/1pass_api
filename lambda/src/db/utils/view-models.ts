@@ -1,9 +1,10 @@
 import Booking from '../models/booking';
 import SportObject from '../models/sport-object';
+import SportObjectImage from '../models/sport-object-image';
 import User from '../models/user';
 
 export function toSportObject(sportObject: SportObject): SportObjectVM {
-  const { id, name, address, lat, long } = sportObject;
+  const { id, name, address, lat, long, images } = sportObject;
 
   return {
     id,
@@ -11,6 +12,9 @@ export function toSportObject(sportObject: SportObject): SportObjectVM {
     address,
     lat,
     long,
+    images: images
+      ? images.map((image: SportObjectImage) => image.url)
+      : [],
   };
 }
 

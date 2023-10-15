@@ -147,6 +147,7 @@ type SportObjectVM = {
   address: string,
   lat: number,
   long: number,
+  images: string[],
 };
 
 type UserVM = {
