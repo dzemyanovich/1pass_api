@@ -240,7 +240,7 @@ resource "aws_lambda_function" "confirm_visit_lambda" {
   handler           = "dist/admin-api/confirm-visit.handler"
   source_code_hash  = data.archive_file.lambda_zip.output_base64sha256
   runtime           = local.runtime
-  # todo: optimizaiton on db level might be required (e.g. creating indexes)
+  # todo: [performance issues] optimizaiton on db level might be required (e.g. creating indexes)
   timeout           = local.long_timeout
   memory_size       = 256
 
