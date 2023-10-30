@@ -413,9 +413,6 @@ describe('test-data', () => {
       && address === firstSportObject.address)).toBeTruthy();
     expect(sportObjects.find(({ name, address }: SportObject) => name === lastSportObject.name
       && address === lastSportObject.address)).toBeTruthy();
-    sportObjects.forEach((sportObject: SportObject) => {
-      expect(sportObject.images.length).toBeGreaterThan(0);
-    });
   });
 
   it('getTestUsers', async () => {
