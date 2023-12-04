@@ -259,7 +259,7 @@ resource "aws_lambda_function" "delete_firebase_token_lambda" {
   handler           = "dist/user-api/delete-firebase-token.handler"
   source_code_hash  = data.archive_file.lambda_zip.output_base64sha256
   runtime           = local.runtime
-  timeout           = local.long_timeout
+  timeout           = local.very_long_timeout # todo: performance issues
 
   environment {
     variables = local.firebase_env_vars
