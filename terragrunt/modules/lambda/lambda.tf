@@ -6,6 +6,7 @@ locals {
 
   base_env_vars = {
     NODE_ENV            = var.env
+    PRODUCT             = var.product
     PREPROD_DB_USERNAME = var.PREPROD_DB_USERNAME
     PREPROD_DB_PASSWORD = var.PREPROD_DB_PASSWORD
     PREPROD_DB_NAME     = var.PREPROD_DB_NAME
@@ -38,9 +39,23 @@ locals {
     FIREBASE_AUTH_URI                    = var.FIREBASE_AUTH_URI
     FIREBASE_TOKEN_URI                   = var.FIREBASE_TOKEN_URI
     FIREBASE_AUTH_PROVIDER_X509_CERT_URL = var.FIREBASE_AUTH_PROVIDER_X509_CERT_URL
-    FIREBASE_CLIENT_X509_CERT_URL         = var.FIREBASE_CLIENT_X509_CERT_URL
+    FIREBASE_CLIENT_X509_CERT_URL        = var.FIREBASE_CLIENT_X509_CERT_URL
     FIREBASE_UNIVERSE_DOMAIN             = var.FIREBASE_UNIVERSE_DOMAIN
   })
+}
+
+data "aws_iam_policy_document" "sns_policy_document" {
+  statement {
+    actions = [
+      "sns:Publish",
+      "sns:Subscribe",
+      "sns:Receive",
+    ]
+    effect = "Allow"
+    resources = [
+      aws_sns_topic.send_notifications.arn,
+    ]
+  }
 }
 
 resource "aws_iam_role" "iam_for_lambda" {
@@ -68,6 +83,16 @@ resource "aws_iam_role_policy_attachment" "lambda_basic_access" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
+resource "aws_iam_policy" "sns_policy" {
+  name   = "${var.product}-${var.env}-sns-policy"
+  policy = data.aws_iam_policy_document.sns_policy_document.json
+}
+
+resource "aws_iam_role_policy_attachment" "sns_policy_attachment" {
+  role       = aws_iam_role.iam_for_lambda.name
+  policy_arn = aws_iam_policy.sns_policy.arn
+}
+
 resource "aws_lambda_function" "add_today_bookings_lambda" {
   filename          = data.archive_file.lambda_zip.output_path
   function_name     = "${var.product}-${var.env}-add-today-bookings"
@@ -93,6 +118,29 @@ resource "aws_lambda_function" "delete_expired_tokens_lambda" {
   environment {
     variables = local.base_env_vars
   }
+}
+
+resource "aws_lambda_function" "send_notifications_lambda" {
+  filename          = data.archive_file.lambda_zip.output_path
+  function_name     = "${var.product}-${var.env}-send-notifications"
+  role              = aws_iam_role.iam_for_lambda.arn
+  handler           = "dist/send-notifications.handler"
+  source_code_hash  = data.archive_file.lambda_zip.output_base64sha256
+  runtime           = local.runtime
+  timeout           = local.long_timeout
+  memory_size       = 256
+
+  environment {
+    variables = local.firebase_env_vars
+  }
+}
+
+resource "aws_lambda_permission" "allow_send_notifications_sns_invoke" {
+  statement_id  = "AllowExecutionFromSNS"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.send_notifications_lambda.function_name
+  principal     = "sns.amazonaws.com"
+  source_arn    = aws_sns_topic.send_notifications.arn
 }
 
 #################### USER API ####################
@@ -240,9 +288,7 @@ resource "aws_lambda_function" "confirm_visit_lambda" {
   handler           = "dist/admin-api/confirm-visit.handler"
   source_code_hash  = data.archive_file.lambda_zip.output_base64sha256
   runtime           = local.runtime
-  # todo: [performance issues] optimizaiton on db level might be required (e.g. creating indexes)
   timeout           = local.long_timeout
-  memory_size       = 256
 
   environment {
     variables = local.firebase_env_vars

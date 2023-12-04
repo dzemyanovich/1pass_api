@@ -16,6 +16,14 @@ type LambdaResponse<T> = {
   data?: T,
 };
 
+type SendNotificationsRequest = {
+  userId: number,
+  bookingId: number,
+  visitTime: Date,
+  title: string,
+  body: string,
+};
+
 // ************** USER API ****************
 
 type UserInfo = {

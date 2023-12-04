@@ -1,8 +1,9 @@
+import { SNS, STS } from 'aws-sdk';
+
 import Booking from '../db/models/booking';
 import { confirmVisit, getAdminById, getBookingById, getFullBooking } from '../db/utils/repository';
 import { getAdminId } from '../utils/auth';
 import { invalidToken, noBooking, noBookingAccess, pastBooking, updateError } from '../utils/errors';
-import { sendNotification } from '../utils/firebase';
 import { isPastBooking } from '../utils/utils';
 import { getErrors, validateConfirmVisit } from '../utils/validation';
 
@@ -57,13 +58,23 @@ export async function handler(event: ConfirmVisitRequest): Promise<ConfirmVisitR
 
   const { visitTime, userId } = await getBookingById(bookingId) as Booking;
 
-  await sendNotification(
-    userId,
-    bookingId,
-    visitTime,
-    'Visit confirmed',
-    `Congrats! Visit to ${booking.sportObject.name} confirmed`,
-  );
+  const sts = new STS();
+  const { Account: awsAccountId } = await sts.getCallerIdentity({}).promise();
+
+  const sns = new SNS();
+  const { PRODUCT, NODE_ENV, AWS_REGION } = process.env;
+  const snsTopicArn = `arn:aws:sns:${AWS_REGION}:${awsAccountId}:${PRODUCT}-${NODE_ENV}-send-notifications`;
+  const params = {
+    Message: JSON.stringify({
+      userId,
+      bookingId,
+      visitTime,
+      title: 'Visit confirmed',
+      body: `Congrats! Visit to ${booking.sportObject.name} confirmed`,
+    }),
+    TopicArn: snsTopicArn,
+  };
+  await sns.publish(params).promise();
 
   return {
     success: true,

@@ -33,7 +33,7 @@ import {
   deleteFirebaseCollection,
   deleteFirebaseToken,
   getFirebaseTokens,
-  sendNotification,
+  sendNotifications,
   storeFirebaseToken,
 } from '../lambda/src/utils/firebase';
 import { getAdminToken, getHash, getUserId, getJwtExpireMilliseconds } from '../lambda/src/utils/auth';
@@ -770,7 +770,7 @@ describe('firebase js methods', () => {
   const firebaseToken1 = 'any-token-1';
   const firebaseToken2 = 'any-token-2';
 
-  it('sendNotification', async () => {
+  it('sendNotifications', async () => {
     const userTokenData: TokenData = {
       userId: nonExistingUserId,
       createdAt: Date.now(),
@@ -778,7 +778,7 @@ describe('firebase js methods', () => {
 
     await storeFirebaseToken(userTokenData, firebaseToken1);
     await storeFirebaseToken(userTokenData, firebaseToken2);
-    await sendNotification(nonExistingUserId, bookingId, visitTime, 'any-title', 'any-body');
+    await sendNotifications(nonExistingUserId, bookingId, visitTime, 'any-title', 'any-body');
 
     const tokens = await getFirebaseTokens(nonExistingUserId);
 

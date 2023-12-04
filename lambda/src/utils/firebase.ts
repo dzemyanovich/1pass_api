@@ -25,7 +25,7 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
 
-export async function sendNotification(
+export async function sendNotifications(
   userId: number,
   bookingId: number,
   visitTime: Date,
