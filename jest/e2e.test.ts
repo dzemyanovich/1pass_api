@@ -47,12 +47,13 @@ const SIGN_IN_URL = `${USER_API_URL}/sign-in`;
 const SIGN_UP_URL = `${USER_API_URL}/sign-up`;
 const USER_DATA_URL = `${USER_API_URL}/get-user-data`;
 const REGISTER_FIREBASE_TOKEN_URL = `${USER_API_URL}/register-firebase-token`;
-const DELETE_FIREBASE_TOKEN_URL = `${USER_API_URL}/delete-firebase-token`;
+const SIGN_OUT_URL = `${USER_API_URL}/sign-out`;
 const CREATE_BOOKING_URL = `${USER_API_URL}/create-booking`;
 const CANCEL_BOOKING_URL = `${USER_API_URL}/cancel-booking`;
 const ADMIN_SIGN_IN_URL = `${ADMIN_API_URL}/admin-sign-in`;
 const CONFIRM_VISIT_URL = `${ADMIN_API_URL}/confirm-visit`;
 const GET_ADMIN_DATA_URL = `${ADMIN_API_URL}/get-admin-data`;
+// const DELETE_TOKEN_DURATION = 10;
 
 describe('get-user-data', () => {
   it('gets full user data', async () => {
@@ -657,7 +658,7 @@ describe('firebase API methods', () => {
     };
   }, LONG_TEST_MS);
 
-  it('register-firebase-token & delete-firebase-token', async () => {
+  it('register-firebase-token & sign-out', async () => {
     const firebaseTokens0 = await getFirebaseTokens(userId);
 
     expect(firebaseTokens0).not.toContain(firebaseToken1);
@@ -689,14 +690,16 @@ describe('firebase API methods', () => {
     expect(firebaseTokens3).toContain(firebaseToken1);
     expect(firebaseTokens3).toContain(firebaseToken2);
 
-    const deleteTokenResponse1: FirebaseResponse = await post(DELETE_FIREBASE_TOKEN_URL, firebaseRequest1);
-    const deleteTokenResponse2: FirebaseResponse = await post(DELETE_FIREBASE_TOKEN_URL, firebaseRequest2);
+    const signOutResponse1: FirebaseResponse = await post(SIGN_OUT_URL, firebaseRequest1);
+    const signOutResponse2: FirebaseResponse = await post(SIGN_OUT_URL, firebaseRequest2);
+    // todo: uncomment after refactoring
+    // await delay(DELETE_TOKEN_DURATION); // wait until tokens are deleted via sns
     const emptyFirebaseTokens = await getFirebaseTokens(userId);
 
-    expect(deleteTokenResponse1).toMatchObject({
+    expect(signOutResponse1).toMatchObject({
       success: true,
     });
-    expect(deleteTokenResponse2).toMatchObject({
+    expect(signOutResponse2).toMatchObject({
       success: true,
     });
     expect(emptyFirebaseTokens).not.toContain(firebaseToken1);
@@ -745,9 +748,11 @@ describe('firebase API methods', () => {
     expect(firebaseTokens2).not.toContain(firebaseToken2);
     expect(firebaseTokens2).not.toContain(firebaseToken3);
 
-    const deleteTokenResponse: FirebaseResponse = await post(DELETE_FIREBASE_TOKEN_URL, firebaseRequest1);
+    const signOutResponse: FirebaseResponse = await post(SIGN_OUT_URL, firebaseRequest1);
+    // todo: uncomment after refactoring
+    // await delay(DELETE_TOKEN_DURATION);
 
-    expect(deleteTokenResponse).toMatchObject({
+    expect(signOutResponse).toMatchObject({
       success: true,
     });
 
@@ -757,9 +762,13 @@ describe('firebase API methods', () => {
   }, VERY_LONG_TEST_MS);
 
   afterEach(async () => {
-    await post(DELETE_FIREBASE_TOKEN_URL, firebaseRequest1);
-    await post(DELETE_FIREBASE_TOKEN_URL, firebaseRequest2);
-    await post(DELETE_FIREBASE_TOKEN_URL, firebaseRequest3);
+    // todo: make actual deletion of firebase tokens
+    // todo: make actual deletion of firebase tokens in all other places
+    await post(SIGN_OUT_URL, firebaseRequest1);
+    await post(SIGN_OUT_URL, firebaseRequest2);
+    await post(SIGN_OUT_URL, firebaseRequest3);
+    // todo: uncomment after refactoring
+    // await delay(DELETE_TOKEN_DURATION);
   }, LONG_TEST_MS);
 });
 

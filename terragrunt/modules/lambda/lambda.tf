@@ -252,11 +252,11 @@ resource "aws_lambda_function" "register_firebase_token_lambda" {
   }
 }
 
-resource "aws_lambda_function" "delete_firebase_token_lambda" {
+resource "aws_lambda_function" "sign_out_lambda" {
   filename          = data.archive_file.lambda_zip.output_path
-  function_name     = "${var.product}-${var.env}-delete-firebase-token"
+  function_name     = "${var.product}-${var.env}-sign-out"
   role              = aws_iam_role.iam_for_lambda.arn
-  handler           = "dist/user-api/delete-firebase-token.handler"
+  handler           = "dist/user-api/sign-out.handler"
   source_code_hash  = data.archive_file.lambda_zip.output_base64sha256
   runtime           = local.runtime
   timeout           = local.very_long_timeout # todo: performance issues

@@ -11,7 +11,7 @@ resource "aws_api_gateway_rest_api" "user_api" {
     aws_lambda_function.create_booking_lambda,
     aws_lambda_function.cancel_booking_lambda,
     aws_lambda_function.register_firebase_token_lambda,
-    aws_lambda_function.delete_firebase_token_lambda
+    aws_lambda_function.sign_out_lambda
   ]
 }
 
@@ -63,10 +63,10 @@ resource "aws_api_gateway_resource" "register_firebase_token_api_resource" {
   path_part   = "register-firebase-token"
 }
 
-resource "aws_api_gateway_resource" "delete_firebase_token_api_resource" {
+resource "aws_api_gateway_resource" "sign_out_api_resource" {
   rest_api_id = aws_api_gateway_rest_api.user_api.id
   parent_id   = aws_api_gateway_rest_api.user_api.root_resource_id
-  path_part   = "delete-firebase-token"
+  path_part   = "sign-out"
 }
 
 ############## GET get-user-data ##############
@@ -977,37 +977,37 @@ resource "aws_api_gateway_integration_response" "register_firebase_token_options
   ]
 }
 
-############## POST delete-firebase-token ##############
+############## POST sign-out ##############
 
-resource "aws_api_gateway_method" "delete_firebase_token_post_method" {
+resource "aws_api_gateway_method" "sign_out_post_method" {
   rest_api_id   = aws_api_gateway_rest_api.user_api.id
-  resource_id   = aws_api_gateway_resource.delete_firebase_token_api_resource.id
+  resource_id   = aws_api_gateway_resource.sign_out_api_resource.id
   http_method   = "POST"
   authorization = "NONE"
 }
 
-resource "aws_api_gateway_integration" "delete_firebase_token_post_integration" {
+resource "aws_api_gateway_integration" "sign_out_post_integration" {
   rest_api_id             = aws_api_gateway_rest_api.user_api.id
-  resource_id             = aws_api_gateway_resource.delete_firebase_token_api_resource.id
-  http_method             = aws_api_gateway_method.delete_firebase_token_post_method.http_method
+  resource_id             = aws_api_gateway_resource.sign_out_api_resource.id
+  http_method             = aws_api_gateway_method.sign_out_post_method.http_method
   integration_http_method = "POST"
   type                    = "AWS"
-  uri                     = aws_lambda_function.delete_firebase_token_lambda.invoke_arn
+  uri                     = aws_lambda_function.sign_out_lambda.invoke_arn
 }
 
-resource "aws_lambda_permission" "delete_firebase_token_lambda_permission" {
+resource "aws_lambda_permission" "sign_out_lambda_permission" {
   statement_id  = "AllowExecutionFromAPIGateway"
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.delete_firebase_token_lambda.function_name
+  function_name = aws_lambda_function.sign_out_lambda.function_name
   principal     = "apigateway.amazonaws.com"
 
   source_arn = "${aws_api_gateway_rest_api.user_api.execution_arn}/*/*"
 }
 
-resource "aws_api_gateway_method_response" "delete_firebase_token_method_response" {
+resource "aws_api_gateway_method_response" "sign_out_method_response" {
   rest_api_id = aws_api_gateway_rest_api.user_api.id
-  resource_id = aws_api_gateway_resource.delete_firebase_token_api_resource.id
-  http_method = aws_api_gateway_method.delete_firebase_token_post_method.http_method
+  resource_id = aws_api_gateway_resource.sign_out_api_resource.id
+  http_method = aws_api_gateway_method.sign_out_post_method.http_method
   status_code = "200"
 
   response_parameters = {
@@ -1019,34 +1019,34 @@ resource "aws_api_gateway_method_response" "delete_firebase_token_method_respons
   }
 }
 
-resource "aws_api_gateway_integration_response" "delete_firebase_token_post_integration_response" {
+resource "aws_api_gateway_integration_response" "sign_out_post_integration_response" {
   rest_api_id = aws_api_gateway_rest_api.user_api.id
-  resource_id = aws_api_gateway_resource.delete_firebase_token_api_resource.id
-  http_method = aws_api_gateway_method.delete_firebase_token_post_method.http_method
-  status_code = aws_api_gateway_method_response.delete_firebase_token_method_response.status_code
+  resource_id = aws_api_gateway_resource.sign_out_api_resource.id
+  http_method = aws_api_gateway_method.sign_out_post_method.http_method
+  status_code = aws_api_gateway_method_response.sign_out_method_response.status_code
 
   response_parameters = {
     "method.response.header.Access-Control-Allow-Origin" = "'*'"
   }
 
   depends_on = [
-    aws_api_gateway_integration.delete_firebase_token_post_integration
+    aws_api_gateway_integration.sign_out_post_integration
   ]
 }
 
-############## OPTIONS delete-firebase-token (for cors) ##############
+############## OPTIONS sign-out (for cors) ##############
 
-resource "aws_api_gateway_method" "delete_firebase_token_options_method" {
+resource "aws_api_gateway_method" "sign_out_options_method" {
   rest_api_id   = aws_api_gateway_rest_api.user_api.id
-  resource_id   = aws_api_gateway_resource.delete_firebase_token_api_resource.id
+  resource_id   = aws_api_gateway_resource.sign_out_api_resource.id
   http_method   = "OPTIONS"
   authorization = "NONE"
 }
 
-resource "aws_api_gateway_integration" "delete_firebase_token_options_integration" {
+resource "aws_api_gateway_integration" "sign_out_options_integration" {
   rest_api_id = aws_api_gateway_rest_api.user_api.id
-  resource_id = aws_api_gateway_resource.delete_firebase_token_api_resource.id
-  http_method = aws_api_gateway_method.delete_firebase_token_options_method.http_method
+  resource_id = aws_api_gateway_resource.sign_out_api_resource.id
+  http_method = aws_api_gateway_method.sign_out_options_method.http_method
   type        = "MOCK"
 
   request_templates = {
@@ -1056,10 +1056,10 @@ resource "aws_api_gateway_integration" "delete_firebase_token_options_integratio
   }
 }
 
-resource "aws_api_gateway_method_response" "delete_firebase_token_options_method_response" {
+resource "aws_api_gateway_method_response" "sign_out_options_method_response" {
   rest_api_id = aws_api_gateway_rest_api.user_api.id
-  resource_id = aws_api_gateway_resource.delete_firebase_token_api_resource.id
-  http_method = aws_api_gateway_method.delete_firebase_token_options_method.http_method
+  resource_id = aws_api_gateway_resource.sign_out_api_resource.id
+  http_method = aws_api_gateway_method.sign_out_options_method.http_method
   status_code = "200"
 
   response_parameters = {
@@ -1073,11 +1073,11 @@ resource "aws_api_gateway_method_response" "delete_firebase_token_options_method
   }
 }
 
-resource "aws_api_gateway_integration_response" "delete_firebase_token_options_integration_response" {
+resource "aws_api_gateway_integration_response" "sign_out_options_integration_response" {
   rest_api_id = aws_api_gateway_rest_api.user_api.id
-  resource_id = aws_api_gateway_resource.delete_firebase_token_api_resource.id
-  http_method = aws_api_gateway_method.delete_firebase_token_options_method.http_method
-  status_code = aws_api_gateway_method_response.delete_firebase_token_options_method_response.status_code
+  resource_id = aws_api_gateway_resource.sign_out_api_resource.id
+  http_method = aws_api_gateway_method.sign_out_options_method.http_method
+  status_code = aws_api_gateway_method_response.sign_out_options_method_response.status_code
 
   response_parameters = {
     "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
@@ -1086,7 +1086,7 @@ resource "aws_api_gateway_integration_response" "delete_firebase_token_options_i
   }
 
   depends_on = [
-    aws_api_gateway_integration.delete_firebase_token_options_integration
+    aws_api_gateway_integration.sign_out_options_integration
   ]
 }
 
@@ -1112,8 +1112,8 @@ resource "aws_api_gateway_deployment" "user_api_deployment" {
     aws_api_gateway_integration.cancel_booking_options_integration,
     aws_api_gateway_integration.register_firebase_token_post_integration,
     aws_api_gateway_integration.register_firebase_token_options_integration,
-    aws_api_gateway_integration.delete_firebase_token_post_integration,
-    aws_api_gateway_integration.delete_firebase_token_options_integration,
+    aws_api_gateway_integration.sign_out_post_integration,
+    aws_api_gateway_integration.sign_out_options_integration,
     aws_api_gateway_integration_response.get_user_data_get_integration_response,
     aws_api_gateway_integration_response.get_user_data_options_integration_response,
     aws_api_gateway_integration_response.auth_send_code_post_integration_response,
@@ -1128,8 +1128,8 @@ resource "aws_api_gateway_deployment" "user_api_deployment" {
     aws_api_gateway_integration_response.cancel_booking_options_integration_response,
     aws_api_gateway_integration_response.register_firebase_token_post_integration_response,
     aws_api_gateway_integration_response.register_firebase_token_options_integration_response,
-    aws_api_gateway_integration_response.delete_firebase_token_post_integration_response,
-    aws_api_gateway_integration_response.delete_firebase_token_options_integration_response
+    aws_api_gateway_integration_response.sign_out_post_integration_response,
+    aws_api_gateway_integration_response.sign_out_options_integration_response
   ]
   rest_api_id = aws_api_gateway_rest_api.user_api.id
 
@@ -1144,7 +1144,7 @@ resource "aws_api_gateway_deployment" "user_api_deployment" {
       aws_api_gateway_resource.create_booking_api_resource.id,
       aws_api_gateway_resource.cancel_booking_api_resource.id,
       aws_api_gateway_resource.register_firebase_token_api_resource.id,
-      aws_api_gateway_resource.delete_firebase_token_api_resource.id,
+      aws_api_gateway_resource.sign_out_api_resource.id,
       aws_api_gateway_method.get_user_data_get_method.id,
       aws_api_gateway_method.get_user_data_options_method.id,
       aws_api_gateway_method.auth_send_code_post_method.id,
@@ -1160,7 +1160,7 @@ resource "aws_api_gateway_deployment" "user_api_deployment" {
       aws_api_gateway_method.cancel_booking_post_method.id,
       aws_api_gateway_method.cancel_booking_options_method.id,
       aws_api_gateway_method.register_firebase_token_post_method.id,
-      aws_api_gateway_method.delete_firebase_token_post_method.id,
+      aws_api_gateway_method.sign_out_post_method.id,
       aws_api_gateway_integration.get_user_data_get_integration.id,
       aws_api_gateway_integration.get_user_data_options_integration.id,
       aws_api_gateway_integration.auth_send_code_post_integration.id,
@@ -1177,8 +1177,8 @@ resource "aws_api_gateway_deployment" "user_api_deployment" {
       aws_api_gateway_integration.cancel_booking_options_integration.id,
       aws_api_gateway_integration.register_firebase_token_post_integration.id,
       aws_api_gateway_integration.register_firebase_token_options_integration.id,
-      aws_api_gateway_integration.delete_firebase_token_post_integration.id,
-      aws_api_gateway_integration.delete_firebase_token_options_integration.id,
+      aws_api_gateway_integration.sign_out_post_integration.id,
+      aws_api_gateway_integration.sign_out_options_integration.id,
       aws_lambda_function.get_user_data_lambda.source_code_hash,
       aws_lambda_function.auth_send_code_lambda.source_code_hash,
       aws_lambda_function.auth_verify_code_lambda.source_code_hash,
@@ -1187,7 +1187,7 @@ resource "aws_api_gateway_deployment" "user_api_deployment" {
       aws_lambda_function.create_booking_lambda.source_code_hash,
       aws_lambda_function.cancel_booking_lambda.source_code_hash,
       aws_lambda_function.register_firebase_token_lambda.source_code_hash,
-      aws_lambda_function.delete_firebase_token_lambda.source_code_hash,
+      aws_lambda_function.sign_out_lambda.source_code_hash,
       local.get_request_mapping
     ]))
   }

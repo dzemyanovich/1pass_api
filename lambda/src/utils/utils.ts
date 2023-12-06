@@ -35,3 +35,8 @@ export function getRandomValue<T>(array: T[]): T {
 export function daysToMilliseconds(days: number): number {
   return days * 1000 * 60 * 60 * 24;
 }
+
+export function delay(sec: number): Promise<unknown> {
+  // eslint-disable-next-line no-promise-executor-return
+  return new Promise(resolve => setTimeout(resolve, sec * 1000));
+}

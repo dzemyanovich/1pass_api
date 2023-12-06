@@ -3,6 +3,7 @@ import { invalidToken } from '../utils/errors';
 import { deleteFirebaseToken } from '../utils/firebase';
 import { getErrors, validateFirebaseRequest } from '../utils/validation';
 
+// todo: change return type to SignOutResponse
 export async function handler(event: FirebaseRequest): Promise<FirebaseResponse> {
   const validationResult = validateFirebaseRequest(event);
   if (!validationResult.success) {
