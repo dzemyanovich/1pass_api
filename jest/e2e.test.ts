@@ -53,7 +53,7 @@ const CANCEL_BOOKING_URL = `${USER_API_URL}/cancel-booking`;
 const ADMIN_SIGN_IN_URL = `${ADMIN_API_URL}/admin-sign-in`;
 const CONFIRM_VISIT_URL = `${ADMIN_API_URL}/confirm-visit`;
 const GET_ADMIN_DATA_URL = `${ADMIN_API_URL}/get-admin-data`;
-const DELETE_TOKEN_DURATION = 15;
+const DELETE_TOKEN_DURATION = 20;
 
 describe('get-user-data', () => {
   it('gets full user data', async () => {
