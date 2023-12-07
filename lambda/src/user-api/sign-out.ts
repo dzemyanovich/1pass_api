@@ -1,10 +1,9 @@
 import { getUserId } from '../utils/auth';
 import { invalidToken } from '../utils/errors';
-import { deleteFirebaseToken } from '../utils/firebase';
 import { getErrors, validateFirebaseRequest } from '../utils/validation';
+import { publishMessage } from '../utils/sns';
 
-// todo: change return type to SignOutResponse
-export async function handler(event: FirebaseRequest): Promise<FirebaseResponse> {
+export async function handler(event: FirebaseRequest): Promise<EmptyResponse> {
   const validationResult = validateFirebaseRequest(event);
   if (!validationResult.success) {
     return {
@@ -23,7 +22,10 @@ export async function handler(event: FirebaseRequest): Promise<FirebaseResponse>
     };
   }
 
-  await deleteFirebaseToken(userId, firebaseToken);
+  await publishMessage({
+    userId,
+    firebaseToken,
+  }, 'delete-firebase-token');
 
   return {
     success: true,

@@ -37,7 +37,7 @@ import {
   storeFirebaseToken,
 } from '../lambda/src/utils/firebase';
 import { getAdminToken, getHash, getUserId, getJwtExpireMilliseconds } from '../lambda/src/utils/auth';
-import { addDays, daysToMilliseconds, isToday } from '../lambda/src/utils/utils';
+import { addDays, daysToMilliseconds, delay, isToday } from '../lambda/src/utils/utils';
 import { get, post } from './utils/rest';
 import { expectAdminData, expectSportObject, expectBooking, expectSignInSuccess } from './utils/expect';
 import { LONG_TEST_MS, VERY_LONG_TEST_MS } from './utils/constants';
@@ -53,7 +53,7 @@ const CANCEL_BOOKING_URL = `${USER_API_URL}/cancel-booking`;
 const ADMIN_SIGN_IN_URL = `${ADMIN_API_URL}/admin-sign-in`;
 const CONFIRM_VISIT_URL = `${ADMIN_API_URL}/confirm-visit`;
 const GET_ADMIN_DATA_URL = `${ADMIN_API_URL}/get-admin-data`;
-// const DELETE_TOKEN_DURATION = 10;
+const DELETE_TOKEN_DURATION = 15;
 
 describe('get-user-data', () => {
   it('gets full user data', async () => {
@@ -664,7 +664,7 @@ describe('firebase API methods', () => {
     expect(firebaseTokens0).not.toContain(firebaseToken1);
     expect(firebaseTokens0).not.toContain(firebaseToken2);
 
-    const registerTokenResponse1: FirebaseResponse = await post(REGISTER_FIREBASE_TOKEN_URL, firebaseRequest1);
+    const registerTokenResponse1: EmptyResponse = await post(REGISTER_FIREBASE_TOKEN_URL, firebaseRequest1);
     const firebaseTokens1 = await getFirebaseTokens(userId);
 
     expect(registerTokenResponse1).toMatchObject({
@@ -672,7 +672,7 @@ describe('firebase API methods', () => {
     });
     expect(firebaseTokens1).toContain(firebaseToken1);
 
-    const registerTokenResponse2: FirebaseResponse = await post(REGISTER_FIREBASE_TOKEN_URL, firebaseRequest1);
+    const registerTokenResponse2: EmptyResponse = await post(REGISTER_FIREBASE_TOKEN_URL, firebaseRequest1);
     const firebaseTokens2 = await getFirebaseTokens(userId);
 
     expect(registerTokenResponse2).toMatchObject({
@@ -681,7 +681,7 @@ describe('firebase API methods', () => {
     expect(firebaseTokens2).toContain(firebaseToken1);
     expect(firebaseTokens1.length).toEqual(firebaseTokens2.length);
 
-    const registerTokenResponse3: FirebaseResponse = await post(REGISTER_FIREBASE_TOKEN_URL, firebaseRequest2);
+    const registerTokenResponse3: EmptyResponse = await post(REGISTER_FIREBASE_TOKEN_URL, firebaseRequest2);
     const firebaseTokens3 = await getFirebaseTokens(userId);
 
     expect(registerTokenResponse3).toMatchObject({
@@ -690,10 +690,9 @@ describe('firebase API methods', () => {
     expect(firebaseTokens3).toContain(firebaseToken1);
     expect(firebaseTokens3).toContain(firebaseToken2);
 
-    const signOutResponse1: FirebaseResponse = await post(SIGN_OUT_URL, firebaseRequest1);
-    const signOutResponse2: FirebaseResponse = await post(SIGN_OUT_URL, firebaseRequest2);
-    // todo: uncomment after refactoring
-    // await delay(DELETE_TOKEN_DURATION); // wait until tokens are deleted via sns
+    const signOutResponse1: EmptyResponse = await post(SIGN_OUT_URL, firebaseRequest1);
+    const signOutResponse2: EmptyResponse = await post(SIGN_OUT_URL, firebaseRequest2);
+    await delay(DELETE_TOKEN_DURATION); // wait until tokens are deleted via sns
     const emptyFirebaseTokens = await getFirebaseTokens(userId);
 
     expect(signOutResponse1).toMatchObject({
@@ -748,9 +747,8 @@ describe('firebase API methods', () => {
     expect(firebaseTokens2).not.toContain(firebaseToken2);
     expect(firebaseTokens2).not.toContain(firebaseToken3);
 
-    const signOutResponse: FirebaseResponse = await post(SIGN_OUT_URL, firebaseRequest1);
-    // todo: uncomment after refactoring
-    // await delay(DELETE_TOKEN_DURATION);
+    const signOutResponse: EmptyResponse = await post(SIGN_OUT_URL, firebaseRequest1);
+    await delay(DELETE_TOKEN_DURATION);
 
     expect(signOutResponse).toMatchObject({
       success: true,
@@ -762,13 +760,10 @@ describe('firebase API methods', () => {
   }, VERY_LONG_TEST_MS);
 
   afterEach(async () => {
-    // todo: make actual deletion of firebase tokens
-    // todo: make actual deletion of firebase tokens in all other places
     await post(SIGN_OUT_URL, firebaseRequest1);
     await post(SIGN_OUT_URL, firebaseRequest2);
     await post(SIGN_OUT_URL, firebaseRequest3);
-    // todo: uncomment after refactoring
-    // await delay(DELETE_TOKEN_DURATION);
+    await delay(DELETE_TOKEN_DURATION);
   }, LONG_TEST_MS);
 });
 

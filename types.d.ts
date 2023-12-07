@@ -24,6 +24,11 @@ type SendNotificationsRequest = {
   body: string,
 };
 
+type DeleteTokenRequest = {
+  userId: number,
+  firebaseToken: string,
+};
+
 // ************** USER API ****************
 
 type UserInfo = {
@@ -104,7 +109,7 @@ type FirebaseRequest = {
   userToken: string,
 };
 
-type FirebaseResponse = LambdaResponse<void>;
+type EmptyResponse = LambdaResponse<void>;
 
 type FirebaseTokenValue = {
   token: string,

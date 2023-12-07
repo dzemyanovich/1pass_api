@@ -3,7 +3,7 @@ import { invalidToken } from '../utils/errors';
 import { storeFirebaseToken } from '../utils/firebase';
 import { getErrors, validateFirebaseRequest } from '../utils/validation';
 
-export async function handler(event: FirebaseRequest): Promise<FirebaseResponse> {
+export async function handler(event: FirebaseRequest): Promise<EmptyResponse> {
   const validationResult = validateFirebaseRequest(event);
   if (!validationResult.success) {
     return {
