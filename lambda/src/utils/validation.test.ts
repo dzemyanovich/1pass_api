@@ -85,6 +85,7 @@ describe('validateSignUp', () => {
       confirmEmail: 'smth_2@mail.ru',
       password: 'password',
       confirmPassword: 'password_2',
+      firebaseToken: 'any-token',
     });
 
     const errors = getErrors(result);

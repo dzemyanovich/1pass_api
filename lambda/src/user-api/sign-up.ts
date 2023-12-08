@@ -1,6 +1,7 @@
 import { getUserByPhone, getUserByEmail, signUp } from '../db/utils/repository';
-import { getToken } from '../utils/auth';
+import { getToken, getTokenData } from '../utils/auth';
 import { emailExists, phoneNotVerified, userExists, userNotFound } from '../utils/errors';
+import { publishMessage } from '../utils/sns';
 import { getErrors, validateSignUp } from '../utils/validation';
 
 export async function handler(event: SignUpRequest): Promise<SignUpResponse> {
@@ -46,8 +47,15 @@ export async function handler(event: SignUpRequest): Promise<SignUpResponse> {
   }
 
   await signUp(event);
+
   const token = getToken(userByPhone.id as number);
-  const { firstName, lastName } = event;
+  const tokenData = getTokenData(token);
+  const { firstName, lastName, firebaseToken } = event;
+
+  await publishMessage({
+    tokenData,
+    firebaseToken,
+  }, 'register-firebase-token');
 
   return {
     success: true,

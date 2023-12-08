@@ -63,6 +63,7 @@ export function validateSignUp(
     confirmEmail: z.string().nonempty().email(),
     password: z.string().nonempty().min(6),
     confirmPassword: z.string().nonempty().min(6),
+    firebaseToken: z.string().nonempty(),
   }).superRefine(({ email, confirmEmail }, ctx) => {
     if (email !== confirmEmail) {
       ctx.addIssue({
@@ -90,6 +91,7 @@ export function validateSignIn(
   const schema = z.object({
     phone: z.string().nonempty().refine(validator.isMobilePhone),
     password: z.string().nonempty(),
+    firebaseToken: z.string().nonempty(),
   });
 
   return schema.safeParse(event);
@@ -117,9 +119,9 @@ export function validateCancelBooking(
   return schema.safeParse(event);
 }
 
-export function validateFirebaseRequest(
-  event: FirebaseRequest,
-): SafeParseReturnType<FirebaseRequest, FirebaseRequest> {
+export function validateSignOutRequest(
+  event: SignOutRequest,
+): SafeParseReturnType<SignOutRequest, SignOutRequest> {
   const schema = z.object({
     firebaseToken: z.string().nonempty(),
     userToken: z.string().nonempty(),

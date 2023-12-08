@@ -1,7 +1,8 @@
 import { getUserBookings, signIn } from '../db/utils/repository';
 import { toUserBooking, toUserInfo } from '../db/utils/view-models';
-import { getToken } from '../utils/auth';
+import { getToken, getTokenData } from '../utils/auth';
 import { invalidCredentials } from '../utils/errors';
+import { publishMessage } from '../utils/sns';
 import { getErrors, validateSignIn } from '../utils/validation';
 
 export async function handler(event: SignInRequest): Promise<SignInResponse> {
@@ -25,10 +26,19 @@ export async function handler(event: SignInRequest): Promise<SignInResponse> {
   const userInfo: UserInfo = toUserInfo(user);
   const bookings: UserBooking[] = (await getUserBookings(user.id as number)).map(toUserBooking);
 
+  const token = getToken(user.id as number);
+  const tokenData = getTokenData(token);
+  const { firebaseToken } = event;
+
+  await publishMessage({
+    tokenData,
+    firebaseToken,
+  }, 'register-firebase-token');
+
   return {
     success: true,
     data: {
-      token: getToken(user.id as number),
+      token,
       userInfo,
       bookings,
     },

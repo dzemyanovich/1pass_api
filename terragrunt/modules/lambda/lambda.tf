@@ -55,6 +55,7 @@ data "aws_iam_policy_document" "sns_policy_document" {
     resources = [
       aws_sns_topic.send_notifications_sns.arn,
       aws_sns_topic.delete_firebase_token_sns.arn,
+      aws_sns_topic.register_firebase_token_sns.arn
     ]
   }
 }
@@ -121,11 +122,13 @@ resource "aws_lambda_function" "delete_expired_tokens_lambda" {
   }
 }
 
+#################### SNS LAMBDAS ####################
+
 resource "aws_lambda_function" "send_notifications_lambda" {
   filename          = data.archive_file.lambda_zip.output_path
   function_name     = "${var.product}-${var.env}-send-notifications"
   role              = aws_iam_role.iam_for_lambda.arn
-  handler           = "dist/send-notifications.handler"
+  handler           = "dist/sns/send-notifications.handler"
   source_code_hash  = data.archive_file.lambda_zip.output_base64sha256
   runtime           = local.runtime
   timeout           = local.long_timeout
@@ -140,10 +143,24 @@ resource "aws_lambda_function" "delete_firebase_token_lambda" {
   filename          = data.archive_file.lambda_zip.output_path
   function_name     = "${var.product}-${var.env}-delete-firebase-token"
   role              = aws_iam_role.iam_for_lambda.arn
-  handler           = "dist/delete-firebase-token.handler"
+  handler           = "dist/sns/delete-firebase-token.handler"
   source_code_hash  = data.archive_file.lambda_zip.output_base64sha256
   runtime           = local.runtime
   timeout           = local.very_long_timeout
+
+  environment {
+    variables = local.firebase_env_vars
+  }
+}
+
+resource "aws_lambda_function" "register_firebase_token_lambda" {
+  filename          = data.archive_file.lambda_zip.output_path
+  function_name     = "${var.product}-${var.env}-register-firebase-token"
+  role              = aws_iam_role.iam_for_lambda.arn
+  handler           = "dist/sns/register-firebase-token.handler"
+  source_code_hash  = data.archive_file.lambda_zip.output_base64sha256
+  runtime           = local.runtime
+  timeout           = local.long_timeout
 
   environment {
     variables = local.firebase_env_vars
@@ -164,6 +181,14 @@ resource "aws_lambda_permission" "allow_delete_firebase_token_sns_invoke" {
   function_name = aws_lambda_function.delete_firebase_token_lambda.function_name
   principal     = "sns.amazonaws.com"
   source_arn    = aws_sns_topic.delete_firebase_token_sns.arn
+}
+
+resource "aws_lambda_permission" "allow_register_firebase_token_sns_invoke" {
+  statement_id  = "AllowExecutionFromSNS"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.register_firebase_token_lambda.function_name
+  principal     = "sns.amazonaws.com"
+  source_arn    = aws_sns_topic.register_firebase_token_sns.arn
 }
 
 #################### USER API ####################
@@ -216,6 +241,7 @@ resource "aws_lambda_function" "sign_in_lambda" {
   handler           = "dist/user-api/sign-in.handler"
   source_code_hash  = data.archive_file.lambda_zip.output_base64sha256
   runtime           = local.runtime
+  timeout           = local.long_timeout
 
   environment {
     variables = local.jwt_env_vars
@@ -258,20 +284,6 @@ resource "aws_lambda_function" "cancel_booking_lambda" {
 
   environment {
     variables = local.jwt_env_vars
-  }
-}
-
-resource "aws_lambda_function" "register_firebase_token_lambda" {
-  filename          = data.archive_file.lambda_zip.output_path
-  function_name     = "${var.product}-${var.env}-register-firebase-token"
-  role              = aws_iam_role.iam_for_lambda.arn
-  handler           = "dist/user-api/register-firebase-token.handler"
-  source_code_hash  = data.archive_file.lambda_zip.output_base64sha256
-  runtime           = local.runtime
-  timeout           = local.long_timeout
-
-  environment {
-    variables = local.firebase_env_vars
   }
 }
 

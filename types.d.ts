@@ -62,6 +62,7 @@ type VerifyCodeResponse = LambdaResponse<void>;
 type SignInRequest = {
   phone: string,
   password: string,
+  firebaseToken: string,
 };
 
 type SignInResponse = LambdaResponse<{
@@ -78,6 +79,7 @@ type SignUpRequest = {
   confirmEmail: string,
   password: string,
   confirmPassword: string,
+  firebaseToken: string,
 };
 
 type SignUpResponse = LambdaResponse<{
@@ -104,9 +106,14 @@ type TokenData = {
   createdAt: number,
 };
 
-type FirebaseRequest = {
+type SignOutRequest = {
   firebaseToken: string,
   userToken: string,
+};
+
+type RegisterFirebaseRequest = {
+  tokenData: TokenData,
+  firebaseToken: string,
 };
 
 type EmptyResponse = LambdaResponse<void>;

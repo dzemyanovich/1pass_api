@@ -40,31 +40,64 @@ import { getAdminToken, getHash, getUserId, getJwtExpireMilliseconds } from '../
 import { addDays, daysToMilliseconds, delay, isToday } from '../lambda/src/utils/utils';
 import { get, post } from './utils/rest';
 import { expectAdminData, expectSportObject, expectBooking, expectSignInSuccess } from './utils/expect';
-import { LONG_TEST_MS, VERY_LONG_TEST_MS } from './utils/constants';
+import {
+  LONG_TEST_MS,
+  VERY_LONG_TEST_MS,
+  EXTREMELY_LONG_TEST_MS,
+  REGISTER_TOKEN_DURATION,
+  DELETE_TOKEN_DURATION,
+} from './utils/constants';
 
 const { USER_API_URL, ADMIN_API_URL } = process.env;
 const SIGN_IN_URL = `${USER_API_URL}/sign-in`;
 const SIGN_UP_URL = `${USER_API_URL}/sign-up`;
 const USER_DATA_URL = `${USER_API_URL}/get-user-data`;
-const REGISTER_FIREBASE_TOKEN_URL = `${USER_API_URL}/register-firebase-token`;
 const SIGN_OUT_URL = `${USER_API_URL}/sign-out`;
 const CREATE_BOOKING_URL = `${USER_API_URL}/create-booking`;
 const CANCEL_BOOKING_URL = `${USER_API_URL}/cancel-booking`;
 const ADMIN_SIGN_IN_URL = `${ADMIN_API_URL}/admin-sign-in`;
 const CONFIRM_VISIT_URL = `${ADMIN_API_URL}/confirm-visit`;
 const GET_ADMIN_DATA_URL = `${ADMIN_API_URL}/get-admin-data`;
-const DELETE_TOKEN_DURATION = 20;
+
+const FIREBASE_TOKEN = 'firebase-token-from-e2e-test';
+
+async function signOutUser(userToken: string): Promise<void> {
+  if (!userToken) {
+    return;
+  }
+
+  await delay(REGISTER_TOKEN_DURATION);
+
+  const signOutRequest: SignOutRequest = {
+    firebaseToken: FIREBASE_TOKEN,
+    userToken,
+  };
+
+  const signOutResponse: EmptyResponse = await post(SIGN_OUT_URL, signOutRequest);
+  if (!signOutResponse.success) {
+    // eslint-disable-next-line no-console
+    console.error('[ERROR] sign out failed');
+    // eslint-disable-next-line no-console
+    console.log('### signOutResponse = ', signOutResponse);
+    return;
+  }
+
+  await delay(DELETE_TOKEN_DURATION);
+}
 
 describe('get-user-data', () => {
+  let userToken: string;
+
   it('gets full user data', async () => {
     const { phone } = e2eUser;
     const signInResponse: SignInResponse = await post(SIGN_IN_URL, {
       phone,
       password: TEST_USER_PASSWORD,
+      firebaseToken: FIREBASE_TOKEN,
     });
-    const token = signInResponse.data?.token as string;
+    userToken = signInResponse.data?.token as string;
     const user: User = await getUserByPhone(phone);
-    const userDataResponse: UserDataResponse = await get(USER_DATA_URL, { token });
+    const userDataResponse: UserDataResponse = await get(USER_DATA_URL, { token: userToken });
 
     expectSignInSuccess(signInResponse);
     expect(userDataResponse.success).toBe(true);
@@ -79,6 +112,10 @@ describe('get-user-data', () => {
       lastName: user.lastName,
     });
   }, LONG_TEST_MS);
+
+  afterAll(async () => {
+    await signOutUser(userToken);
+  }, VERY_LONG_TEST_MS);
 });
 
 describe('user workflow', () => {
@@ -88,10 +125,13 @@ describe('user workflow', () => {
   const lastName = 'any';
   const password = 'password_1';
 
-  it('sign up + sign in + delete', async () => {
+  let signUpToken: string;
+
+  it('sign up + sign in + delete user', async () => {
     const signInFail: SignInResponse = await post(SIGN_IN_URL, {
       phone,
       password,
+      firebaseToken: FIREBASE_TOKEN,
     });
 
     expect(signInFail.success).toBe(false);
@@ -120,7 +160,10 @@ describe('user workflow', () => {
       confirmEmail: email,
       password,
       confirmPassword: password,
+      firebaseToken: FIREBASE_TOKEN,
     });
+
+    signUpToken = signUpResponse.data?.token as string;
 
     expect(signUpResponse.success).toBe(true);
     expect(signUpResponse.data).toMatchObject({
@@ -142,9 +185,9 @@ describe('user workflow', () => {
     const sinInSuccess: SignInResponse = await post(SIGN_IN_URL, {
       phone,
       password,
+      firebaseToken: FIREBASE_TOKEN,
     });
     const signInToken = sinInSuccess.data?.token as string;
-    const signUpToken = signUpResponse.data?.token as string;
 
     expectSignInSuccess(sinInSuccess, false);
     expect(getUserId(signInToken)).toEqual(getUserId(signUpToken));
@@ -156,30 +199,36 @@ describe('user workflow', () => {
 
     expect(userByPhone).toBeFalsy();
     expect(userByEmail).toBeFalsy();
-  }, LONG_TEST_MS * 1000);
+  }, LONG_TEST_MS);
 
   afterAll(async () => {
     await deleteUserByPhone(phone);
-  });
+
+    if (signUpToken) {
+      await signOutUser(signUpToken);
+    }
+  }, VERY_LONG_TEST_MS);
 });
 
 describe('booking workflow', () => {
   let bookingId: number;
+  let userToken: string;
 
   it('create + delete booking', async () => {
     const { phone } = e2eUser;
     const signInResponse: SignInResponse = await post(SIGN_IN_URL, {
       phone,
       password: TEST_USER_PASSWORD,
+      firebaseToken: FIREBASE_TOKEN,
     });
 
+    userToken = signInResponse.data?.token as string;
     const userDataResponse: UserDataResponse = await get(USER_DATA_URL);
     const sportObjects = userDataResponse.data?.sportObjects as SportObjectVM[];
     const sportObjectId = sportObjects[0].id;
-    const token = signInResponse.data?.token as string;
 
     const createBookingResponse: CreateBookingResponse = await post(CREATE_BOOKING_URL, {
-      token,
+      token: userToken,
       sportObjectId,
     });
     bookingId = createBookingResponse.data?.id as number;
@@ -198,38 +247,44 @@ describe('booking workflow', () => {
     });
 
     const cancelBookingResponse: CancelBookingResponse = await post(CANCEL_BOOKING_URL, {
-      token,
+      token: userToken,
       bookingId,
     });
     const deletedBooking = await getBookingById(bookingId);
 
     expect(cancelBookingResponse.success).toBe(true);
     expect(deletedBooking).toBeNull();
-  }, LONG_TEST_MS * 1000);
+  }, LONG_TEST_MS);
 
   afterAll(async () => {
     if (bookingId) {
       await deleteBooking(bookingId);
     }
-  });
+
+    if (userToken) {
+      await signOutUser(userToken);
+    }
+  }, VERY_LONG_TEST_MS);
 });
 
 describe('create-booking', () => {
   const bookingIds: number[] = [];
+  let userToken: string;
 
   it('already booked', async () => {
     const { phone } = e2eUser;
     const signInResponse: SignInResponse = await post(SIGN_IN_URL, {
       phone,
       password: TEST_USER_PASSWORD,
+      firebaseToken: FIREBASE_TOKEN,
     });
+    userToken = signInResponse.data?.token as string;
     const userDataResponse: UserDataResponse = await get(USER_DATA_URL);
     const sportObjects = userDataResponse.data?.sportObjects as SportObjectVM[];
     const sportObjectId = sportObjects[0].id;
-    const token = signInResponse.data?.token as string;
 
     const createBookingSuccess: CreateBookingResponse = await post(CREATE_BOOKING_URL, {
-      token,
+      token: userToken,
       sportObjectId,
     });
     const bookingId = createBookingSuccess.data?.id as number;
@@ -239,7 +294,7 @@ describe('create-booking', () => {
     expectBooking(createBookingSuccess.data as UserBooking);
 
     const createBookingFail: CreateBookingResponse = await post(CREATE_BOOKING_URL, {
-      token,
+      token: userToken,
       sportObjectId,
     });
 
@@ -259,25 +314,31 @@ describe('create-booking', () => {
         await deleteBooking(bookingId);
       }
     }
-  });
+
+    if (userToken) {
+      await signOutUser(userToken);
+    }
+  }, VERY_LONG_TEST_MS);
 });
 
 describe('cancel-booking -> already visited', () => {
   let bookingId: number;
+  let userToken: string;
 
   it('cannot cancel past booking: already visited', async () => {
     const { phone } = e2eUser;
     const signInResponse: SignInResponse = await post(SIGN_IN_URL, {
       phone,
       password: TEST_USER_PASSWORD,
+      firebaseToken: FIREBASE_TOKEN,
     });
+    userToken = signInResponse.data?.token as string;
     const userDataResponse: UserDataResponse = await get(USER_DATA_URL);
     const sportObjects = userDataResponse.data?.sportObjects as SportObjectVM[];
     const sportObjectId = sportObjects[0].id;
-    const token = signInResponse.data?.token as string;
 
     const createBookingSuccess: CreateBookingResponse = await post(CREATE_BOOKING_URL, {
-      token,
+      token: userToken,
       sportObjectId,
     });
     bookingId = createBookingSuccess.data?.id as number;
@@ -301,7 +362,7 @@ describe('cancel-booking -> already visited', () => {
     expect(new Date(confirmVisitResponse.data as Date).toString()).toEqual(booking.visitTime.toString());
 
     const cancelBookingResponse: CancelBookingResponse = await post(CANCEL_BOOKING_URL, {
-      token,
+      token: userToken,
       bookingId,
     });
 
@@ -315,20 +376,26 @@ describe('cancel-booking -> already visited', () => {
     if (bookingId) {
       await deleteBooking(bookingId);
     }
-  });
+
+    if (userToken) {
+      await signOutUser(userToken);
+    }
+  }, VERY_LONG_TEST_MS);
 });
 
 describe('cancel-booking -> booking date is in the past', () => {
   let bookingId: number;
+  let userToken: string;
 
   it('cancel-booking -> booking date is in the past', async () => {
     const { phone } = e2eUser;
     const signInResponse: SignInResponse = await post(SIGN_IN_URL, {
       phone,
       password: TEST_USER_PASSWORD,
+      firebaseToken: FIREBASE_TOKEN,
     });
-    const token = signInResponse.data?.token as string;
-    const userId = getUserId(token) as number;
+    userToken = signInResponse.data?.token as string;
+    const userId = getUserId(userToken) as number;
     const userDataResponse: UserDataResponse = await get(USER_DATA_URL);
     const sportObjects = userDataResponse.data?.sportObjects as SportObjectVM[];
     const sportObjectId = sportObjects[0].id;
@@ -344,7 +411,7 @@ describe('cancel-booking -> booking date is in the past', () => {
     expect(booking.visitTime).toBeFalsy();
 
     const cancelBookingResponse: CancelBookingResponse = await post(CANCEL_BOOKING_URL, {
-      token,
+      token: userToken,
       bookingId,
     });
 
@@ -358,7 +425,11 @@ describe('cancel-booking -> booking date is in the past', () => {
     if (bookingId) {
       await deleteBooking(bookingId);
     }
-  });
+
+    if (userToken) {
+      await signOutUser(userToken);
+    }
+  }, VERY_LONG_TEST_MS);
 });
 
 describe('admin-sign-in', () => {
@@ -626,84 +697,109 @@ describe('get-admin-data', () => {
 });
 
 describe('firebase API methods', () => {
-  const firebaseToken1 = 'any_string_1';
-  const firebaseToken2 = 'any_string_2';
-  const firebaseToken3 = 'any_string_3';
+  const firebaseToken1 = `${FIREBASE_TOKEN}-1`;
+  const firebaseToken2 = `${FIREBASE_TOKEN}-2`;
+  const firebaseToken3 = `${FIREBASE_TOKEN}-3`;
 
   let userId: number;
-  let firebaseRequest1: FirebaseRequest;
-  let firebaseRequest2: FirebaseRequest;
-  let firebaseRequest3: FirebaseRequest;
+  let signInRequest1: SignInRequest;
+  let signInRequest2: SignInRequest;
+  let signInRequest3: SignInRequest;
+  let userToken1: string;
+  let userToken2: string;
+  let userToken3: string;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     const { phone } = e2eUser;
-    const signInResponse: SignInResponse = await post(SIGN_IN_URL, {
+
+    const user = await getUserByPhone(phone);
+    userId = user.id;
+    await deleteFirebaseCollection(userId);
+
+    signInRequest1 = {
       phone,
       password: TEST_USER_PASSWORD,
-    });
-    const userToken = signInResponse.data?.token as string;
-
-    userId = getUserId(userToken) as number;
-    firebaseRequest1 = {
       firebaseToken: firebaseToken1,
-      userToken,
     };
-    firebaseRequest2 = {
+    signInRequest2 = {
+      phone,
+      password: TEST_USER_PASSWORD,
       firebaseToken: firebaseToken2,
-      userToken,
     };
-    firebaseRequest3 = {
+    signInRequest3 = {
+      phone,
+      password: TEST_USER_PASSWORD,
       firebaseToken: firebaseToken3,
-      userToken,
     };
   }, LONG_TEST_MS);
 
-  it('register-firebase-token & sign-out', async () => {
+  it('sign-in & sign-out (checking firebase tokens)', async () => {
     const firebaseTokens0 = await getFirebaseTokens(userId);
 
     expect(firebaseTokens0).not.toContain(firebaseToken1);
     expect(firebaseTokens0).not.toContain(firebaseToken2);
 
-    const registerTokenResponse1: EmptyResponse = await post(REGISTER_FIREBASE_TOKEN_URL, firebaseRequest1);
+    const signInResponse1: SignInResponse = await post(SIGN_IN_URL, signInRequest1);
+    userToken1 = signInResponse1.data?.token as string;
+    await delay(REGISTER_TOKEN_DURATION);
     const firebaseTokens1 = await getFirebaseTokens(userId);
 
-    expect(registerTokenResponse1).toMatchObject({
-      success: true,
-    });
+    expect(signInResponse1.success).toBe(true);
     expect(firebaseTokens1).toContain(firebaseToken1);
+    expect(firebaseTokens1.length).toBe(1);
 
-    const registerTokenResponse2: EmptyResponse = await post(REGISTER_FIREBASE_TOKEN_URL, firebaseRequest1);
+    const signInResponse2: SignInResponse = await post(SIGN_IN_URL, signInRequest2);
+    userToken2 = signInResponse2.data?.token as string;
+    await delay(REGISTER_TOKEN_DURATION);
     const firebaseTokens2 = await getFirebaseTokens(userId);
 
-    expect(registerTokenResponse2).toMatchObject({
-      success: true,
-    });
+    expect(signInResponse2.success).toBe(true);
     expect(firebaseTokens2).toContain(firebaseToken1);
-    expect(firebaseTokens1.length).toEqual(firebaseTokens2.length);
+    expect(firebaseTokens2).toContain(firebaseToken2);
+    expect(firebaseTokens2.length).toBe(2);
 
-    const registerTokenResponse3: EmptyResponse = await post(REGISTER_FIREBASE_TOKEN_URL, firebaseRequest2);
+    const signInResponse3: SignInResponse = await post(SIGN_IN_URL, signInRequest3);
+    userToken3 = signInResponse3.data?.token as string;
+    await delay(REGISTER_TOKEN_DURATION);
     const firebaseTokens3 = await getFirebaseTokens(userId);
 
-    expect(registerTokenResponse3).toMatchObject({
-      success: true,
-    });
+    expect(signInResponse3.success).toBe(true);
     expect(firebaseTokens3).toContain(firebaseToken1);
     expect(firebaseTokens3).toContain(firebaseToken2);
+    expect(firebaseTokens3).toContain(firebaseToken3);
+    expect(firebaseTokens3.length).toBe(3);
 
-    const signOutResponse1: EmptyResponse = await post(SIGN_OUT_URL, firebaseRequest1);
-    const signOutResponse2: EmptyResponse = await post(SIGN_OUT_URL, firebaseRequest2);
-    await delay(DELETE_TOKEN_DURATION); // wait until tokens are deleted via sns
+    const signOutResponse1: EmptyResponse = await post(SIGN_OUT_URL, {
+      firebaseToken: firebaseToken1,
+      userToken: userToken1,
+    });
+    const signOutResponse2: EmptyResponse = await post(SIGN_OUT_URL, {
+      firebaseToken: firebaseToken2,
+      userToken: userToken2,
+    });
+    const signOutResponse3: EmptyResponse = await post(SIGN_OUT_URL, {
+      firebaseToken: firebaseToken3,
+      userToken: userToken3,
+    });
+    await delay(DELETE_TOKEN_DURATION);
     const emptyFirebaseTokens = await getFirebaseTokens(userId);
 
     expect(signOutResponse1).toMatchObject({
       success: true,
     });
+    userToken1 = '';
     expect(signOutResponse2).toMatchObject({
       success: true,
     });
+    userToken2 = '';
+    expect(signOutResponse3).toMatchObject({
+      success: true,
+    });
+    userToken3 = '';
     expect(emptyFirebaseTokens).not.toContain(firebaseToken1);
     expect(emptyFirebaseTokens).not.toContain(firebaseToken2);
-  }, VERY_LONG_TEST_MS);
+    expect(emptyFirebaseTokens).not.toContain(firebaseToken3);
+  }, EXTREMELY_LONG_TEST_MS);
 
   it('delete-expired-tokens', async () => {
     const jwtExpireMilliseconds = getJwtExpireMilliseconds();
@@ -747,24 +843,24 @@ describe('firebase API methods', () => {
     expect(firebaseTokens2).not.toContain(firebaseToken2);
     expect(firebaseTokens2).not.toContain(firebaseToken3);
 
-    const signOutResponse: EmptyResponse = await post(SIGN_OUT_URL, firebaseRequest1);
-    await delay(DELETE_TOKEN_DURATION);
-
-    expect(signOutResponse).toMatchObject({
-      success: true,
-    });
-
+    await deleteFirebaseToken(userId, firebaseToken1);
     const firebaseTokens3 = await getFirebaseTokens(userId);
 
     expect(firebaseTokens3).not.toContain(firebaseToken1);
   }, VERY_LONG_TEST_MS);
 
   afterEach(async () => {
-    await post(SIGN_OUT_URL, firebaseRequest1);
-    await post(SIGN_OUT_URL, firebaseRequest2);
-    await post(SIGN_OUT_URL, firebaseRequest3);
+    if (userToken1) {
+      await signOutUser(userToken1);
+    }
+    if (userToken2) {
+      await signOutUser(userToken1);
+    }
+    if (userToken3) {
+      await signOutUser(userToken1);
+    }
     await delay(DELETE_TOKEN_DURATION);
-  }, LONG_TEST_MS);
+  }, EXTREMELY_LONG_TEST_MS);
 });
 
 describe('firebase js methods', () => {

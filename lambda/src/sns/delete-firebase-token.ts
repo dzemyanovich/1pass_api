@@ -1,6 +1,6 @@
 import type { SNSEvent } from 'aws-lambda';
 
-import { deleteFirebaseToken } from './utils/firebase';
+import { deleteFirebaseToken } from '../utils/firebase';
 
 export async function handler(event: SNSEvent): Promise<void> {
   const request: DeleteTokenRequest = JSON.parse(event.Records[0].Sns.Message);

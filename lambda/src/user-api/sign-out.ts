@@ -1,10 +1,10 @@
 import { getUserId } from '../utils/auth';
 import { invalidToken } from '../utils/errors';
-import { getErrors, validateFirebaseRequest } from '../utils/validation';
+import { getErrors, validateSignOutRequest } from '../utils/validation';
 import { publishMessage } from '../utils/sns';
 
-export async function handler(event: FirebaseRequest): Promise<EmptyResponse> {
-  const validationResult = validateFirebaseRequest(event);
+export async function handler(event: SignOutRequest): Promise<EmptyResponse> {
+  const validationResult = validateSignOutRequest(event);
   if (!validationResult.success) {
     return {
       success: false,

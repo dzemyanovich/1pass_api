@@ -1,6 +1,16 @@
-import { sendNotifications, getFirebaseTokens, deleteFirebaseToken } from '../lambda/src/utils/firebase';
+import {
+  sendNotifications,
+  getFirebaseTokens,
+  deleteFirebaseToken,
+  deleteFirebaseCollection,
+} from '../lambda/src/utils/firebase';
 import { getToken, getUserId } from '../lambda/src/utils/auth';
-import { getAllTestUsers, getTestSportObjects, getTestUsers, getUserByPhone } from '../lambda/src/db/utils/repository';
+import {
+  getAllTestUsers,
+  getTestSportObjects,
+  getTestUsers,
+  getUserByPhone,
+} from '../lambda/src/db/utils/repository';
 import {
   confirmMismatch,
   emailExists,
@@ -31,9 +41,10 @@ import {
 import testSportObjects from '../lambda/src/db/utils/test-data/test-sport-objects';
 import { get, post } from './utils/rest';
 import { expectSignInSuccess, expectSportObjects } from './utils/expect';
-import { LONG_TEST_MS } from './utils/constants';
+import { LONG_TEST_MS, REGISTER_TOKEN_DURATION } from './utils/constants';
 import SportObject from '../lambda/src/db/models/sport-object';
 import User from '../lambda/src/db/models/user';
+import { delay } from '../lambda/src/utils/utils';
 
 const { USER_API_URL } = process.env;
 const SIGN_IN_URL = `${USER_API_URL}/sign-in`;
@@ -43,6 +54,8 @@ const SEND_CODE_URL = `${USER_API_URL}/auth-send-code`;
 const VERIFY_CODE_URL = `${USER_API_URL}/auth-verify-code`;
 const CREATE_BOOKING_URL = `${USER_API_URL}/create-booking`;
 const CANCEL_BOOKING_URL = `${USER_API_URL}/cancel-booking`;
+
+const FIREBASE_TOKEN = 'firebase-token-from-integration-test';
 
 describe('get-user-data', () => {
   it('gets all sport objects (token not passed)', async () => {
@@ -125,31 +138,36 @@ describe('auth-verify-code', () => {
 });
 
 describe('sign-in', () => {
+  let user: User;
+
   it('success', async () => {
     const { phone } = e2eUser;
     const signInResponse: SignInResponse = await post(SIGN_IN_URL, {
       phone,
       password: TEST_USER_PASSWORD,
+      firebaseToken: FIREBASE_TOKEN,
     });
-    const user = await getUserByPhone(phone);
+    user = await getUserByPhone(phone);
     const token = getToken(user.id as number);
 
     expectSignInSuccess(signInResponse);
     expect(getUserId(token)).toEqual(getUserId(signInResponse.data?.token as string));
   }, LONG_TEST_MS);
 
-  it('phone and password are missing', async () => {
+  it('data is missing', async () => {
     const signInResponse: SignInResponse = await post(SIGN_IN_URL, {});
 
     expect(signInResponse.success).toBe(false);
     expect(signInResponse.errors).toContain(required('phone'));
     expect(signInResponse.errors).toContain(required('password'));
+    expect(signInResponse.errors).toContain(required('firebaseToken'));
   });
 
   it('invalid data', async () => {
     const signInResponse: SignInResponse = await post(SIGN_IN_URL, {
       phone: '12412',
       password: true,
+      firebaseToken: FIREBASE_TOKEN,
     });
 
     expect(signInResponse.success).toBe(false);
@@ -161,11 +179,19 @@ describe('sign-in', () => {
     const signInResponse: SignInResponse = await post(SIGN_IN_URL, {
       phone: '+12025550181',
       password: 'some_password',
+      firebaseToken: FIREBASE_TOKEN,
     });
 
     expect(signInResponse.success).toBe(false);
     expect(signInResponse.errors).toContain(invalidCredentials());
   });
+
+  afterAll(async () => {
+    if (user) {
+      await delay(REGISTER_TOKEN_DURATION);
+      await deleteFirebaseCollection(user.id as number);
+    }
+  }, LONG_TEST_MS);
 });
 
 describe('sign-up', () => {
@@ -180,6 +206,7 @@ describe('sign-up', () => {
       confirmEmail: 'smth@mail.ru',
       password: 'password',
       confirmPassword: 'password',
+      firebaseToken: FIREBASE_TOKEN,
     });
 
     expect(signUpResponse.success).toBe(false);
@@ -197,6 +224,7 @@ describe('sign-up', () => {
       confirmEmail: 'smth@mail.ru',
       password: 'password',
       confirmPassword: 'password',
+      firebaseToken: FIREBASE_TOKEN,
     });
 
     expect(signUpResponse.success).toBe(false);
@@ -214,6 +242,7 @@ describe('sign-up', () => {
       confirmEmail: email,
       password: 'any_password',
       confirmPassword: 'any_password',
+      firebaseToken: FIREBASE_TOKEN,
     });
 
     expect(signUpResponse.success).toBe(false);
@@ -231,6 +260,7 @@ describe('sign-up', () => {
     expect(signUpResponse.errors).toContain(required('confirmEmail'));
     expect(signUpResponse.errors).toContain(required('password'));
     expect(signUpResponse.errors).toContain(required('confirmPassword'));
+    expect(signUpResponse.errors).toContain(required('firebaseToken'));
   });
 
   it('invalid data', async () => {
@@ -242,6 +272,7 @@ describe('sign-up', () => {
       confirmEmail: 'not-email',
       password: 333,
       confirmPassword: 333,
+      firebaseToken: FIREBASE_TOKEN,
     });
 
     expect(signUpResponse.success).toBe(false);
@@ -263,6 +294,7 @@ describe('sign-up', () => {
       confirmEmail: 'smth_2@mail.ru',
       password: 'password',
       confirmPassword: 'password_2',
+      firebaseToken: FIREBASE_TOKEN,
     });
 
     expect(signUpResponse.success).toBe(false);
@@ -280,6 +312,7 @@ describe('sign-up', () => {
       confirmEmail: 'smth@mail.ru',
       password: 'password',
       confirmPassword: 'password',
+      firebaseToken: FIREBASE_TOKEN,
     });
 
     expect(signUpResponse.success).toBe(false);
@@ -322,6 +355,7 @@ describe('create-booking', () => {
     const signInResponse: SignInResponse = await post(SIGN_IN_URL, {
       phone,
       password: TEST_USER_PASSWORD,
+      firebaseToken: FIREBASE_TOKEN,
     });
     const token = signInResponse.data?.token as string;
 
@@ -333,6 +367,14 @@ describe('create-booking', () => {
     expect(createBookingResponse.success).toBe(false);
     expect(createBookingResponse.errors).toContain(noSportObject());
   });
+
+  afterAll(async () => {
+    const { phone } = e2eUser;
+    const user = await getUserByPhone(phone);
+
+    await delay(REGISTER_TOKEN_DURATION);
+    await deleteFirebaseCollection(user.id as number);
+  }, LONG_TEST_MS);
 });
 
 describe('cancel-booking', () => {
@@ -370,6 +412,7 @@ describe('cancel-booking', () => {
     const signInResponse: SignInResponse = await post(SIGN_IN_URL, {
       phone,
       password: TEST_USER_PASSWORD,
+      firebaseToken: FIREBASE_TOKEN,
     });
     const token = signInResponse.data?.token as string;
     const cancelBookingResponse: CancelBookingResponse = await post(CANCEL_BOOKING_URL, {
@@ -380,6 +423,14 @@ describe('cancel-booking', () => {
     expect(cancelBookingResponse.success).toBe(false);
     expect(cancelBookingResponse.errors).toContain(noBooking());
   });
+
+  afterAll(async () => {
+    const { phone } = e2eUser;
+    const user = await getUserByPhone(phone);
+
+    await delay(REGISTER_TOKEN_DURATION);
+    await deleteFirebaseCollection(user.id as number);
+  }, LONG_TEST_MS);
 });
 
 describe('firebase', () => {
