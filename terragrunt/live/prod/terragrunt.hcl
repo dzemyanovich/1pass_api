@@ -1,4 +1,5 @@
 locals {
+  product    = "1pass"
   env        = "prod1"
   aws_region = "eu-central-1"
 }
@@ -16,7 +17,7 @@ EOF
 remote_state {
   backend = "s3"
   config = {
-    bucket = "${local.env}.1pass-api-terragrunt"
+    bucket = "${local.env}.${local.product}-api-terragrunt"
     region = "${local.aws_region}"
     key    = "${path_relative_to_include()}/terraform.tfstate"
   }

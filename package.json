@@ -28,7 +28,7 @@
     "db-undo-migrate-dev": "export NODE_ENV=dev && npx sequelize-cli db:migrate:undo:all",
     "db-undo-migrate-preprod": "export NODE_ENV=preprod && npx sequelize-cli db:migrate:undo:all",
     "db-undo-migrate-prod": "export NODE_ENV=prod && npx sequelize-cli db:migrate:undo:all",
-    "db-create-seed": "npx sequelize-cli seed:generate --name my-seed-name",
+    "db-empty-seed": "npx sequelize-cli seed:generate --name my-seed-name",
     "db-seeds-dev": "export NODE_ENV=dev && npx sequelize-cli db:seed:all",
     "db-seeds-preprod": "export NODE_ENV=preprod && npx sequelize-cli db:seed:all",
     "db-seeds-prod": "export NODE_ENV=prod && npx sequelize-cli db:seed:all",
