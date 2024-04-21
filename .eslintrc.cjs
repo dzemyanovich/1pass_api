@@ -50,6 +50,7 @@ module.exports = {
     'no-console': 'error',
     'no-await-in-loop': 'off',
     'no-restricted-syntax': 'off',
+    'import/extensions': 'off',
   },
   ignorePatterns: [
     'lambda/dist',
