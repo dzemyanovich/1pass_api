@@ -16,11 +16,6 @@ function getConfig(): SequelizeOptions {
   };
   const env = getEnv();
 
-  // eslint-disable-next-line no-console
-  console.log('#### env = ', env);
-  // eslint-disable-next-line no-console
-  console.log('#### process.env.NODE_ENV', process.env.NODE_ENV);
-
   switch (env) {
     case ENVS.dev:
     case ENVS.test:
