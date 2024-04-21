@@ -1,4 +1,5 @@
-# todo: search for other mysql db providers since aws is extremely expensive
+############ AWS SQL DB IS NOT USED BECAUSE IT'S VERY EXPENSIVE ############
+
 # custom security group is required for connection from MySQL Workbench
 # resource "aws_security_group" "mysql_security_group" {
 #   // having db per each env is costly
